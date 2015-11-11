@@ -1,0 +1,188 @@
+\documentclass{report}
+
+\author{Ben Pearre, Nathan Perkins, Jeff Markowitz, Tim Gardner}
+
+\begin{abstract}
+  We present an accurate, versatile, and fast detector that can
+  control hardware at precisely timed moments during zebra finch
+  song. Most moments during song can be isolated and detected with
+  $>90$\% accuracy, easier syllables exceed 99\% detection rate, and
+  false positive rates can be near 0\marginpar{How to explain how to
+    quantify this in the abstract?}. The detector can run on a stock
+  Mac Mini with a triggering delay around 2 milliseconds and trigger
+  jitter with $\sigma\approx 2$ milliseconds.
+\end{abstract}
+
+\section{Introduction}
+
+The adult zebra finch sings a song made up of 2-6 syllables, with
+longer songs taking on the order of a second. The song may be repeated
+hundreds of times per day, and is almost identical each time. This
+consistency presents a unique opportunity to study the neural basis of
+learning, audition, and control: we do not know of a model in which
+raster plots of neural activity vs.~vocal output are as
+consistent. \marginpar{Quantify? Remove vacuous handwaving? Figure?}
+
+In order to take advantage of this consistency, it is useful to be
+able to detect selected moments during song, in order to align data or
+trigger other systems.\marginpar{Examples?} To the best of our
+knowledge, current systems require expensive hardware, extensive
+hand-tuning, and careful choice of an easy syllable, and moreover no
+standalone solution is available.
+
+We developed a detector based on the song spectrogram. Given a set of
+aligned songs, our software computes spectrograms and trains a neural
+network to output a TTL pulse at the chosen moment. The approach
+consists of three steps:
+
+\begin{enumerate}
+\item Align songs. This is outside the scope of this paper, but song
+  alignment software can be found at {\tt
+    https://github.com/jmarkow/}.
+\item Choose one or more desired trigger syllables, and train a neural
+  network to recognise them. This is carried out offline using any
+  recent Matlab, and we recommend a computer with at least 32G of RAM.
+\item Once trained, the Matlab's output file is read into code written
+  in Swift. Audio input uses the Mac's audio port and the CoreAudio
+  interface. Output is via TTL pulses. Hardware requirements for this
+  system are minimal: we use the current (2015) Mac Mini.
+\end{enumerate}
+
+We present the method in
+Section~\ref{sec:method}. Section~\ref{sec:quantify} describes how we
+define and test performance. Section\~ref{sec:results} presents our
+measurements. Finally, Section~\ref{sec:case} gives an example usage
+case of the detector.
+
+
+\section{Method}
+\label{sec:method}
+
+First, one or more moments during the song are selected (although note
+that with Levenburg-Marquardt training, the default for Matlab's
+neural network toolbox, multiple output syllables may require a large
+amout of RAM and increase training time to hours).
+
+Tuning FFT parameters
+
+Tuning the recognition region
+
+Micro-realignment
+
+Breaking the songs into training X vectors
+
+Defining Y vectors -- the shotgun parameter
+
+Neural network geometry
+
+Computing the optimal triggering threshold
+
+With inputs well outside the space on which a neural network has been
+trained, its outputs will be random. Thus in order to reduce the false
+negative rate it is necessary to provide negative training examples
+that include silence, cage noise, non-song vocalisations, and perhaps
+even songs from other birds. We have found that training with roughly
+a 8:1 ratio of non-song to song yields excellent results, although
+this will depend on the makeup of the non-song data.
+
+\section{Quantification}
+\label{sec:quantify}
+
+
+Ground truth is given on the training set, and can be measured by
+presenting the recorded training songs as well as the canonical
+detection events. To this end, besides the trained network object, our
+Matlab code produces an audio file consisting of all of the training
+data on the left audio channel and delta functions at the moment of
+correct detection (basically a TTL pulse, although the voltage will
+fluctuate with audio output volume) on the right channel. Thus, when
+played on any audio player and provided as input to the Swift
+detector, this file provides birdsong with a perfectly aligned ground
+truth indicator.
+
+
+\subsection{Precision and Recall}
+
+The Matlab neural network toolbox breaks the given training set into
+three groups: data on which the network is trained, data used to
+validate the progress of the training algorithm, and test data used
+only as a final measure of performance. We further withold a portion
+of the training data in order to provide another evaluation of
+performance on unseen data.
+
+\begin{definition}
+  \item[True positive:] A song for which the detector fires within
+    20ms of the intended moment.
+  \item[True negative:] So that every non-detected non-syllable does
+    not count, a true negative is a song during which the detector
+    did not fire at any point outside the true positive region.
+  \item[False positive:] A detection event outside of the intended region.
+  \item[False negative:] A song during which a detection event should
+    have occurred, but didn't.
+\end{definition}
+
+
+
+A simple technique with occasional popularity is to evaluate detectors
+based on the area under the ROC curve\cite{fixme}.
+
+\subsection{Timing}
+
+We evaluate the time taken from the presentation of the target
+syllable to the firing of the TTL pulse. While playing the audio test
+file from another device (such as a mobile phone), the TTL output from
+the ground-truth channel of the audio output may be used as the
+trigger pulse of an oscilloscope, and compared to the TTL pulse
+produced by the Swift detector, which sees only the birdsong channel
+of the audio file. For this purpose we used a pulse generator to widen
+the detector's detection spike to more than 10ms or so. The
+oscilloscope may then be set to averaging mode: the canonical signal
+will be at the trigger time, and the average of the detector's detection
+events will be seen as a low-to-high transition with form
+approximating the cumulative probability distribution function (CDF)
+of the detector's output given the chosen song event.
+
+Mean latency is then given as the halfway point of that detection
+sigmoid. It is a helpful number, but not a critical one, since a
+high-latency detector can be trained to trigger at a point somewhat
+before the true moment of interest.
+
+Of more importance is latency jitter: how much random variability is
+there in the latency? This we obtain by eyeballing the width of the
+detection sigmoid in the oscilloscope.
+
+
+\section{Results}
+\label{sec:results}
+
+Bases for comparison? Jeff's matched filterbank? Nothing really
+informative.
+
+Head mic, cage mic?
+
+
+\section{Case Study}
+\label{sec:case}
+
+Jeff is using the detector for something cool.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+
+\section{Resources}
+\label{sec:resources}
+
+\begin{description}
+  \item[Song alignment:] Last we checked, Jeff Markowitz's song
+    alignment software could be found at {\tt
+      https://github.com/jmarkow}.
+
+    \item[Training the neural network:] Our implementation of the
+      syllable detector training code is available under the GNU GPL
+      at {\tt https://github.com/bwpearre/}\marginpar{Fix the
+        location!}
+
+    \item[Runtime:] The Swift implementation for executing the trained
+      network\dots
+\end{description}
