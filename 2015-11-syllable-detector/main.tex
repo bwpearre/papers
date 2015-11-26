@@ -1,10 +1,35 @@
-\documentclass{report}
+\documentclass{article}
+
+\title{A fast, accurate, and robust zebra finch syllable detector}
+
+\usepackage{amsmath, amsthm, amssymb, wasysym, graphicx}
+\usepackage[small, hang, bf]{caption}
+\usepackage{natbib}
+\renewcommand\cite{\citep}
+\newcommand\citepossessive[1]{\citeauthor{#1}'s \citeyearpar{#1}}
+\newcommand\eq[1]{Equation~\ref{#1}}
+\newcommand\fig[1]{Figure~\ref{#1}}
+
+
+\setlength{\marginparwidth}{35mm}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]
+  {\raggedright\footnotesize #1}}
 
 \author{Ben Pearre, Nathan Perkins, Jeff Markowitz, Tim Gardner}
 
+\newcommand\argmin{\mathop{\mbox{{\rm argmin}}}\limits}
+\newcommand{\noprint}[1]{}
+
+
+  
+
+\begin{document}
+\maketitle
+
 \begin{abstract}
-  We present an accurate, versatile, and fast detector that can
-  control hardware at precisely timed moments during zebra finch
+  We present an accurate, versatile, and fast syllable detector that
+  can control hardware at precisely timed moments during zebra finch
   song. Most moments during song can be isolated and detected with
   $>90$\% accuracy, easier syllables exceed 99\% detection rate, and
   false positive rates can be near 0\marginpar{How to explain how to
@@ -19,71 +44,141 @@ The adult zebra finch sings a song made up of 2-6 syllables, with
 longer songs taking on the order of a second. The song may be repeated
 hundreds of times per day, and is almost identical each time. This
 consistency presents a unique opportunity to study the neural basis of
-learning, audition, and control: we do not know of a model in which
-raster plots of neural activity vs.~vocal output are as
-consistent. \marginpar{Quantify? Remove vacuous handwaving? Figure?}
+learning, audition, and control: we do not know of another model in
+which \marginpar{Quantify? Remove vacuous handwaving? Figure?} neural
+activity may be so easily correlated with motor output.
 
 In order to take advantage of this consistency, it is useful to be
 able to detect selected moments during song, in order to align data or
-trigger other systems.\marginpar{Examples?} To the best of our
+trigger\marginpar{Examples?} other systems.  To the best of our
 knowledge, current systems require expensive hardware, extensive
-hand-tuning, and careful choice of an easy syllable, and moreover no
+hand-tuning, and careful choice of an easy syllable, and no
 standalone solution is available.
 
-We developed a detector based on the song spectrogram. Given a set of
-aligned songs, our software computes spectrograms and trains a neural
-network to output a TTL pulse at the chosen moment. The approach
-consists of three steps:
+We developed a standalone detector based on the song
+spectrogram. Given a set of aligned songs, our software computes
+spectrograms and trains a neural network to output a TTL pulse at the
+chosen moment. The approach consists of three steps:
 
 \begin{enumerate}
 \item Align songs. This is outside the scope of this paper, but song
-  alignment software can be found at {\tt
-    https://github.com/jmarkow/}.
+  alignment software is discussed in Section~\ref{sec:resources}.
 \item Choose one or more desired trigger syllables, and train a neural
   network to recognise them. This is carried out offline using any
-  recent Matlab, and we recommend a computer with at least 32G of RAM.
-\item Once trained, the Matlab's output file is read into code written
-  in Swift. Audio input uses the Mac's audio port and the CoreAudio
-  interface. Output is via TTL pulses. Hardware requirements for this
-  system are minimal: we use the current (2015) Mac Mini.
+  recent version of Matlab, and we recommend a computer with at least
+  32G of RAM.
+\item Once trained, the Matlab output file is read into code written
+  in Swift. Audio input uses the Mac's stereo audio jack and the
+  CoreAudio interface. Detection of the target syllables is indicated
+  by TTL pulses. Hardware requirements for this system are minimal: we
+  use the current (2015) Mac Mini, which is overkill.
 \end{enumerate}
 
-We present the method in
-Section~\ref{sec:method}. Section~\ref{sec:quantify} describes how we
-define and test performance. Section\~ref{sec:results} presents our
-measurements. Finally, Section~\ref{sec:case} gives an example usage
-case of the detector.
+We present the method in Section~\ref{sec:method}.
+Section~\ref{sec:quantify} describes how we define and test
+performance.  Section~\ref{sec:results} presents our measurements.
+Section~\ref{sec:case} gives an example usage case of the detector. We
+conclude in Section~\ref{sec:conclusion}, and point to software
+resources in Section~\ref{sec:resources}.
 
 
 \section{Method}
 \label{sec:method}
 
-First, one or more moments during the song are selected (although note
-that with Levenburg-Marquardt training, the default for Matlab's
-neural network toolbox, multiple output syllables may require a large
-amout of RAM and increase training time to hours).
+The adult zebra finch's song is highly consistent. We begin with a few
+hundred time-aligned recordings of a given bird's song.
 
-Tuning FFT parameters
+One or more moments during the song must be chosen.  Our interface
+presents the time-aligned spectrogram and requires manual input of the
+target times. The user may next tune the region in frequency and time
+used for syllable identification. Then we assemble the training set
+from the song data, train the network, compute optimal output unit
+thresholds, present ROC curves for the final network, and save the
+network file and an audio test file.
 
-Tuning the recognition region
 
-Micro-realignment
+Various parameter sets yield results similar to those presented
+here. What we describe is one possible set that we have found to work
+well, and the examples presented use this configuration. Some of the
+parameters described here trade off detection accuracy or detection
+timing vs.~training time.
 
-Breaking the songs into training X vectors
+For example, detection latency and jitter cannot be less than the FFT
+frame rate, but reducing the frame rate increases the size of the
+training set and the training resources required. For our experiments,
+2ms windows were used, but due to the timescale of variation in zebra
+xfinch song, little is gained or lost by using 1ms or 3 ms
+windows.\marginpar{Check with Nathan and Jeff on what they've used.}
 
-Defining Y vectors -- the shotgun parameter
+The neural network uses several concurrent timesteps from the song
+spectrogram.  The range of frequencies $F$ and length of the history
+$T$ of this recognition region should be chosen in order to contain
+unique features of the target syllable and surrounding areas. This
+process should be automated, but we have not done so, as hand-choosing
+is neither difficult nor particularly error-prone.
 
-Neural network geometry
+We use a size-256 FFT, a Hamming window, and a spectrum sampled every
+2 milliseconds.  We usually define the network's input space to be
+20-80ms long, and spanning frequencies from about 2-7kHz.
 
-Computing the optimal triggering threshold
+As conditions change, syllable length may vary somewhat, which
+introduces variations in the precise timing of each syllable per
+song. Our alignment software ensures that songs are aligned at the
+point midway through the song, but if the target syllable is not at
+that point, it is helpful to re-align the songs at the point of
+interest.\marginpar{Quick overview of how?}
+
+The neural network's training set is defined in the typical fashion:
+the rectangular $F\times T$ recognition region in the spectrogram is
+simply reshaped into a vector of length $FT$. Each possible region of
+size $F\times T$ is converted into a training input vector.
 
 With inputs well outside the space on which a neural network has been
-trained, its outputs will be random. Thus in order to reduce the false
-negative rate it is necessary to provide negative training examples
-that include silence, cage noise, non-song vocalisations, and perhaps
-even songs from other birds. We have found that training with roughly
-a 8:1 ratio of non-song to song yields excellent results, although
-this will depend on the makeup of the non-song data.
+trained, its outputs will be essentially random. In order to reduce
+the false negative rate it is necessary to provide negative training
+examples that include silence, cage noise, non-song vocalisations, and
+perhaps songs from other birds. We have found that training with
+roughly a 8:1 ratio of non-song to song yields excellent results,
+although this will depend on the makeup of the non-song data.
+
+Training targets are, roughly, 1 if the input vector should yield a
+match, 0 otherwise, for each target syllable. Since the song
+realignment may not be perfect, and due to sample aliasing, this
+output vector may be spread in time, such that at the target moment it
+is 1, and at neighbouring moments it is nonzero. We found that a
+Gaussian smoothing kernel around the target time with $\sigma\simeq
+3$ms serves well.
+
+We tried a variety of feedforward neural network geometries, from
+simple 1-layer perceptrons to more complicated forms and many hidden
+nodes. Perhaps surprisingly, even the former yields excellent results
+on many syllables, but a 2-layer perceptron with a very small hidden
+layer---just 1 or 2 more units than the number of target
+syllables---was a good compromise between accuracy and training
+speed. Various other neural network geometries could be tried, as well
+as any other classifier that executes quickly.
+
+The network is trained using Matlab's neural network toolbox. Outputs
+of the trained classifier for any input are now available, and will be
+in the interval (0, 1). We must choose a threshold above which the
+output is considered a match. Finding the optimal threshold requires
+two choices. The first is the relative cost of false positives to
+false negatives, $C$. The second is the acceptable time interval: if
+the true event occurs at time $t$, and the detector triggers at any
+time $t\pm\Delta t$, then it is considered a correct match. Then the
+optimal detection threshold $\tau$ is the one that minimises false
+positives $+C\cdot$ false negatives over the training set, using the
+definitions of false positives and negatives given
+in Section~\ref{sec:precisionandrecall}.. Since large portions of the
+cost function are flat, random-restart hillclimbing would be
+effective, but a brute-force search requires fractions of a
+second. For the results presented here, we have used $C=1$ and $\Delta
+t=20$ms.\marginpar{I chose this large value for $\Delta t$ before I
+  did target syllable realignment, and it could probably be much
+  reduced now. Does this number make our results look bad? Should I
+  explain it, change it and rerun, etc?}
+
+
 
 \section{Quantification}
 \label{sec:quantify}
@@ -102,6 +197,7 @@ truth indicator.
 
 
 \subsection{Precision and Recall}
+\label{sec:precisionandrecall}
 
 The Matlab neural network toolbox breaks the given training set into
 three groups: data on which the network is trained, data used to
@@ -110,7 +206,9 @@ only as a final measure of performance. We further withold a portion
 of the training data in order to provide another evaluation of
 performance on unseen data.
 
-\begin{definition}
+We define accuracy on a per-song basis, as follows:
+
+\begin{description}
   \item[True positive:] A song for which the detector fires within
     20ms of the intended moment.
   \item[True negative:] So that every non-detected non-syllable does
@@ -119,12 +217,28 @@ performance on unseen data.
   \item[False positive:] A detection event outside of the intended region.
   \item[False negative:] A song during which a detection event should
     have occurred, but didn't.
-\end{definition}
+\end{description}
 
+These definitions are used both for evaluation of the detector on
+unseen data and for computing the optimal thresholds above which the
+network's output should be interpreted as a match on the training data.
 
-
-A simple technique with occasional popularity is to evaluate detectors
-based on the area under the ROC curve\cite{fixme}.
+\noprint{
+Since the network
+will output values $o_t$ between 0 and 1 at each moment $t$ in an
+attempt to match the training output, the optimal threshold
+$\tau\in[0,1]$ for the output neuron should be computed.  Given the
+relative cost of false positives vs.~false negatives $C$, and the
+accptable time difference between target syllable and correct output
+$\Delta t_d$, we compute the optimal threshold for an output element
+according to the definitions above:
+\begin{eqnarray*}
+  \mbox{true positives}_\tau &=& \mbox{size of set}_{s\in \mbox{target songs}} o_t > \tau, \left| t \leq \Delta t_d \right| \\
+  \mbox{false negatives}_\tau &=& \mbox{size of set} {s\in\mbox{target songs}} - \mbox{size of set} \mbox{true positives} \\
+  \mbox{false positives}_\tau &=& \mbox{size of set}_{s\in \mbox{target songs}} o_t > \tau, \left| t > \Delta t_d \right| \\
+  \widehat{\tau} &=& \argmin_\tau C\mbox{false positive} + \mbox{false negatives}
+\end{eqnarray*}
+}
 
 \subsection{Timing}
 
@@ -135,21 +249,21 @@ the ground-truth channel of the audio output may be used as the
 trigger pulse of an oscilloscope, and compared to the TTL pulse
 produced by the Swift detector, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse generator to widen
-the detector's detection spike to more than 10ms or so. The
-oscilloscope may then be set to averaging mode: the canonical signal
-will be at the trigger time, and the average of the detector's detection
-events will be seen as a low-to-high transition with form
-approximating the cumulative probability distribution function (CDF)
-of the detector's output given the chosen song event.
+the detector's output spike to more than 50ms or so and set the
+oscilloscope to averaging mode. The canonical signal will be at the
+trigger time, and the average of the detector's detection events will
+be seen as a low-to-high transition with form approximating the
+cumulative probability distribution function (CDF) of the detector's
+output given the chosen song event.
 
 Mean latency is then given as the halfway point of that detection
 sigmoid. It is a helpful number, but not a critical one, since a
-high-latency detector can be trained to trigger at a point somewhat
-before the true moment of interest.
+detector with high but constent latency can be trained to trigger at a
+point somewhat before the true moment of interest.
 
-Of more importance is latency jitter: how much random variability is
-there in the latency? This we obtain by eyeballing the width of the
-detection sigmoid in the oscilloscope.
+Perhaps of more importance is latency jitter: how much random
+variability is there in the latency? This we obtain by eyeballing the
+width of the detection sigmoid in the oscilloscope.
 
 
 \section{Results}
@@ -158,16 +272,46 @@ detection sigmoid in the oscilloscope.
 Bases for comparison? Jeff's matched filterbank? Nothing really
 informative.
 
+% Show:
+% - Spectrogram; syllable selection
+% - Detection events
+% - Typical ROC curves
+% - Nathan's timing curve
+
 Head mic, cage mic?
 
+\begin{figure}
+  \includegraphics[width=\textwidth]{6_syllables}
+  \caption{Top plot: a spectrogram made by averaging over 500 songs. The 6 target syllables, spaced 10ms apart, are marked by red lines. Below, each plot shows detection events for the corresponding syllable. The bar on the left is the same width as the detection window, so no detection events can happen within that region, and its colour code shows training songs to the right of red regions and unseen test songs to the right of cyan regions. For visualisation of the distribution, songs have been sorted by the time of detection events.}
+  \label{fig:sixsyllables}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{6_syllables_roc}
+  \caption{ROC curves for the detection of targets shown in Figure~\ref{fig:sixsyllables}. The first one, at the beginning of a syllable, is the most difficult to detect, and as more structure emerges in the current syllable, precision and recall both approach 100\%.}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{timing_nathan}
+\end{figure}
 
 \section{Case Study}
 \label{sec:case}
 
-Jeff is using the detector for something cool.
+Jeff is using the detector for something cool.\marginpar{Do we want to include a case study? I think the paper is on the long side already, but it might be interesting and let Jeff earn that coauthorship ;)}
 
 \section{Conclusion}
 \label{sec:conclusion}
+
+This syllable detector is appropriate for zebra finch syllable detection. It offers the following noteworthy benefits:
+\begin{itemize}
+\item Accuracies in the range of 99\% are common.
+\item Latency and jitter are both in the range of 2 milliseconds.
+\item Works on a wide range of target syllables.
+\item Requires minimal hand-tuning.
+\item Requires only inexpensive consumer-grade hardware.
+\end{itemize}
+It has not been evaluated in other species, and the high accuracy presented here relies on zebra-finch--like consistency of song.
 
 
 \section{Resources}
@@ -186,3 +330,9 @@ Jeff is using the detector for something cool.
     \item[Runtime:] The Swift implementation for executing the trained
       network\dots
 \end{description}
+
+\bibliographystyle{plainnat}
+\bibliography{rl}
+
+\end{document}
+
