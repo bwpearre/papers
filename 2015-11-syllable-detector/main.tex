@@ -88,6 +88,8 @@ resources in Appendix~\ref{sec:resources}.
 \section{Method}
 \label{sec:method}
 
+\subsection{Learning a detector}
+
 We begin with a few hundred time-aligned recordings of a given bird's
 song.
 
@@ -193,7 +195,7 @@ t=20$ms.\marginpar{I chose this large value for $\Delta t$ before I
   reduced now. Does this number make our results look bad? Should I
   explain it, change it and rerun, etc?}
 
-\subsection{Our parameter choices}
+\subsubsection{Our parameter choices}
 
 We use a size-256 FFT, a Hamming window, and a spectrum sampled every
 2 milliseconds.\marginpar{Check with Nathan and Jeff on what they've
@@ -212,7 +214,9 @@ burden on the realtime detector, but that seems low to begin
 with).
 
 
+\subsection{Realtime detection}
 
+ipsum lorum\marginpar{Nathan?}
 
 \section{Quantification}
 \label{sec:quantify}
@@ -417,16 +421,18 @@ It has not been evaluated in other species, and the high accuracy presented here
 
 \begin{description}
   \item[Song alignment:] Last we checked, Jeff Markowitz's song
-    alignment software could be found at {\tt
-      https://github.com/jmarkow}.
+    alignment software could be found at \\
+    {\tt https://github.com/jmarkow}.
 
-    \item[Training the neural network:] Our implementation of the
-      syllable detector training code is available under the GNU GPL
-      at {\tt https://github.com/bwpearre/}\marginpar{Fix the
-        location!}
+    \item[Training the neural network:] Our \marginpar{Fix the
+      location! If going live, I should reorganise my repository, and
+      also clean up the code.}  implementation of the syllable
+      detector training code is available under the GNU GPL at:
+      \\ {\tt https://github.com/bwpearre/}
 
     \item[Runtime:] The Swift implementation for executing the trained
-      network\dots
+      network:\\
+      {\tt https://github.com/nathanntg/syllable-detector}
 \end{description}
 
 \bibliographystyle{plainnat}
