@@ -1,7 +1,7 @@
 \documentclass{article}
 
 \title{A fast and accurate zebra finch syllable detector}
-\author{Ben Pearre, Nathan Perkins, Jeffrey E. Markowitz, Timothy J. Gardner}
+\author{Ben Pearre, L. Nathan Perkins, Jeffrey E. Markowitz, Timothy J. Gardner}
 
 \usepackage{amsmath, amsthm, amssymb, wasysym, graphicx}
 \usepackage[small, hang, bf]{caption}
@@ -71,7 +71,7 @@ chosen moment. The approach consists of three steps:
   least 32GB of RAM.
 \item Once trained, the Matlab output file is used by a realtime
   detection program written in Swift, which uses the Mac's stereo
-  audio jack and the CoreAudio interface. Detection of the target
+  audio jack and the Core Audio interface. Detection of the target
   syllables is indicated by a TTL pulse. Hardware requirements for this
   system are minimal: we use the current (2015) Mac Mini, which is
   overkill.
