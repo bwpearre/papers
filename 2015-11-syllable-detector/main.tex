@@ -125,14 +125,30 @@ average over the training set.\marginpar{I hope that's the right thing
   to do. Seems to work, anyway\dots}
 
 \subsubsection{Normalisation}
-Jeff and Nathan changed this. What's our current state of the art?\marginpar{FIXME}
+
+To accommodate differences in amplitude, due to changes in the relative
+change in position between the microphone and bird or due to other 
+minor variations in recording, normalisation ensures that the 
+detector is sensitive only to the relative spectral content. We found 
+that a two-step normalisation works. The spectrogram in the time and 
+frequency windows, in decibels, is normalised to have mean zero and 
+unit standard deviation. This eliminates relative differences in song
+amplitude due to microphone position or line levels. Next, each 
+time-frequency bin is normalised based on the training set, such that
+that bin has mean zero and unit variance. This scales each 
+time-frequency bin based on the amplitudes seen in the training set.
+These two normalisation steps provide a set of inputs that were more
+robust to outliers and less likely to produce false positives during 
+silence when evaluated against other normalisation schemes, such as 
+linear or L2 normalisation. \marginpar{Would it be worth putting in
+data to this effect?}
 
 \subsubsection{Building the training set}
 
 The neural network's training set is created in the typical fashion:
 the rectangular $F\times T$ recognition region in the spectrogram is
 simply reshaped into a vector of length $FT$. Each possible region of
-size $F\times T$ is converted into a training input vector.
+size $F \times T$ is converted into a training input vector.
 
 With inputs well outside the space on which a neural network has been
 trained, its outputs will be essentially random. In order to reduce
