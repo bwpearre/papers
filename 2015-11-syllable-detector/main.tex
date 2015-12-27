@@ -219,6 +219,11 @@ We use a size-256 FFT, a Hamming window, and a spectrum sampled every
 long, and to span frequencies from about 1.5-7kHz, which contains the
 fundamentals and several overtones of most zebra finch vocalisations.
 
+\marginpar{The parameters used varied form iteration to iteration.
+Towards the end, we were using either 128 or 256 size FFT with 
+no overlap (or even a gap between the FFTs). Jeff may be able to 
+give a better sense of what worked best for him. - NP}
+
 We found these parameters to work well across a variety of target
 syllables, but various parameter sets yield results similar to those
 presented here.  Some of the parameters trade off detection accuracy
@@ -229,10 +234,44 @@ training resources required (and also increases the computational
 burden on the realtime detector, but that seems low to begin
 with).
 
-
 \subsection{Realtime detection}
 
-ipsum lorum\marginpar{Nathan?}
+In order to implement the trained syllable detector in an 
+experimental context, we implemented a realtime detector that runs
+off consumer hardware. Using Core Audio frameworks available on 
+Mac OS X computers and a low-level language (Swift), we were able
+to implement the syllable detector in a way that ensures near-
+realtime detection and minimal jitter in detection time.
+
+The Core Audio frameworks provide an adjustable buffer size for 
+reading from and writing to audio hardware. Tuning this buffer size
+provides a tradeoff between the jitter in the detection and the 
+processor usage needed to run the detector. We settled on a buffer 
+size of 64 samples (1.4ms at 44.1kHz), as this created minimal system
+load while achieving detection within the desired lag and jitter.
+
+Audio samples from the microphone are appended to a circular buffer. 
+When there are sufficient samples in the buffer, the spectrogram is
+calculated by applying the Hamming window, performing an FFT and 
+extracting the power. All vector operations are performed using the
+Accelerate framework (vDSP and vecLib), which use modern vector-
+oriented processor instructions to perform calculations. Outputs
+of the spectrogram, from the target frequency band, are appended 
+to a second circular buffer. When there is sufficient data in the
+second circular buffer, the data is sent to a static implementation
+of the neural network previously trained, again implemented using
+the Accelerate framework to optimize normalization, matrix 
+multiplication and all transfer functions.
+
+The output of the neural network is written to the audio output 
+buffer (again, in 64 sample or 1.5ms chunks) to create a trigger 
+pulse, that can be used to trigger experimental feedback.
+
+The above code can be run on multiple channels of audio on 
+consumer hardware (such as a 2015 Mac Mini) with little impact
+on CPU usage (<10\%). Depending on the experimental needs, latency
+can be further decreased (at the expense of processor usage) by
+adjusting the audio buffer sizes.
 
 \section{Quantification}
 \label{sec:quantify}
