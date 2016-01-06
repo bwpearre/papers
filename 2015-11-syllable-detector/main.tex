@@ -126,8 +126,7 @@ average over the training set.\marginpar{I hope that's the right thing
 
 \subsubsection{Normalisation}
 
-To accommodate differences in amplitude, due to changes in the relative
-change in position between the microphone and bird or due to other 
+To accommodate differences in amplitude, due to changes in the relative position between the microphone and bird or due to other \marginpar{What data is each norm computed over? Why does this do more than just the second step?}
 minor variations in recording, normalisation ensures that the 
 detector is sensitive only to the relative spectral content. We found 
 that a two-step normalisation works. The spectrogram in the time and 
@@ -147,12 +146,11 @@ data to this effect?}
 
 The neural network's training set is created in the typical fashion:
 the rectangular $F\times T$ recognition region in the spectrogram is
-simply reshaped into a vector of length $FT$. Each possible region of
-size $F \times T$ is converted into a training input vector.
+simply reshaped into a vector of length $FT$. The requency range is constant,\marginpar{awkward phrasing} and every possible value for $T$ is converted into a training input vector.
 
 With inputs well outside the space on which a neural network has been
 trained, its outputs will be essentially random. In order to reduce
-the false negative rate it is necessary to provide negative training
+the false positive rate it is necessary to provide negative training
 examples that include silence, cage noise, non-song vocalisations, and
 perhaps songs from other birds. We have found that training with
 roughly a 8:1 ratio of non-song to song yields excellent results,
@@ -160,9 +158,8 @@ although this will depend on the makeup of the non-song data.
 
 Training targets are, roughly, 1 if the input vector comes from the
 target time, 0 otherwise, for each target syllable. Since the song
-realignment may not be perfect, due to sample aliasing, and because
-the zebra finch's song seems not to vary faster than this, this output
-vector may be spread in time, such that at the target moment it is 1,
+realignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the output
+vector in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
 smoothing kernel around the target time with $\sigma\simeq 3$ms serves
 well.
@@ -182,7 +179,7 @@ songs, deep structure-preserving networks may be more appropriate, but
 they are slow to train and unnecessary for zebra finch song.
 
 Matlab's neural network toolbox defaults to Levenburg-Marquardt
-training. This is a fast algorithm, but is memory-intensive, so
+training. This is a fast algorithm, but is memory-intensive, \marginpar{Didn't you guys try reducing input size with an autoencoder? Wasn't that effective?} so
 multiple output syllables or high FFT frame rates require a large
 amout of RAM and increase training time to hours. Other training
 algorithms that use less RAM are much slower, and by default they will
@@ -254,8 +251,7 @@ Audio samples from the microphone are appended to a circular buffer.
 When there are sufficient samples in the buffer, the spectrogram is
 calculated by applying the Hamming window, performing an FFT and 
 extracting the power. All vector operations are performed using the
-Accelerate framework (vDSP and vecLib), which use modern vector-
-oriented processor instructions to perform calculations. Outputs
+Accelerate framework (vDSP and vecLib), which use modern vector-oriented processor instructions to perform calculations. Outputs
 of the spectrogram, from the target frequency band, are appended 
 to a second circular buffer. When there is sufficient data in the
 second circular buffer, the data is sent to a static implementation
@@ -269,7 +265,7 @@ pulse, that can be used to trigger experimental feedback.
 
 The above code can be run on multiple channels of audio on 
 consumer hardware (such as a 2015 Mac Mini) with little impact
-on CPU usage (<15\%). Depending on the experimental needs, latency
+on CPU usage ($<15\%$). Depending on the experimental needs, latency
 can be further decreased (at the expense of processor usage) by
 adjusting the audio buffer sizes.
 
@@ -299,7 +295,7 @@ data\marginpar{It's a little more complex than that
   (cross-validation), but can we go with this?} used only as a final
 measure of performance. We further withhold a portion of the training
 data in order to provide another evaluation of performance on unseen
-data.
+data.\marginpar{But another test set layer is just paranoia!}
 
 We define accuracy on a per-song basis, as follows:
 
@@ -311,7 +307,7 @@ We define accuracy on a per-song basis, as follows:
     detector did not fire at any point outside the true positive
     region.
   \item[False positive:] A detection event more than 20ms from the
-    target syllable.
+    target syllable.\marginpar{Or a song with $>0$ false pos?}
   \item[False negative:] A song's target interval during which a
     detection event should have occurred, but didn't.
 \end{description}
@@ -322,7 +318,7 @@ training data as described in Section~\ref{sec:optimalthresholds}, for
 evaluation of the detector on the training songs in Matlab and Swift,
 and while live.
 
-Given those definitions, we can compute the false-positive and false-negative rates. For simplicity, we present detector accuracy using the area under the ROC curve.
+Given those definitions, we can compute the false-positive and false-negative rates. We present the rates for those metrics over a few songs, and, for simplicity, we present a summary of detector accuracy using the area under the ROC curve.
 
 \noprint{
 Since the network
@@ -365,7 +361,7 @@ detector with high but constant latency can be trained to trigger at a
 point somewhat before the true moment of interest.
 
 Often more important is latency jitter: how much random variability is
-there in the latency? This we obtain by eyeballing the width of the
+there in the latency? This we obtain by eyeballing the $\mu\pm 34\%$ crossings ($1\sigma$) of the
 detection sigmoid in the oscilloscope.
 
 
@@ -402,7 +398,7 @@ appears to have $\sigma\simeq 1.5$ms or so (eyeballed).
   syllable, at least!} is similar to \fig{fig:timing_nathan} but
 tested using the LabView implementation, on a different syllable from
 a different bird, with different parameters.  Latency is much higher
-($\simeq 11$ms, but latency jitter is more like $\sigma\simeq
+($\simeq 11$ms), but latency jitter is more like $\sigma\simeq
 1.5$ms---note that the grid spacing is 2.5ms.
 
 \fig{fig:bwpvstdt} could show\marginpar{FIXME} a comparison between Jeff's filtering approach on the TDT and my FFT-NN. But how much time do I want to spend describing Jeff's filters? Not much, since it's not in use anywhere besides our lab. Or I could simply insert a photo of Jeff, holding my FFT-NN and a finch, and smiling, with ``My name is Dr.~Jeffrey~E.~Markowitz and I endorse this software!''
