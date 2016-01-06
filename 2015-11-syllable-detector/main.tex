@@ -247,7 +247,7 @@ The Core Audio frameworks provide an adjustable buffer size for
 reading from and writing to audio hardware. Tuning this buffer size
 provides a tradeoff between the jitter in the detection and the 
 processor usage needed to run the detector. We settled on a buffer 
-size of 64 samples (1.4ms at 44.1kHz), as this created minimal system
+size of 32 samples (0.7ms at 44.1kHz), as this created minimal system
 load while achieving detection within the desired lag and jitter.
 
 Audio samples from the microphone are appended to a circular buffer. 
@@ -264,12 +264,12 @@ the Accelerate framework to optimize normalization, matrix
 multiplication and all transfer functions.
 
 The output of the neural network is written to the audio output 
-buffer (again, in 64 sample or 1.5ms chunks) to create a trigger 
+buffer (again, in 32 sample or 0.7ms chunks) to create a trigger 
 pulse, that can be used to trigger experimental feedback.
 
 The above code can be run on multiple channels of audio on 
 consumer hardware (such as a 2015 Mac Mini) with little impact
-on CPU usage (<10\%). Depending on the experimental needs, latency
+on CPU usage (<15\%). Depending on the experimental needs, latency
 can be further decreased (at the expense of processor usage) by
 adjusting the audio buffer sizes.
 
@@ -322,7 +322,7 @@ training data as described in Section~\ref{sec:optimalthresholds}, for
 evaluation of the detector on the training songs in Matlab and Swift,
 and while live.
 
-Given those definitions, we can compute the false-positive and\marginpar{Would be good to measure FP and FN rates on Nathan's detector! With the test audio file, it's easy---see the LabView code for my spaghetti implementation, or do it anew.} false-negative rates. For simplicity, we present detector accuracy using the area under the ROC curve.
+Given those definitions, we can compute the false-positive and false-negative rates. For simplicity, we present detector accuracy using the area under the ROC curve.
 
 \noprint{
 Since the network
@@ -350,7 +350,8 @@ output from the ground-truth channel of the audio output may be used
 as the trigger pulse for an oscilloscope, and compared to the TTL pulse
 produced by the Swift detector, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse
-generator \marginpar{Model? Ramp time? Latency?} to widen the
+generator (Philips PM 5715) \marginpar{Listed latency of 50ns, jitter 
+of $\leq0.1\%$ or 50ps, whichever is greater.} to widen the
 detector's output spike to about 100ms and set the oscilloscope to
 averaging mode. The canonical signal is the trigger at $t=0$, and the
 average of the detector's detection events will be seen as a
@@ -393,9 +394,9 @@ during training on that song (not shown).  The oscilloscope is
 triggering on the true signal on CH2 (blue), while CH1 (yellow) shows
 the average of the detection events, using a pulse generator as
 described above (a single detection event, non-averaged, would be a
-single low-to-high step function).  Each grid square is 10ms long, so
-average detection latency appears to be around 1ms, while jitter
-appears to have $\sigma\simeq 3$ms or so (eyeballed).
+single low-to-high step function).  Each grid square is 2.5ms long, so
+average detection latency appears to be around 5ms, while jitter
+appears to have $\sigma\simeq 1.5$ms or so (eyeballed).
 
 \fig{fig:timing_ben}\marginpar{Figure this out! Compare on the same
   syllable, at least!} is similar to \fig{fig:timing_nathan} but
@@ -443,7 +444,7 @@ a different bird, with different parameters.  Latency is much higher
 
 \begin{figure}
   \includegraphics[width=\textwidth]{detector-timing-2}
-  \caption{Alternate view of timing, from the LabView implementation. Seems better than that in \fig{fig:timing_nathan}, doesn't it? Hmmm\dots have to discuss with Nathan!}
+  \caption{Alternate view of timing, from the LabView implementation.}
   \label{fig:timing_ben}
 \end{figure}
 
