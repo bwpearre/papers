@@ -94,9 +94,9 @@ We begin with a few hundred time-aligned recordings of a given bird's
 song.
 
 One or more moments during the song must be chosen.  Our interface
-presents the time-aligned spectrogram and requires manual input of the
-target times. The user may next tune the region in frequency and time
-used for syllable identification. Then we assemble the training set
+presents the time-aligned spectrogram averaged over training songs, and requires manual input of the
+target times.  The user may next tune the region in frequency and time
+used for syllable identification.  Then we assemble the training set
 from the song data, train the network, compute optimal output unit
 thresholds, and save the
 network file and an audio test file.
@@ -104,8 +104,8 @@ network file and an audio test file.
 
 \subsubsection{Recognition region}
 
-The neural network uses several concurrent timesteps from the song
-spectrogram.  The range of frequencies $F$ and length of the history
+The neural network uses a contiguous set of the most recent timesteps (frames) from the song
+spectrogram.  The frequencies $F$ and timesteps
 $T$ of this recognition region should be chosen in order to contain
 unique features of the target syllable and surrounding areas. This
 process could perhaps be automated, but we have not done so, as
@@ -145,16 +145,8 @@ data to this effect?}
 \subsubsection{Building the training set}
 
 The neural network's training set is created in the typical fashion:
-the rectangular $F\times T$ recognition region in the spectrogram is
-simply reshaped into a vector of length $FT$. The requency range is constant,\marginpar{awkward phrasing} and every possible value for $T$ is converted into a training input vector.
-
-With inputs well outside the space on which a neural network has been
-trained, its outputs will be essentially random. In order to reduce
-the false positive rate it is necessary to provide negative training
-examples that include silence, cage noise, non-song vocalisations, and
-perhaps songs from other birds. We have found that training with
-roughly a 8:1 ratio of non-song to song yields excellent results,
-although this will depend on the makeup of the non-song data.
+the rectangular $|F|\times |T|$ recognition region in the spectrogram is
+simply reshaped into a vector of length $|F||T|$. The requency range is constant,\marginpar{awkward phrasing} and every possible range of the correct length for $T$ is converted into a training input vector.
 
 Training targets are, roughly, 1 if the input vector comes from the
 target time, 0 otherwise, for each target syllable. Since the song
@@ -163,6 +155,14 @@ vector in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
 smoothing kernel around the target time with $\sigma\simeq 3$ms serves
 well.
+
+With inputs well outside the space on which a neural network has been
+trained, its outputs will be essentially random. In order to reduce
+the false positive rate it is useful to provide negative training
+examples that include silence, cage noise, non-song vocalisations, and
+perhaps songs from other birds.  We have found that training with
+as low as a 1:1 ratio of non-song to song yields excellent results,
+although this will depend on the makeup of the non-song data.
 
 \subsubsection{Training the network}
 
@@ -211,7 +211,7 @@ t=20$ms.\marginpar{I chose this large value for $\Delta t$ before I
 \subsubsection{Our parameter choices}
 
 We use a size-256 FFT, a Hamming window, and a spectrum sampled every
-2 milliseconds.\marginpar{Check with Nathan and Jeff on what they've
+3 milliseconds.\marginpar{Check with Nathan and Jeff on what they've
   used.}  We usually define the network's input space to be 20-80ms
 long, and to span frequencies from about 1.5-7kHz, which contains the
 fundamentals and several overtones of most zebra finch vocalisations.
@@ -222,23 +222,30 @@ no overlap (or even a gap between the FFTs). Jeff may be able to
 give a better sense of what worked best for him. - NP}
 
 We found these parameters to work well across a variety of target
-syllables, but various parameter sets yield results similar to those
+syllables, but various other parameter sets yield results similar to those
 presented here.  Some of the parameters trade off detection accuracy
 or detection timing vs.~training time. For example, detection latency
-and jitter cannot be less than the FFT frame rate, but reducing the
+and jitter cannot be less than the FFT frame rate, but increasing the
 frame rate increases the size of the training set and thus the
-training resources required (and also increases the computational
-burden on the realtime detector, but that seems low to begin
-with).
+training resources required and the detection latency.
 
 \subsection{Realtime detection}
 
-In order to implement the trained syllable detector in an 
-experimental context, we implemented a realtime detector that runs
-off consumer hardware. Using Core Audio frameworks available on 
-Mac OS X computers and a low-level language (Swift), we were able
-to implement the syllable detector in a way that ensures near-
-realtime detection and minimal jitter in detection time.
+We tested three implementations of the realtime detector:
+
+\begin{description}
+\item[{\bf Matlab:}] This detector uses the built-in audio input and output jacks on a compatible computer.  We tested on a 2015 Mac Mini.  The 2015 Mac Pro does not have an audio input jack, so we tested using an M-Audio MobilePre external USB audio interface, but this did not improve measured latency, perhaps due to USB data transfer overhead.
+
+  \item[{\bf Swift:}] This uses the Swift programming language and CoreAudio interface for Apple's operating systems.
+  
+  \item[{\bf LabView:}] This implementation requires special hardware and software: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a Windows PC.
+\end{description}
+
+\subsubsection{Matlab}
+
+The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  However, it performed relatively poorly on our test systems.  Key to jitter performance is the size of the audio buffer, which on a 2015 Mac Pro or Mac Mini running Matlab 2015B the minimum buffer size to prevent read underruns was about 4ms.
+
+\subsubsection{Swift}
 
 The Core Audio frameworks provide an adjustable buffer size for 
 reading from and writing to audio hardware. Tuning this buffer size
@@ -268,6 +275,10 @@ consumer hardware (such as a 2015 Mac Mini) with little impact
 on CPU usage ($<15\%$). Depending on the experimental needs, latency
 can be further decreased (at the expense of processor usage) by
 adjusting the audio buffer sizes.
+
+\subsubsection{LabView}
+
+We do not enjoy working in LabView. It is difficult to modify, difficult to debug, and requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware.
 
 \section{Quantification}
 \label{sec:quantify}
@@ -365,7 +376,7 @@ point somewhat before the true moment of interest.  Often more
 important is latency jitter: how much random variability is there in
 the latency?
 
-We obtain both of these numbers by fitting a Gaussian distribution to the timing data gathered on the oscilloscope.
+We obtain both of these numbers by performing a maximum-likelihood fit of a Gaussian distribution to the timing data obtained from the oscilloscope.
 
 
 \section{Results}
