@@ -394,7 +394,7 @@ the syllable quickly becomes reliably identifiable.  By the time the
 detector has seen 50ms of the syllable---the sixth detection
 point---performance is good: the area under the ROC curve is 0.992.
 
-Accuracy for a typical good syllable \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors. An example confusion matrix looks like this:
+Accuracy for a typical good syllable \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors. An example confusion matrix looks like this:\marginpar{NEED to make the definition of negatives consistent!}
 
 \vspace{4pt}
 
@@ -402,8 +402,8 @@ Accuracy for a typical good syllable \marginpar{Should be! Verify! And/or explai
   & \multicolumn{2}{c}{True} \\
   & pos & neg \\
   \hline
-  Detected pos &  &  \\
-  neg &  &
+  Detected pos & 632 & 1 (0.07\%)\\
+  neg & 4 (0.63\%) & 1271
 \end{tabular}
 
 \vspace{4pt}
