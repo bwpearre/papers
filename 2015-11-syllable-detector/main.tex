@@ -394,19 +394,35 @@ the syllable quickly becomes reliably identifiable.  By the time the
 detector has seen 50ms of the syllable---the sixth detection
 point---performance is good: the area under the ROC curve is 0.992.
 
+Sample accuracy for a typical good syllable \marginpar{Should be! Verify! ALSO need to present a picture of the test syllable or etc\dots} are identical for the three detectors. An example confusion matrix looks like this:
+
+\vspace{4pt}
+
+\begin{tabular}{r|cc}
+  & \multicolumn{2}{c}{True} \\
+  & pos & neg \\
+  \hline
+  Detected pos &  &  \\
+  neg &  &
+\end{tabular}
+
+\vspace{4pt}
+
 \fig{fig:timing} shows the latency and jitter for the three implementations of our detector running on a
 single syllable from another bird, using the test audio file generated
 during training on that song (not shown).  The maximum-likelihood estimates of the mean and standard deviation of the detector latencies on this training set are as follows:
 
-\begin{tabular}{|l|c|c|}
-  \hline
+\vspace{4pt}
+
+\begin{tabular}{l|c|c}
   Detector & Latency $\mu$ (ms) & $\sigma$ (ms) \\
   \hline
   Matlab & 26 & 1.6 \\
   Swift & 6.5 & 1.7 \\
-  LabView & 4.6 & 1.4\\
-  \hline
+  LabView & 4.6 & 1.4
 \end{tabular}
+
+\vspace{4pt}
 
 
 \fig{fig:bwpvstdt} could show\marginpar{FIXME} a comparison between Jeff's filtering approach on the TDT and my FFT-NN. But how much time do I want to spend describing Jeff's filters? Not much, since it's not in use anywhere besides our lab. Or I could simply insert a photo of Jeff, holding my FFT-NN and a finch, and smiling, with ``My name is Dr.~Jeffrey~E.~Markowitz and I endorse this software!''
