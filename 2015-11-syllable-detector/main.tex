@@ -70,11 +70,8 @@ chosen moment. The approach consists of three steps:
   any recent version of Matlab, and we recommend a computer with at
   least 32GB of RAM.
 \item Once trained, the Matlab output file is used by a realtime
-  detection program written in Swift, which uses the Mac's stereo
-  audio jack and the Core Audio interface. Detection of the target
-  syllables is indicated by a TTL pulse. Hardware requirements for this
-  system are minimal: we use the current (2015) Mac Mini, which is
-  overkill.
+  detection program that listens to an audio signal and indicates detection of the target
+  syllables via a TTL pulse.  We present three implementations that trade off hardware requirements, ease of maintenance, and performance.
 \end{enumerate}
 
 We present the method in Section~\ref{sec:method}.
@@ -231,21 +228,17 @@ training resources required and the detection latency.
 
 \subsection{Realtime detection}
 
-We tested three implementations of the realtime detector:
-
-\begin{description}
-\item[{\bf Matlab:}] This detector uses the built-in audio input and output jacks on a compatible computer.  We tested on a 2015 Mac Mini.  The 2015 Mac Pro does not have an audio input jack, so we tested using an M-Audio MobilePre external USB audio interface, but this did not improve measured latency, perhaps due to USB data transfer overhead.
-
-  \item[{\bf Swift:}] This uses the Swift programming language and CoreAudio interface for Apple's operating systems.
-  
-  \item[{\bf LabView:}] This implementation requires special hardware and software: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a Windows PC.
-\end{description}
+We tested three implementations of the realtime detector.
 
 \subsubsection{Matlab}
 
-The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  However, it performed relatively poorly on our test systems.  Key to jitter performance is the size of the audio buffer, which on a 2015 Mac Pro or Mac Mini running Matlab 2015B the minimum buffer size to prevent read underruns was about 4ms.
+This detector uses the built-in audio input and output jacks on a compatible computer.  We tested on a 2015 Mac Mini.  The 2015 Mac Pro does not have an audio input jack, so we tested using an M-Audio MobilePre external USB audio interface, but this did not improve measured latency, perhaps due to USB data transfer overhead.
+
+The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  However, it performed relatively poorly on our test systems.  Key to jitter performance is the size of the audio buffer, which on a 2015 Mac Pro or Mac Mini running Matlab 2015B the minimum buffer size to prevent read underruns was about 4ms.  Latency is also significantly longer than for the other two detectors.
 
 \subsubsection{Swift}
+
+This uses the Swift programming language and CoreAudio interface for Apple's operating systems.
 
 The Core Audio frameworks provide an adjustable buffer size for 
 reading from and writing to audio hardware. Tuning this buffer size
@@ -278,7 +271,9 @@ adjusting the audio buffer sizes.
 
 \subsubsection{LabView}
 
-We do not enjoy working in LabView. It is difficult to modify, difficult to debug, and requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware.
+This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a Windows PC.
+
+This implementation is difficult to modify and debug, and requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware.
 
 \section{Quantification}
 \label{sec:quantify}
@@ -287,13 +282,13 @@ We do not enjoy working in LabView. It is difficult to modify, difficult to debu
 Ground truth is given on the training set, and can be measured by
 presenting the recorded training songs as well as the canonical
 detection events. To this end, besides the trained network object, our
-Matlab code produces an audio file consisting of all of the training
-data on the left audio channel and delta functions at the moment of
+learning code produces an audio file consisting of all of the training
+data on the left audio channel and a delta function at each moment of
 correct detection (basically a TTL pulse, although the voltage will
-fluctuate with audio output volume) on the right channel. Thus, when
+fluctuate with audio output volume and the exact shape of the pulse will vary with the quality of the audio player) on the right channel. Thus, when
 played on any audio player, the left channel may be provided as input
-to the Swift detector, and the right channel may be compared against
-the Swift detector's detection pulse.
+to the detector, and the right channel may be compared against
+the detector's detection pulse.
 
 
 \subsection{Accuracy}
