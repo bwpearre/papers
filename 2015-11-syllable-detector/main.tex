@@ -394,7 +394,7 @@ the syllable quickly becomes reliably identifiable.  By the time the
 detector has seen 50ms of the syllable---the sixth detection
 point---performance is good: the area under the ROC curve is 0.992.
 
-Sample accuracy for a typical good syllable \marginpar{Should be! Verify! ALSO need to present a picture of the test syllable or etc\dots} are identical for the three detectors. An example confusion matrix looks like this:
+Accuracy for a typical good syllable \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors. An example confusion matrix looks like this:
 
 \vspace{4pt}
 
@@ -410,15 +410,16 @@ Sample accuracy for a typical good syllable \marginpar{Should be! Verify! ALSO n
 
 \fig{fig:timing} shows the latency and jitter for the three implementations of our detector running on a
 single syllable from another bird, using the test audio file generated
-during training on that song (not shown).  The maximum-likelihood estimates of the mean and standard deviation of the detector latencies on this training set are as follows:
+during training on that song (not shown).  The maximum-likelihood estimates of the mean $\mu$ and standard deviation $\sigma$ of the detector latencies on this training set are as follows:
 
 \vspace{4pt}
 
 \begin{tabular}{l|c|c}
-  Detector & Latency $\mu$ (ms) & $\sigma$ (ms) \\
+  & \multicolumn{2}{c}{Latency (ms)}\\
+  Detector & $\mu$ & $\sigma$ \\
   \hline
   Matlab & 26 & 1.6 \\
-  Swift & 6.5 & 1.7 \\
+  Swift & 4.3 & 1.8 \\
   LabView & 4.6 & 1.4
 \end{tabular}
 
@@ -475,11 +476,11 @@ Failing that, I can immediately do song-aligned X spike rasters if lw95rhp is st
 This syllable detector is appropriate for zebra finch song.  It offers
 the following benefits:
 \begin{itemize}
-\item False positive and false negative rates can be well under 1\%.
-\item Latency and jitter are both in the range of 2 milliseconds.
+\item The detector is accurate. False positive and false negative rates can both be well under 1\%.
+\item Latency can be around $5\pm1.7$ms or better depending on hardware.
 \item Works on a wide range of target syllables.
 \item Requires minimal hand-tuning.
-\item Runs in realtime on inexpensive consumer-grade hardware---we use the Mac Mini with 8GB RAM.
+\item Runs in realtime on inexpensive consumer-grade hardware.
 \item We recommend training the network on a computer with at least 32GB of RAM.
 \end{itemize}
 It has not been evaluated in other species, and the high accuracy presented here relies on zebra-finch--like consistency of song.
