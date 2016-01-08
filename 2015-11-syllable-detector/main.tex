@@ -22,7 +22,7 @@
 \newcommand{\noprint}[1]{}
 
 
-  
+\hyphenation{cross-valid-ation}
 
 \begin{document}
 \maketitle
@@ -261,7 +261,7 @@ multiplication and all transfer functions.
 
 The output of the neural network is written to the audio output 
 buffer (again, in 32 sample or 0.7ms chunks) to create a trigger 
-pulse, that can be used to trigger experimental feedback.
+pulse, which can be used to trigger experimental feedback.
 
 The above code can be run on multiple channels of audio on 
 consumer hardware (such as a 2015 Mac Mini) with little impact
@@ -297,28 +297,31 @@ measure of performance. We further withhold a portion of the training
 data in order to provide another evaluation of performance on unseen
 data.\marginpar{But another test set layer is just paranoia!}
 
-We define accuracy on a per-song basis, as follows:
+We define the accuracy of the network based on its classification performance per frame. In order to avoid the apparent problem of every non-detected non-syllable counting as a true negative, we also tried defining accuracy on a per-song basis, such that a song without the target syllable counted as a single true negative.  Computing the optimal output thresholds on a per-frame basis resulted in higher thresholds and thus a lower false-positive rate, with minimal consequences to the false-negative rate.
 
-\begin{description}
-  \item[True positive:] A song for which the detector fires within
-    20ms of the intended moment.
-  \item[True negative:] So that every non-detected non-syllable does
-    not count, a true negative is a complete song during which the
-    detector did not fire at any point outside the true positive
-    region.
-  \item[False positive:] A detection event more than 20ms from the
-    target syllable.\marginpar{Or a song with $>0$ false pos?}
-  \item[False negative:] A song's target interval during which a
-    detection event should have occurred, but didn't.
-\end{description}
 
-These definitions are used for computing the optimal thresholds above
+%% We define accuracy on a per-song basis, as follows:
+
+%% \begin{description}
+%%   \item[True positive:] A song for which the detector fires within
+%%     20ms of the intended moment.
+%%   \item[True negative:] So that every non-detected non-syllable does
+%%     not count, a true negative is a complete song during which the
+%%     detector did not fire at any point outside the true positive
+%%     region.
+%%   \item[False positive:] A detection event more than 20ms from the
+%%     target syllable.\marginpar{Or a song with $>0$ false pos?}
+%%   \item[False negative:] A song's target interval during which a
+%%     detection event should have occurred, but didn't.
+%% \end{description}
+
+The accuracy as defined above is used for computing the optimal thresholds above
 which the network's output should be interpreted as a match on the
 training data as described in Section~\ref{sec:optimalthresholds}, for
 evaluation of the detector on the training songs in Matlab and Swift,
 and while live.
 
-Given those definitions, we can compute the false-positive and false-negative rates. We present the rates for those metrics over a few songs, and, for simplicity, we present a summary of detector accuracy using the area under the ROC curve.
+We present the resulting confusion matrix for a few sample songs, and, for simplicity, we present a summary of detector accuracy using the area under the ROC curve.
 
 \noprint{
 Since the network
@@ -348,8 +351,8 @@ produced by the Swift detector, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse
 generator (Philips PM 5715) \marginpar{Listed latency of 50ns, jitter 
 of $\leq0.1\%$ or 50ps, whichever is greater.} to widen the
-detector's output spike to about 100ms and set the oscilloscope to
-averaging mode. The canonical signal is the trigger at $t=0$, and the
+detector's output spike to a number much larger than the jitter (100ms).  This obviates pulse length jitter in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
+averaging mode (128-trigger average) in order to collect timing data. The canonical signal is the trigger at $t=0$, and the
 average of the detector's detection events will be seen as a
 low-to-high transition with form approximating the cumulative
 probability distribution function (CDF) of the detector's output in
@@ -358,11 +361,11 @@ response to the chosen song event.
 Mean latency is then given as the halfway point of that detection
 sigmoid. It is a helpful number, but not a critical one, since a
 detector with high but constant latency can be trained to trigger at a
-point somewhat before the true moment of interest.
+point somewhat before the true moment of interest.  Often more
+important is latency jitter: how much random variability is there in
+the latency?
 
-Often more important is latency jitter: how much random variability is
-there in the latency? This we obtain by eyeballing the $\mu\pm 34\%$ crossings ($1\sigma$) of the
-detection sigmoid in the oscilloscope.
+We obtain both of these numbers by fitting a Gaussian distribution to the timing data gathered on the oscilloscope.
 
 
 \section{Results}
