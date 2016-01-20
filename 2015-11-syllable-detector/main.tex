@@ -160,10 +160,10 @@ Timothy J.~Gardner\textsuperscript{1}
   We present an accurate, versatile, and fast syllable detector that
   can control hardware at precisely timed moments during zebra finch
   song. Most moments during song can be isolated and detected with
-  $>95$\% accuracy, easier syllables exceed 99.5\% detection, with
-  fewer than 1\% of songs producing false positives. The detector can run on a stock
-  Mac Mini with a triggering delay around 5 milliseconds and trigger
-  jitter with $\sigma\approx 1.6$ milliseconds.
+  $>95$\% accuracy, easier syllables can be detected 99.5\% of the time, with
+  fewer than 0.1\% of songs producing false positives. The detector can run on a stock
+  Mac Mini with a triggering delay around 3 milliseconds and trigger
+  jitter with $\sigma\approx 1.2$ milliseconds.
 \end{abstract}
 
 \linenumbers
@@ -180,9 +180,17 @@ activity may be so easily correlated with motor output.
 
 In order to take advantage of this consistency,\marginpar{Examples of how this has been taken advantage of.} it is useful to be
 able to detect selected moments during song, in order to align data or
-trigger\marginpar{Examples?} other systems.  To the best of our
-knowledge, current systems require expensive hardware, extensive
-hand-tuning, and careful choice of an easy syllable.
+trigger\marginpar{Examples?} other systems.  Important considerations for such a detector are as follows:
+\begin{description}
+\item[Accuracy:] How often does the system produce false positives or false negatives?
+\item[Latency:] The average delay between the target syllable being sung and the detection.
+\item[Jitter:] The amount that latency changes from instance to instance of song.
+\item[Versatility:] Is detection possible on ``difficult'' syllables?
+\item[Ease of use:] How much hand-tuning is involved?  What level of expertise is required in order to produce good results?
+\item[Cost:] What are the hardware and software requirements?
+\end{description}
+
+A variety of syllable-triggering systems have been used, but few have been described or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As accesss to computational resources became less expensive, approaches have changed: in 2009, \cite{Andalman2009} still uses hand-tuned filters, but now runs them on a Tucker-Davis Technologies digital signal processor, which should yield near instantaneous performance, but is neither inexpensive nor, based on our experience with a similar technique, especially accurate.  \cite{Keller2009} applies a neural network to a spectral image of song, and reports a latency of 4.3 ms.  Further implementation and performance details are not available.  In 2013, \cite{Skocik2013} describes a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and sporting a National Instruments data acquisition card, they report a hardware-only (no syllable-matching computations) latency and jitter of just a few microseconds, and the computation they perform should not much increase that.  Drawbacks are some little hand-tuning, and false-negative rates around 4-7\% (Zebra finches and Bengalese finches, respectively) on a small dataset.
 
 We developed a standalone detector based on the song
 spectrogram. Given a set of aligned songs, our software computes
@@ -194,13 +202,20 @@ chosen moment. The approach consists of three steps:
 \item Choose one or more desired trigger
   syllables\marginpar{Terminology: ``syllable'' is a unit, but this
     detector triggers on ``song moments'' or something?}, and train a
-  neural network to recognise them. This is carried out offline using
-  any recent version of Matlab, and we recommend a computer with at
+  neural network to recognise them. This step is carried out offline.  While any neural network software would produce equivalent results, we used Matlab 2015b, and we recommend a computer with at
   least 32GB of RAM.
-\item Once trained, the Matlab output file is used by a realtime
+\item Once trained and saved, the neural network is used by a realtime
   detection program that listens to an audio signal and indicates detection of the target
   syllables via a TTL pulse.  We present three implementations that trade off hardware requirements, ease of maintenance, and performance.
 \end{enumerate}
+This method makes the following contributions:
+\begin{itemize}
+\item Fast: latencies in the 3-6 ms range, with jitter around 1.5 ms.
+\item Accurate: false positive rates under 0.1\%, and false negative rates well under 1\%, for a variety of syllables.  Balancing these rates depends on a single relative-cost parameter.
+\item Minimal hand-tuning.
+\item Runs on inexpensive hardware.
+\item Described in some detail here, with reference implementations provided.
+\end{itemize}
 
 We present the method in Section~\ref{sec:method}.
 Section~\ref{sec:quantify} describes how we define and test
