@@ -31,7 +31,7 @@ MAKEINDEX = makeindex
 XDVI	= xdvi -gamma 4
 XDVIPROC= xdvi-xaw
 DVIPS	= dvips
-DVIPDF  = dvipdfm
+DVIPDF  = dvipdf
 L2H	= latex2html
 GH	= gv
 

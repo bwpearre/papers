@@ -33,7 +33,7 @@
 \usepackage{rotating}
 
 % Remove comment for double spacing
-%\usepackage{setspace} 
+\usepackage{setspace} 
 %\doublespacing
 
 % Text layout
@@ -114,13 +114,13 @@
 \newline
 % Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
 \\
-Ben Pearre\textsuperscript{1,*},
+Ben Pearre\textsuperscript{1,\textcurrency},
 L.~Nathan Perkins\textsuperscript{1},
 Jeffrey E.~Markowitz\textsuperscript{1},
 Timothy J.~Gardner\textsuperscript{1}
 \\
 \bigskip
-\bf{1} Department of Biology, Boston University, Boston, MA, USA
+\textsuperscript{1} Department of Biology, Boston University, Boston, Massachusetts, United States of America
 \\
 \bigskip
 
@@ -136,7 +136,7 @@ Timothy J.~Gardner\textsuperscript{1}
 %\ddag These authors also contributed equally to this work.
 
 % Current address notes
-\textcurrency a Insert current address of first author with an address update
+%\textcurrency a Insert current address of first author with an address update
 % \textcurrency b Insert current address of second author with an address update
 % \textcurrency c Insert current address of third author with an address update
 
@@ -147,7 +147,7 @@ Timothy J.~Gardner\textsuperscript{1}
 %\textpilcrow Membership list can be found in the Acknowledgments section.
 
 % Use the asterisk to denote corresponding authorship and provide email address in note below.
-* bwpearre@gmail.com
+\textsuperscript{\textcurrency} Corresponding author: bwpearre@gmail.com (BP)
 
 \end{flushleft}
 
@@ -218,9 +218,9 @@ resources in Appendix~\ref{sec:resources}.
 We begin with a few hundred time-aligned recordings of a given bird's
 song.
 
-The spectrogram is
-computed at regular intervals---every 1-5 milliseconds, which we refer
-to as the frame rate.  
+The spectrogram is computed at regular intervals---every 1-5
+milliseconds, which we refer to as the frame time
+$t_f$.
 
 One or more moments during the song must be chosen.  Our interface
 presents the time-aligned spectrogram averaged over training songs,
@@ -234,7 +234,7 @@ file.
 \paragraph{Recognition region}
 
 The neural network uses a contiguous set of the most recent timesteps (frames) from the song
-spectrogram.  The frequencies $F$ and timesteps
+spectrogram.  The frequencies $F$ and duration
 $T$ of this recognition region should be chosen in order to contain
 unique features of the target syllable and surrounding areas. This
 process could perhaps be automated, but we have not done so, as
@@ -318,7 +318,7 @@ going to 0.
 \paragraph{Computing optimal output thresholds}
 \label{sec:optimalthresholds}
 When the network is trained, outputs of the classifier for any input
-are now available, and will be in the \marginpar{Or is it (-1, 1)?}
+are now available, and will be in the
 interval (0, 1). We must choose a threshold above which the output is
 considered a positive detection. Finding the optimal threshold
 requires two choices. The first is the relative cost of false
@@ -339,38 +339,42 @@ t=20$ms.\marginpar{I chose this large value for $\Delta t$ before I
 
 \paragraph{Our parameter choices}
 
-We use a size-256 FFT, a Hamming window, and a spectrum sampled every
-3 milliseconds.\marginpar{Check with Nathan and Jeff on what they've
-  used.}  We usually define the network's input space to be 20-80ms
-long, and to span frequencies from about 1.5-7kHz, which contains the
-fundamentals and several overtones of most zebra finch vocalisations.
-
-\marginpar{The parameters used varied form iteration to iteration.
-Towards the end, we were using either 128 or 256 size FFT with 
-no overlap (or even a gap between the FFTs). Jeff may be able to 
-give a better sense of what worked best for him. - NP}
+We used an FFT of size 128 or 256; a Hamming window; and chose a spectrogram
+frame time of $t_f=1.5$ milliseconds.  We usually define the
+network's input space to be 20-100 ms long, and to span frequencies
+from about 1.5-7 kHz, which contains the fundamentals and several
+overtones of most zebra finch vocalisations.
 
 We found these parameters to work well across a variety of target
 syllables, but various other parameter sets yield results similar to those
 presented here.  Some of the parameters trade off detection accuracy
 or detection timing vs.~training time. For example, detection latency
-and jitter cannot be less than the FFT frame rate, but increasing the
+and jitter cannot be less than the frame rate, but increasing the
 frame rate increases the size of the training set and thus the
 training resources required and the detection latency.
 
 \subsection{Realtime detection}
 
-We tested three implementations of the realtime detector.
+The architecture of the realtime detector requires that the most
+recent $|T|/t_f$ spectrograms be fed to the neural network at every
+timestep (1.5 ms in our example).  Audio samples from the microphone
+are appended to a circular buffer.  Every $t_f$ seconds a new
+spectrogram is calculated by applying the Hamming window to the
+contents of the buffer, performing an FFT, and extracting the
+power. Outputs of the spectrogram, from the target frequency band, are
+appended to a second circular buffer.  The spectrograms are sent to a
+static implementation of the previously trained neural network.
 
-\paragraph{Matlab}
+We tested three implementations of the realtime detector.  For all of
+these tests, we ran the detector processes under the operating
+systems' default schedulers and process priorities, running typical
+operating system daemon processes but no user loads.  The computers
+had ample memory resources.
 
-This detector uses the built-in audio input and output jacks on a compatible computer.  We tested on a 2015 Mac Mini.  The 2015 Mac Pro does not have an audio input jack, so we tested using an M-Audio MobilePre external USB audio interface, but this did not improve measured latency, perhaps due to USB data transfer overhead.
+\paragraph{Swift:}
 
-The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  However, it performed relatively poorly on our test systems.  Key to jitter performance is the size of the audio buffer, which on a 2015 Mac Pro or Mac Mini running Matlab 2015B the minimum buffer size to prevent read underruns was about 4ms.  Latency is also significantly longer than for the other two detectors.
-
-\paragraph{Swift}
-
-This uses the Swift programming language and CoreAudio interface for Apple's operating systems.
+This detector uses the Swift programming language and CoreAudio
+interface for Apple's operating systems.
 
 The Core Audio frameworks provide an adjustable buffer size for 
 reading from and writing to audio hardware. Tuning this buffer size
@@ -379,21 +383,20 @@ processor usage needed to run the detector. We settled on a buffer
 size of 32 samples (0.7ms at 44.1kHz), as this created minimal system
 load while achieving detection within the desired lag and jitter.
 
-Audio samples from the microphone are appended to a circular buffer. 
-When there are sufficient samples in the buffer, the spectrogram is
-calculated by applying the Hamming window, performing an FFT and 
-extracting the power. All vector operations are performed using the
-Accelerate framework (vDSP and vecLib), which use modern vector-oriented processor instructions to perform calculations. Outputs
-of the spectrogram, from the target frequency band, are appended 
-to a second circular buffer. When there is sufficient data in the
-second circular buffer, the data is sent to a static implementation
-of the neural network previously trained, again implemented using
-the Accelerate framework to optimize normalization, matrix 
-multiplication and all transfer functions.
+Vector operations---applying the Hamming window, the FFT, input
+normalisation, matrix multiplication, and the neural network's
+transfer functions are performed using the Accelerate framework (vDSP
+and vecLib), which use modern vector-oriented processor instructions
+to perform calculations.
 
-The output of the neural network is written to the audio output 
-buffer (again, in 32 sample or 0.7ms chunks) to create a trigger 
-pulse, which can be used to trigger experimental feedback.
+When the neural network detects a match, it instructs the computer to
+generate a TTL pulse that can be used to trigger downstream hardware.
+This pulse can be either written to the computer's audio output buffer (again, in
+32-sample or 0.7-ms chunks) or sent to a microcontroller (Arduino) via
+a USB serial interface. Sending the trigger pulse via the serial
+interface and microcontroller is noticeably faster (2.2 ms lower
+latency), likely due to the fact that the audio buffer goes through
+hardware mixing and filtering prior to output.
 
 The above code can be run on multiple channels of audio on 
 consumer hardware (such as a 2015 Mac Mini) with little impact
@@ -401,11 +404,17 @@ on CPU usage ($<15\%$). Depending on the experimental needs, latency
 can be further decreased (at the expense of processor usage) by
 adjusting the audio buffer sizes.
 
-\paragraph{LabView}
+\paragraph{LabView:}
 
-This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a Windows PC.
+This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a PC with an Intel Core i5-4590 processor at 3.7GHz (a relatively low-end machine) with 32 gigabytes of RAM, running Microsoft Windows 8.1 Pro.
 
-This implementation is difficult to modify and debug, and requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware.
+This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, and it requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware, or run on a faster desktop system.
+
+\paragraph{Matlab:}
+
+This detector uses the built-in audio input and output jacks on a compatible computer, requiring no special hardware.  We tested on a 2015 Mac Mini and 2015 Mac Pro.  The Mac Pro does not have an audio input jack, so input was through an M-Audio MobilePre external USB audio interface.  Despite the faster processor, the latter system did not achieve higher performance than the former, perhaps due to USB data transfer overhead.
+
+The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2015 Mac Pro or Mac Mini running Matlab 2015B the smallest buffer size that did not result in read underruns was about 4ms.
 
 \section{Quantification}
 \label{sec:quantify}
@@ -433,7 +442,7 @@ measure of performance. We further withhold a portion of the training
 data in order to provide another evaluation of performance on unseen
 data.\marginpar{But another test set layer is just paranoia!}
 
-We define the accuracy of the network based on its classification performance per frame. In order to avoid the apparent problem of every non-detected non-syllable counting as a true negative, we also tried defining accuracy on a per-song basis, such that a song without the target syllable counted as a single true negative.  Computing the optimal output thresholds on a per-frame basis resulted in higher thresholds and thus a lower false-positive rate, with minimal consequences to the false-negative rate.
+We define the accuracy of the network based on its classification performance per frame. In order to avoid the apparent problem of every non-detected non-syllable counting as a true negative, we also tried defining accuracy on a per-song basis, such that a song without the target syllable counted as a single true negative.  Computing the optimal output thresholds on a per-frame basis resulted in higher thresholds and thus a lower false-positive rate, with minimal consequences to the false-negative rate, while also providing a valid definition of false-positive rate for data streams that had not been segmented into songs.
 
 
 %% We define accuracy on a per-song basis, as follows:
@@ -485,8 +494,8 @@ output from the ground-truth channel of the audio output may be used
 as the trigger pulse for an oscilloscope, and compared to the TTL pulse
 produced by the Swift detector, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse
-generator (Philips PM 5715) \marginpar{Listed latency of 50ns, jitter 
-of $\leq0.1\%$ or 50ps, whichever is greater.} to widen the
+generator (Philips PM 5715, with a listed latency of 50ns, jitter 
+of $\leq 0.1\%$ or 50ps, whichever is greater) to widen the
 detector's output spike to a number much larger than the jitter (100ms).  This obviates pulse length jitter in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
 averaging mode (128-trigger average) in order to collect timing data. The canonical signal is the trigger at $t=0$, and the
 average of the detector's detection events will be seen as a
@@ -502,6 +511,21 @@ important is latency jitter: how much random variability is there in
 the latency?
 
 We obtain both of these numbers by performing a maximum-likelihood fit of a Gaussian distribution to the timing data obtained from the oscilloscope.
+
+It is possible to calculate the ideal latency and jitter, which 
+reflects the inherent latency and jitter in the time shift used in 
+calculating new columns of the spectrogram. By passing a recorded 
+audio sequence into the detector and assuming no input or output 
+latency, it is possible compare the how many additional audio 
+samples beyond the syllable are needed before the spectrogram 
+matches the inputs needed to trigger the neural network. Given 
+the detector used for benchmarking the LabView and Swift 
+implementations of the detector, the ideal implementation will 
+have a latency of $\mu = 1.1$ms; $\sigma = 1.0$ ms. This latency reflects the 
+FFT size used for calculating the spectrogram, the FFT time shift 
+between columns in the spectrogram and the width of the Gaussian 
+smoothing kernel applied to the ground truth data when training 
+the neural network.
 
 
 \section{Results}
@@ -617,11 +641,14 @@ the following benefits:
 \end{itemize}
 It has not been evaluated in other species, and the high accuracy presented here relies on zebra-finch--like consistency of song.
 
+\section{Acknowledgments}
+This work was funded by someone.\marginpar{But by whom?}
+
 \appendix
 
 \section{Resources}
 \label{sec:resources}
-
+\marginpar{PLOS doesn't really say where such things should go.}
 \begin{description}
   \item[Song alignment:] Last we checked, Jeff Markowitz's song
     alignment software could be found at \\
@@ -633,7 +660,7 @@ It has not been evaluated in other species, and the high accuracy presented here
       detector training code is available under the GNU GPL at:
       \\ {\tt https://github.com/bwpearre/}
 
-    \item[Runtime:] The Swift implementation for executing the trained
+    \item[Runtime:] The Matlab, Swift, and Labview implementations for executing the trained
       network:\\
       {\tt https://github.com/nathanntg/syllable-detector}
 \end{description}
