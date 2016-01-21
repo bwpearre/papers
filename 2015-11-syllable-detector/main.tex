@@ -34,7 +34,7 @@
 
 % Remove comment for double spacing
 \usepackage{setspace} 
-\doublespacing
+%\doublespacing
 
 % Text layout
 \raggedright
@@ -158,26 +158,40 @@ Timothy J.~Gardner\textsuperscript{1}
 
 
 \begin{abstract}
-  We present an accurate, versatile, and fast syllable detector that
-  can control hardware at precisely timed moments during zebra finch
-  song. Most moments during song can be isolated and detected with
-  $>95$\% accuracy, easier syllables can be detected 99.5\% of the time, with
-  fewer than 0.1\% of songs producing false positives. The detector can run on a stock
-  Mac Mini with a triggering delay around 3 milliseconds and trigger
-  jitter with $\sigma\approx 1.2$ milliseconds.
+  The song of the zebra finch is strikingly consistent.  Efforts to
+  understand motor output, pattern generation, and learning have taken
+  advantage of this consistency by investigating the bird's ability to
+  modify specific parts of song under external cues, and by examining
+  timing relationships between neural activity and vocal output.  Such
+  experiments require that specific moments during song be identified
+  as the bird sings.  Various syllable-detection methods exist, but
+  many require special hardware, software, and know-how, and details
+  on their implementation and performance are scarce.  We present an
+  accurate, versatile, and fast syllable detector that can control
+  hardware at precisely timed moments during zebra finch song.  Most
+  moments during song can be isolated and detected with $>95$\%
+  accuracy, easier syllables can be detected $~99.5\%$ of the time,
+  with fewer than 0.1\% of songs producing false positives. The
+  detector can run on a stock Mac Mini with a triggering delay around
+  3 milliseconds and trigger jitter with $\sigma\approx 1.2$
+  milliseconds.
 \end{abstract}
 
 \linenumbers
 
 \section{Introduction}
 
-The adult zebra finch sings a song made up of 2-6 syllables, with
-longer songs taking on the order of a second. The song may be repeated
-hundreds of times per day, and is almost identical each time. This
-consistency presents a unique opportunity to study the neural basis of
-learning, audition, and control: we do not know of another model in
-which \marginpar{Quantify? Remove vacuous handwaving? Figure?} neural
-activity may be so easily correlated with motor output.  \marginpar{Why might anyone care about syllable detection?  Insert a brief review of some of the coolest research done with song-triggered recording/stim.  Perhaps at a minimum (a) vocal shifting and (b) song-aligned spike raster?}
+The adult zebra finch ({\em Taeniopygia guttata}) sings a song made up
+of 2-6 syllables, with longer songs taking on the order of a
+second. The song may be repeated hundreds of times per day, and is
+almost identical each time. This consistency presents a unique
+opportunity to study the neural basis of learning, audition, and
+control: we do not know of another model in which \marginpar{Quantify?
+  Remove vacuous handwaving? Figure?} neural activity may be so easily
+correlated with motor output.  \marginpar{Why might anyone care about
+  syllable detection?  Insert a brief review of some of the coolest
+  research done with song-triggered recording/stim.  Perhaps at a
+  minimum (a) vocal shifting and (b) song-aligned spike raster?}
 
 In order to take advantage of this consistency, it is useful to be
 able to detect selected moments during song, in order to align data or
@@ -191,7 +205,7 @@ trigger other systems.  Important considerations for such a detector are as foll
 \item[Cost:] What are the hardware and software requirements?
 \end{description}
 
-A variety of syllable-triggering systems have been used, but few have been described or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As accesss to computational resources became less expensive, approaches have changed: in 2009, \cite{Andalman2009} still uses hand-tuned filters, but now runs them on a Tucker-Davis Technologies digital signal processor, which should yield near instantaneous performance, but is neither inexpensive nor, based on our experience with a similar technique, especially accurate.  \cite{Keller2009} applies a neural network to a spectral image of song, and reports a latency of 4.3 ms.  Further implementation and performance details are not available.  In 2013, \cite{Skocik2013} describes a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and sporting a National Instruments data acquisition card, they report a hardware-only (no syllable-matching computations) latency and jitter of just a few microseconds, and the computation they perform should not much increase that.  Drawbacks are some little hand-tuning, and false-negative rates around 4-7\% (Zebra finches and Bengalese finches, respectively) on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
+A variety of syllable-triggering systems have been used, but few have been described or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As accesss to computational resources became less expensive, approaches have changed: in 2009, \cite{Andalman2009} still uses hand-tuned filters, but now runs them on a Tucker-Davis Technologies digital signal processor, which should yield near instantaneous performance, but is neither inexpensive nor, based on our experience with a similar technique, especially accurate.  \cite{Keller2009} applies a neural network to a spectral image of song, and reports a latency of 4.3 ms.  Further implementation and performance details are not available.  In 2013, \cite{Skocik2013} describes a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and sporting a National Instruments data acquisition card, they report a hardware-only (no syllable-matching computations) latency and jitter of just a few microseconds, and the computation they perform should not much increase that.  Drawbacks are some little hand-tuning, and false-negative rates around 4-7\% (zebra finches and Bengalese finches, respectively) on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
 
 We developed a standalone detector based on the song
 spectrogram. Given a set of aligned songs, our software computes
