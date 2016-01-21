@@ -230,7 +230,7 @@ outputs a TTL pulse at the chosen moment. The approach consists of
 three steps:
 
 \begin{enumerate}
-\item Align songs.  The technique has been published in \cite{Poole2012}.
+\item Record and align a corpus of training songs.  The technique has been published in \cite{Poole2012}.
 \item Choose one or more desired trigger
   syllables\marginpar{Terminology: ``syllable'' is a unit, but this
     detector triggers on ``song moments'' or something?}, and train a
@@ -325,11 +325,11 @@ the rectangular $|F|\times |T|$ recognition region in the spectrogram is
 simply reshaped into a vector of length $|F||T|$. The frequency range is constant, and every possible time interval of length $|T|$ is converted into a training input vector.
 
 Training targets are, roughly, 1 if the input vector comes from the
-target time, 0 otherwise, for each target syllable. Since the song
+target time, 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
 realignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the output
 vector in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
-smoothing kernel around the target time with $\sigma\simeq 3$ms serves
+smoothing kernel around the target time with $\sigma\simeq 3$ ms serves
 well.
 
 With inputs well outside the space on which a neural network has been
@@ -379,7 +379,7 @@ negatives given in Section~\ref{sec:accuracy}. Since large
 portions of the cost function are flat, random-restart hillclimbing
 would be effective, but a brute-force search requires fractions of a
 second. For the results presented here, we have used $C=1$ and $\Delta
-t=20$ms.\marginpar{I chose this large value for $\Delta t$ before I
+t=20$ ms.\marginpar{I chose this large value for $\Delta t$ before I
   did target syllable realignment, and it could probably be much
   reduced now. Does this number make our results look bad? Should I
   explain it, change it and rerun, etc?}
@@ -427,12 +427,12 @@ The Core Audio frameworks provide an adjustable buffer size for
 reading from and writing to audio hardware. Tuning this buffer size
 provides a tradeoff between the jitter in the detection and the 
 processor usage needed to run the detector. We settled on a buffer 
-size of 32 samples (0.7ms at 44.1kHz), as this created minimal system
+size of 32 samples (0.7 ms at 44.1 kHz), as this created minimal system
 load while achieving detection within the desired lag and jitter.
 
 Vector operations---applying the Hamming window, the FFT, input
 normalisation, matrix multiplication, and the neural network's
-transfer functions are performed using the Accelerate framework (vDSP
+transfer functions---are performed using the Accelerate framework (vDSP
 and vecLib), which use modern vector-oriented processor instructions
 to perform calculations.
 
@@ -455,13 +455,13 @@ adjusting the audio buffer sizes.
 
 This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a PC with an Intel Core i5-4590 processor at 3.7GHz (a relatively low-end machine) with 32 gigabytes of RAM, running Microsoft Windows 8.1 Pro.
 
-This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, and it requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware, or run on a faster desktop system.
+This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, and it requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
 
 \subsubsection{Matlab}
 
 This detector uses the built-in audio input and output jacks on a compatible computer, requiring no special hardware.  We tested on a 2015 Mac Mini and 2015 Mac Pro.  The Mac Pro does not have an audio input jack, so input was through an M-Audio MobilePre external USB audio interface.  Despite the faster processor, the latter system did not achieve higher performance than the former, perhaps due to USB data transfer overhead.
 
-The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2015 Mac Pro or Mac Mini running Matlab 2015B the smallest buffer size that did not result in read underruns was about 4ms.
+The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2015 Mac Pro or Mac Mini running Matlab 2015B the smallest buffer size that did not result in read underruns was about 4 ms.
 
 \subsection{Quantification}
 \label{sec:quantify}
@@ -543,7 +543,7 @@ produced by the Swift detector, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse
 generator (Philips PM 5715, with a listed latency of 50ns, jitter 
 of $\leq 0.1\%$ or 50ps, whichever is greater) to widen the
-detector's output spike to a number much larger than the jitter (100ms).  This obviates pulse length jitter in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
+detector's output spike to a number much larger than the jitter (100 ms).  This obviates pulse length jitter in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
 averaging mode (128-trigger average) in order to collect timing data. The canonical signal is the trigger at $t=0$, and the
 average of the detector's detection events will be seen as a
 low-to-high transition with form approximating the cumulative
@@ -566,9 +566,9 @@ audio sequence into the detector and assuming no input or output
 latency, it is possible compare the how many additional audio 
 samples beyond the syllable are needed before the spectrogram 
 matches the inputs needed to trigger the neural network. Given 
-the detector used for benchmarking the LabView and Swift 
+the detector\marginpar{Nathan: I think you meant ``Given the {\em hardware} \dots'' or something, right?} used for benchmarking the LabView and Swift 
 implementations of the detector, the ideal implementation will 
-have a latency of $\mu = 1.1$ms; $\sigma = 1.0$ ms. This latency reflects the 
+have a latency of $\mu = 1.1$ ms; $\sigma = 1.0$ ms. This latency reflects the 
 FFT size used for calculating the spectrogram, the FFT time shift 
 between columns in the spectrogram and the width of the Gaussian 
 smoothing kernel applied to the ground truth data when training 
@@ -580,7 +580,7 @@ the neural network.
 
 \fig{fig:sixsyllables} shows a typical song, with six target moments
 selected.  We trained the network with 8 hidden units for the 6
-detection targets spaced 10ms apart.  Matlab's self-report of
+detection targets spaced 10 ms apart.  Matlab's self-report of
 detection \marginpar{I should generate, say, 100 random detection
   points in a few songs, so I can say what something like ``average
   accuracy'' is.}  performance for each iteration of the song is shown
@@ -588,7 +588,7 @@ in \fig{fig:sixsyllables_out}, with ROC curves shown in \fig{fig:roc}.
 The beginning of the syllable is difficult to detect, with a few
 detection events considerably earlier than the correct moment.  But
 the syllable quickly becomes reliably identifiable.  By the time the
-detector has seen 50ms of the syllable---the sixth detection
+detector has seen 50 ms of the syllable---the sixth detection
 point---performance is good: the area under the ROC curve is 0.992.
 
 Accuracy for a typical good syllable \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.  For one of our examples of a well-chosen syllable from a random bird, the confusion matrix was as follows:
@@ -629,7 +629,7 @@ during training on that song (not shown).  The maximum-likelihood estimates of t
 \begin{figure}
   \includegraphics[width=\textwidth]{6_syllables}
   \caption{A spectrogram made by averaging over 526 songs. The 6
-    target syllables, spaced 10ms apart, are marked by red lines.}
+    target syllables, spaced 10 ms apart, are marked by red lines.}
     \label{fig:sixsyllables}
 \end{figure}
 
@@ -676,15 +676,14 @@ This syllable detector is appropriate for zebra finch song, and although we did 
 \item The detector is accurate. False positive and false negative rates can both be well under 1\%, and trading these two numbers off against each other is through a single relative-cost parameter.
 \item Latency can be around $3\pm1.2$ ms or better depending on hardware.
 \item Works on a wide range of target syllables.
-\item A single detector can easily generate different target pulses for multiple syllables.
+\item A single detector can easily generate different target pulses for multiple syllables, at almost no additional computational cost.
 \item Requires minimal hand-tuning.
-\item Runs in realtime on inexpensive consumer-grade hardware.
-\item We recommend training the network on a computer with at least 32GB of RAM.
+\item Runs in (soft) realtime on inexpensive consumer-grade hardware, although we recommend training the network on a computer with at least 32GB of RAM.
 \end{itemize}
 
 As described, the detector only identifies matches that are similar to the training syllables.  A common experimental paradigm requires detecting the frequency of syllables.  Many pitch detection techniques rely on the spectrum, which is already available.  For example, \cite{Canopoli2014} achieved good results with the Harmonic Product Spectrum algorithm \cite{Noll1970}.
 
-Duration detection is similarly easy.  The beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band (approximately 1.5-7 kHz) to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.
+Duration detection is similarly easy.  The beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band (approximately 1.5-7 kHz) to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.  Alternatively, the network can be trained to recognise both the beginning and the end of the syllable of interest.
 
 In feedback experiments such as frequency- or duration-shifting, vocal output changes over the course of the experiment.  The neural network excels at identifying syllables close to its training set, so as vocal output changes the detector may not recognise a match.  If the detector must be robust to this shift, it may be retrained every so often as the bird learns, or data consisting of synthetically pitch-shifted or duration-shifted target syllables over the recognition region may be added to the training set.  We will test these approaches in future work.
 
