@@ -222,7 +222,7 @@ Despite the power and versatility of such experiments, there is no standard syll
 \item[Cost:] What are the hardware and software requirements?
 \end{description}
 
-A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As accesss to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filterbank techniques, it is not strictly a syllable detector but rather a pitch detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  It reported a latency of 4.3 ms, but further implementation and performance details are not available, and the authors claim that their detector is too deeply integrated into their experimental apparatus to be useful to the community [personal communication].\marginpar{Tim: that's my understanding of your conversation with Richard. Is this problem worth mentioning?}  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8-ms segments.  It reported a jitter of 4.5 ms, and false-negative and false-positive rates of 0-2\% and 0-4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and sporting a National Instruments data acquisition card, it boasts a hardware-only (no syllable-matching computations) latency and jitter of just a few microseconds, and the detection computation should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4-7\% (zebra finches and Bengalese finches, respectively) measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
+A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As access to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filter bank techniques, it is not strictly a syllable detector but rather a pitch detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  It reported a latency of 4.3 ms, but further implementation and performance details are not available, and the authors claim that their detector is too deeply integrated into their experimental apparatus to be useful to the community [personal communication].\marginpar{Tim: that's my understanding of your conversation with Richard. Is this problem worth mentioning?}  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8 ms segments.  It reported a jitter of 4.5 ms, and false-negative and false-positive rates of 0-2\% and 0-4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and equipped with a National Instruments data acquisition card, it boasts a hardware-only (no syllable-matching computations) latency and jitter of just a few microseconds, and the detection computation should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4\% to 7\% (zebra finches and Bengalese finches, respectively) measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
 
 We developed a standalone detector that learns to match moments in the
 song using a neural network applied to the song spectrogram, and
@@ -242,7 +242,7 @@ three steps:
 \end{enumerate}
 This method makes the following contributions:
 \begin{itemize}
-\item Fast: latencies in the 3-6 ms range, with jitter around 1.5 ms.
+\item Fast: latencies in the 3-5 ms range, with jitter around 1.5 ms.
 \item Accurate: false positive rates under 0.1\%, and false negative rates well under 1\%, for a variety of syllables.  Balancing these rates depends on a single relative-cost parameter.
 \item Minimal hand-tuning.
 \item Runs on inexpensive hardware.
@@ -311,7 +311,7 @@ unit standard deviation. This eliminates relative differences in song
 amplitude due to microphone position or line levels. Next, each 
 time-frequency bin is normalised based on the training set,\marginpar{Over what set of measurements? This seems clearer than step 1, but the description of step 1's result sounds like what this would do.} such that
 that bin has mean zero and unit variance. This scales each 
-time-frequency bin based on the amplitudes seen in the training set.
+time-frequency bin based on the amplitudes seen in the training data.
 These two normalisation steps provide a set of inputs that were more
 robust to outliers and less likely to produce false positives during 
 silence when evaluated against other normalisation schemes, such as 
@@ -357,7 +357,7 @@ they are slow to train and unnecessary for zebra finch song.
 Matlab's neural network toolbox defaults to Levenburg-Marquardt
 training. This is a fast algorithm, but is memory-intensive, \marginpar{Didn't you guys try reducing input size with an autoencoder? Wasn't that effective?} so
 multiple output syllables or high FFT frame rates require a large
-amout of RAM and increase training time to hours. Other training
+amount of RAM and increase training time to hours. Other training
 algorithms that use less RAM are much slower, and by default they will
 often terminate before converging due to their performance gradient
 going to 0.
@@ -389,7 +389,7 @@ t=20$ ms.\marginpar{I chose this large value for $\Delta t$ before I
 We used an FFT of size 128 or 256; a Hamming window; and chose a spectrogram
 frame time of $t_f=1.5$ milliseconds.  We usually define the
 network's input space to be 20-80 ms long, and to span frequencies
-from about 1.5-7 kHz, which contains the fundamentals and several
+from 1.5 kHz to 7 kHz, which contains the fundamentals and several
 overtones of most zebra finch vocalisations.
 
 We found these parameters to work well across a variety of target
@@ -408,7 +408,7 @@ timestep (1.5 ms in our example).  Audio samples from the microphone
 are appended to a circular buffer.  Every $t_f$ seconds a new
 spectrogram is calculated by applying the Hamming window to the
 contents of the buffer, performing an FFT, and extracting the
-power. Outputs of the spectrogram, from the target frequency band, are
+power. Outputs of the spectrogram from the target frequency band are
 appended to a second circular buffer.  The spectrograms are sent to a
 static implementation of the previously trained neural network.
 
@@ -420,8 +420,8 @@ had ample memory resources.
 
 \subsubsection{Swift}
 
-This detector uses the Swift programming language and CoreAudio
-interface for Apple's operating systems.
+This detector uses the Swift programming language and Core Audio
+interface included in Apple's operating systems.
 
 The Core Audio frameworks provide an adjustable buffer size for 
 reading from and writing to audio hardware. Tuning this buffer size
@@ -439,14 +439,14 @@ to perform calculations.
 When the neural network detects a match, it instructs the computer to
 generate a TTL pulse that can be used to trigger downstream hardware.
 This pulse can be either written to the computer's audio output buffer (again, in
-32-sample or 0.7-ms chunks) or sent to a microcontroller (Arduino) via
+32-sample or 0.7 ms chunks) or sent to a microcontroller (Arduino) via
 a USB serial interface. Sending the trigger pulse via the serial
 interface and microcontroller is noticeably faster (2.2 ms lower
 latency), likely due to the fact that the audio buffer goes through
 hardware mixing and filtering prior to output.
 
 The above code can be run on multiple channels of audio on 
-consumer hardware (such as a 2015 Mac Mini) with little impact
+consumer hardware (such as a 2014 Mac Mini) with little impact
 on CPU usage ($<15\%$). Depending on the experimental needs, latency
 can be further decreased (at the expense of processor usage) by
 adjusting the audio buffer sizes.
@@ -459,9 +459,11 @@ This implementation has several drawbacks: due to the programming language it is
 
 \subsubsection{Matlab}
 
-This detector uses the built-in audio input and output jacks on a compatible computer, requiring no special hardware.  We tested on a 2015 Mac Mini and 2015 Mac Pro.  The Mac Pro does not have an audio input jack, so input was through an M-Audio MobilePre external USB audio interface.  Despite the faster processor, the latter system did not achieve higher performance than the former, perhaps due to USB data transfer overhead.
+This detector uses the built-in audio input and output hardware on a compatible computer.  We tested on a 2014 Mac Mini and 2015 Mac Pro.  The Mac Pro does not have an audio input jack, so input was through an M-Audio MobilePre external USB audio interface.  Despite the faster processor, the latter system did not achieve higher performance than the former, perhaps due to USB data transfer overhead.
 
-The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2015 Mac Pro or Mac Mini running Matlab 2015B the smallest buffer size that did not result in read underruns was about 4 ms.
+Because of how Matlab's DSP toolbox interfaces with audio hardware, there is a double buffer both reading from and writing to audio hardware. As a result, much of the code focuses on a lightweight audio hardware interface, in order to have the smallest achievable audio buffer. To help achieve this, the Matlab implementation spreads data acquisition and processing across two threads, due to the higher computational overhead of the interpreted programming language.
+
+The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2014 Mac Mini running Matlab 2015b the smallest buffer size that did not result in read overruns was about 4 ms.
 
 \subsection{Quantification}
 \label{sec:quantify}
