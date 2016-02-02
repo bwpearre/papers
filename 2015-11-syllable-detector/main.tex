@@ -541,7 +541,7 @@ syllable to the firing of the detector's TTL pulse. While playing the
 audio test file from another device (such as a mobile phone), the TTL
 output from the ground-truth channel of the audio output may be used
 as the trigger pulse for an oscilloscope, and compared to the TTL pulse
-produced by the Swift detector, which sees only the birdsong channel
+produced by the detector implementation, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse
 generator (Philips PM 5715, with a listed latency of 50ns, jitter 
 of $\leq 0.1\%$ or 50ps, whichever is greater) to widen the
@@ -568,7 +568,7 @@ audio sequence into the detector and assuming no input or output
 latency, it is possible compare the how many additional audio 
 samples beyond the syllable are needed before the spectrogram 
 matches the inputs needed to trigger the neural network. Given 
-the detector\marginpar{Nathan: I think you meant ``Given the {\em hardware} \dots'' or something, right?} used for benchmarking the LabView and Swift 
+the network and FFT parameters used for benchmarking the LabView and Swift 
 implementations of the detector, the ideal implementation will 
 have a latency of $\mu = 1.1$ ms; $\sigma = 1.0$ ms. This latency reflects the 
 FFT size used for calculating the spectrogram, the FFT time shift 
@@ -618,11 +618,11 @@ during training on that song (not shown).  The maximum-likelihood estimates of t
   Detector & $\mu$ & $\sigma$ \\
   \hline
   Ideal & 1.1 & 1.0 \\
-  Swift+Arduino & 2.8 & 1.2 \\
+  Swift with serial out & 2.8 & 1.2 \\
   LabView & 3.2 & 1.4 \\
-  Matlab+Arduino & 6.7 & 1.3 \\
-  Swift+audio & 6.8 & 1.3 \\
-  Matlab+audio & 16 & 2.9
+  Matlab with serial out & 6.7 & 1.3 \\
+  Swift with audio out & 6.8 & 1.3 \\
+  Matlab  with audio out & 16 & 2.9
 \end{tabular}
 
 \vspace{4pt}
@@ -674,7 +674,7 @@ This syllable detector is appropriate for zebra finch song, and although we did 
 \item Works on a wide range of target syllables.
 \item A single detector can easily generate different target pulses for multiple syllables, at almost no additional computational cost.
 \item Requires minimal hand-tuning.
-\item Runs in (soft) realtime on inexpensive consumer-grade hardware, although we recommend training the network on a computer with at least 32GB of RAM.
+\item Runs in near realtime on inexpensive consumer-grade hardware, although we recommend training the network on a computer with at least 32GB of RAM.
 \end{itemize}
 
 As described, the detector only identifies matches that are similar to the training syllables.  A common experimental paradigm requires detecting the frequency of syllables.  Many pitch detection techniques rely on the spectrum, which is already available.  For example, \cite{Canopoli2014} achieved good results with the Harmonic Product Spectrum algorithm \cite{Noll1970}.
