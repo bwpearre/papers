@@ -115,10 +115,10 @@
 \newline
 % Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
 \\
-Ben Pearre\textsuperscript{1,\textcurrency},
-L.~Nathan Perkins\textsuperscript{1},
-Jeffrey E.~Markowitz\textsuperscript{1},
-Timothy J.~Gardner\textsuperscript{1}
+Ben Pearre\textsuperscript{1,a,\textcurrency},
+L.~Nathan Perkins\textsuperscript{1,b},
+Jeffrey E.~Markowitz\textsuperscript{1,c},
+Timothy J.~Gardner\textsuperscript{1,d}
 \\
 \bigskip
 \textsuperscript{1} Department of Biology, Boston University, Boston, Massachusetts, United States of America
@@ -131,6 +131,10 @@ Timothy J.~Gardner\textsuperscript{1}
 %
 % Primary Equal Contribution Note
 %\Yinyang These authors contributed equally to this work.
+Author \textsuperscript{a}~contributed the original Matlab and LabView implementations and most of the manuscript.
+\textsuperscript{b}~contributed the Swift implementation and its description herein.
+\textsuperscript{c}~wrote several types of filterbank software against which we compared, made suggestions for the neural network detector, and prepared the final version of the Matlab code for distribution.
+\textsuperscript{d}~provided a stream of suggested techniques, metrics, and goals.
 
 % Additional Equal Contribution Note
 % Also use this double-dagger symbol for special authorship notes, such as senior authorship.
@@ -218,7 +222,7 @@ Despite the power and versatility of such experiments, there is no standard syll
 \item[Cost:] What are the hardware and software requirements?
 \end{description}
 
-A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As access to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filter bank techniques, it is not strictly a syllable detector but rather a pitch detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  It reported a latency of 4.3 ms, but further implementation and performance details are not available, and the authors claim that their detector is too deeply integrated into their experimental apparatus to be useful to the community [personal communication].\marginpar{Tim: that's my understanding of your conversation with Richard. Is this problem worth mentioning?}  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8 ms segments.  It reported a jitter of 4.5 ms, and false-negative and false-positive rates of 0-2\% and 0-4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and equipped with a National Instruments data acquisition card, it boasts a hardware-only (without accounting for the time taken to compute a match with a syllable) latency and jitter of just a few microseconds, and the detection computation should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4\% and 7\% (for zebra finches and Bengalese finches, respectively) measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
+A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As access to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filter bank techniques, it is not strictly a syllable detector but rather a pitch detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  It reported a latency of 4.3 ms, but further implementation and performance details are not available.  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8 ms segments.  It reported a jitter of 4.5 ms, and false-negative and false-positive rates of 0-2\% and 0-4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and equipped with a National Instruments data acquisition card, it boasts a hardware-only (not accounting for the time taken to compute a match with a syllable) latency and jitter of just a few microseconds, and the detection computation they use should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4\% and 7\% (for zebra finches and Bengalese finches, respectively) measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
 
 We developed a standalone detector that learns to match moments in the
 song using a neural network applied to the song spectrogram, and
