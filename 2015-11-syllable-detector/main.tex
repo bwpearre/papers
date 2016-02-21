@@ -329,7 +329,7 @@ although this will depend on the makeup of the non-song data.
 The network is trained using Matlab's neural network toolbox. We tried
 a variety of feedforward neural network geometries, from simple
 1-layer perceptrons to more complicated forms and many hidden
-nodes. Perhaps surprisingly, even the former yields excellent results
+nodes or autoencoders. Perhaps surprisingly, even the former yields excellent results
 on many syllables, but a 2-layer perceptron with a very small hidden
 layer---with a unit count 3 times the number of target
 syllables, or even fewer---was a good compromise between accuracy and training
@@ -348,7 +348,7 @@ going to 0.
 
 \subsubsection{Computing optimal output thresholds}
 \label{sec:optimalthresholds}
-When the network is trained, outputs of the classifier for any input
+After the network is trained, outputs of the classifier for any input
 are now available, and will be in the
 interval (0, 1). We must choose a threshold above which the output is
 considered a positive detection. Finding the optimal threshold
@@ -367,7 +367,7 @@ t=20$ ms.
 
 \subsubsection{De-bouncing}
 
-Since the network may produce above-threshold responses to nearby frames, after the first response, subsequent responses are suppressed for 100 ms.\marginpar{Nathan, what de-bounce time do you use?} However, for measuring accuracy, we used the un-de-bounced network response.
+Since the network may produce above-threshold responses to nearby frames, after the first response, subsequent responses are suppressed for 100 ms.\marginpar{Nathan, what de-bounce time do you use?} However, for the accuracy figures presented here, we used the un-de-bounced network response.
 
 \subsubsection{Our parameter choices}
 
@@ -560,7 +560,7 @@ the neural network.
 \fig{fig:sixsyllables} shows a typical song, with six target moments
 selected.  We trained the network with 8 hidden units for the 6
 detection targets spaced 10 ms apart.  Matlab's self-report of
-detection \marginpar{FIXME New syllables coming, with more thorough analysys.}  performance for each iteration of the song is shown
+detection performance for each iteration of the song is shown
 in \fig{fig:sixsyllables_out}, with ROC curves shown in \fig{fig:roc}.
 The beginning of the syllable is difficult to detect, with a few
 detection events considerably earlier than the correct moment.  But
@@ -668,6 +668,7 @@ Duration detection is similarly easy.  The beginning and end of a syllable may b
 In feedback experiments such as frequency- or duration-shifting, vocal output changes over the course of the experiment.  The neural network excels at identifying syllables close to its training set, so as vocal output changes the detector may not recognise a match.  If the detector must be robust to this shift, it may be retrained every so often as the bird learns, or data consisting of synthetically pitch-shifted or duration-shifted target syllables over the recognition region may be added to the training set.  We will test these approaches in future work.
 
 \section{Acknowledgments}
+We would like to thank William A.~Liberti for his improvements to the draft.
 This work was funded by someone.\marginpar{But by whom?}
 
 \appendix
