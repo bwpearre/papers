@@ -86,6 +86,7 @@
 %\newcommand\citepossessive[1]{\citeauthor{#1}'s \citeyearpar{#1}}
 \newcommand\eq[1]{Eq.~\ref{#1}}
 \newcommand\fig[1]{Fig.~\ref{#1}}
+\newcommand\sref[1]{Section~\ref{#1}}
 \let\oldmarginpar\marginpar
 \renewcommand{\marginpar}[1]{\oldmarginpar{\linespread{1}\scriptsize{#1}}}
 
@@ -172,10 +173,9 @@ Author \textsuperscript{a}~contributed the original Matlab and LabView implement
   many require special hardware, software, and know-how, and details
   on their implementation and performance are scarce.  We present an
   accurate, versatile, and fast syllable detector that can control
-  hardware at precisely timed moments during zebra finch song.  Most
-  moments during song can be isolated and detected with $>99$\%
-  accuracy, easier syllables can be detected $~99.7\%$ of the time,
-  with fewer than 0.1\% of songs producing false positives. The
+  hardware at precisely timed moments during zebra finch song.  Many
+  moments during song can be isolated and detected, with false negative and
+  false positive rates well under 0.5\% and 0.01\% respectively. The
   detector can run on a stock Mac Mini with a triggering delay around
   3 milliseconds and trigger jitter with $\sigma\approx 1.3$
   milliseconds.
@@ -329,7 +329,7 @@ although this will depend on the makeup of the non-song data.
 The network is trained using Matlab's neural network toolbox. We tried
 a variety of feedforward neural network geometries, from simple
 1-layer perceptrons to more complicated forms and many hidden
-nodes or autoencoders. Perhaps surprisingly, even the former yields excellent results
+nodes and autoencoders. Perhaps surprisingly, even the former yields excellent results
 on many syllables, but a 2-layer perceptron with a very small hidden
 layer---with a unit count 3 times the number of target
 syllables, or even fewer---was a good compromise between accuracy and training
@@ -363,7 +363,7 @@ negatives given in Section~\ref{sec:accuracy}. Since large
 portions of the cost function are flat, random-restart hillclimbing
 would be effective, but a brute-force search requires fractions of a
 second. For the results presented here, we have used $C=1$ and $\Delta
-t=20$ ms.
+t=10$ ms.
 
 \subsubsection{De-bouncing}
 
@@ -371,7 +371,7 @@ Since the network may produce above-threshold responses to nearby frames, after 
 
 \subsubsection{Our parameter choices}
 
-We used an FFT of size 128 or 256; a Hamming window; and chose a spectrogram
+We used an FFT of size 256; a Hamming window; and chose a spectrogram
 frame time of $t_f=1.5$ milliseconds.  We usually define the
 network's input space to be 30 ms long, and to span frequencies
 from 1-8 kHz, which contains the fundamentals and several
@@ -424,7 +424,7 @@ to perform calculations.
 When the neural network detects a match, it instructs the computer to
 generate a TTL pulse that can be used to trigger downstream hardware.
 This pulse can be either written to the computer's audio output buffer (again, in
-32-sample or 0.7 ms chunks) or sent to a microcontroller (Arduino) via
+32-sample or 0.7-ms chunks) or sent to a microcontroller (Arduino) via
 a USB serial interface. Sending the trigger pulse via the serial
 interface and microcontroller is noticeably faster (2.2 ms lower
 latency), likely due to the fact that the audio buffer goes through
@@ -490,7 +490,7 @@ We define the accuracy of the network based on its classification performance pe
 
 The accuracy as defined above is used for computing the optimal thresholds above
 which the network's output should be interpreted as a match on the
-training data as described in Section~\ref{sec:optimalthresholds}, for
+training data as described in \sref{sec:optimalthresholds}, for
 evaluation of the detectors on the training songs,
 and while live.
 
@@ -557,39 +557,40 @@ the neural network.
 \section{Results}
 \label{sec:results}
 
-\fig{fig:sixsyllables} shows a typical song, with six target moments
-selected.  We trained the network with 8 hidden units for the 6
-detection targets spaced 10 ms apart.  Matlab's self-report of
-detection performance for each iteration of the song is shown
-in \fig{fig:sixsyllables_out}, with ROC curves shown in \fig{fig:roc}.
-The beginning of the syllable is difficult to detect, with a few
-detection events considerably earlier than the correct moment.  But
-the syllable quickly becomes reliably identifiable.  By the time the
-detector has seen 50 ms of the syllable---the sixth detection
-point---performance is good: the area under the ROC curve is 0.992.
+fig{fig:sixsyllables} shows a typical song.  The image was created by averaging the aligned spectra of 2818 songs.  Three target syllables are shown, at 150, 315, and 405 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1-8 kHz) for each instant in the song.
+
+The first trigger, at 150 ms, is far from a pure tone, but is closer to white noise over the region.  It would be difficult for a harmonic-stack filterbank to detect.  The second trigger, at 315 ms, is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point midway through the syllable demands a detector that can use multiple timesteps.  The third syllable, at 405 ms, shows a steady pitch followed by a downward slide along with a change in timbre, and was chosen in order to test the detector's ability to discriminate between it and the similar region at 250 ms.
+
 
 \subsection{Accuracy}
 
-In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we first evaluated the neural network's accuracy directly on the digitised recording.  When training data and runtime data are gathered on the same hardware setup, this is the signal that the detector will see---only the non-song data may be different.
+We allowed our training software to allocate our default of 3 hidden units per syllable, for a total of 9.  n order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we first evaluated the neural network's accuracy directly on the digitised recording.  When training data and runtime data are gathered on the same hardware setup, this is the signal that the detector will see---only the non-song data may be different.  Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.  Finally, the relative cost of false negatives, $C_n$ (described in \sref{sec:optimalthresholds}), is set to the default value of 1.  The confusion matrices are:n
 
-Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
-
-The song used in our case study is shown in \fig{fig:songspectrogram}.  Three target detection points are shown, at 150, 315, and 402 milliseconds on the axis (whose significance is only that that was the portion identified as song during alignment).  The first syllable is difficult for harmonic-stack--style recognition since it does not contain any easily identifiable pitch.  The second, at 315ms, should be relatively easy.  The third, at 402ms, is difficult for instantaneous detectors as it contains a downward pitch shift, and furthermore it is similar to the song at 235ms.
-
-As discussed in \S{sec:optimalthresholds}, the false-positive and false-negative rates may be traded off against each other through a relative-cost parameter.  We present results with two values of $C_n$, the cost of false negatives relative to false positives.
-
-
-\vspace{4pt}
-
+\vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  & \multicolumn{2}{c}{True} \\
-  & pos & neg \\
-  \hline
-  Detected pos & 632 & 1 (0.07\%)\\
-  neg & 4 (0.63\%) & 1271
+  {\bf At 150 ms} & \multicolumn{2}{c}{True} \\ 
+  & pos & neg \\ 
+  \hline  Detected pos & 99.66611\% & 0.00153\%\\ 
+  neg & 0.33389\% & 99.99847\%\\ 
+\end{tabular}
+\vspace{8pt}\par\noindent
+\begin{tabular}{r|cc}
+  {\bf At 315 ms} & \multicolumn{2}{c}{True} \\ 
+  & pos & neg \\ 
+  \hline  Detected pos & 99.83306\% & 0.00024\%\\ 
+  neg & 0.16694\% & 99.99976\%\\ 
+\end{tabular}
+\vspace{8pt}\par\noindent
+\begin{tabular}{r|cc}
+  {\bf At 405 ms} & \multicolumn{2}{c}{True} \\ 
+  & pos & neg \\ 
+  \hline  Detected pos & 99.66611\% & 0.00243\%\\ 
+  neg & 0.33389\% & 99.99757\%\\ 
 \end{tabular}
 
-\vspace{4pt}
+
+\subsection{Timing}
+
 
 \fig{fig:timing} shows the latency and jitter for the three implementations of our detector running on a
 single syllable from another bird, using the test audio file generated
@@ -611,35 +612,21 @@ during training on that song (not shown).  The maximum-likelihood estimates of t
 
 \vspace{4pt}
 
-
 \begin{figure}
-  \includegraphics[width=\textwidth]{song}
-  \caption{A spectrogram made by averaging over 526 songs. The 6
-    target syllables, spaced 10 ms apart, are marked by red lines.}
-    \label{fig:sixsyllables}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{6_syllables_out}
-    \caption{Detection results. Each plot shows detection events for
-      the corresponding syllable as shown in
-      \fig{fig:sixsyllables}. The horizontal axis is time, and the
-      vertical axis is the index of the 526 single song
+  \includegraphics[width=8cm]{song}
+    \caption{Each plot shows detection events for
+      the corresponding syllable. The horizontal axis is time relative to the beginning of the aligned song segment, and the
+      vertical axis is the index of the 2818 single song
       presentations. The grey shading shows the total audio energy of
       song Y at time X. The bar on the left is the same width as the
       detection window, so no detection events can happen within that
       region, and its colour code shows training songs to the right of
-      red regions and unseen test songs to the right of cyan
+      cyan regions and unseen test songs to the right of red
       regions. For visualisation of the distribution, songs have been
       stably sorted by the time of detection events.}
   \label{fig:sixsyllables_out}
 \end{figure}
 
-\begin{figure}
-  \includegraphics[width=\textwidth]{6_syllables_roc}
-  \caption{ROC curves for the detection of targets shown in Figure~\ref{fig:sixsyllables}. The first one, at the beginning of a syllable, is the most difficult to detect, and as more structure emerges in the current syllable, accuracy approaches 100\%.}
-  \label{fig:roc}
-\end{figure}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{timing}
@@ -653,17 +640,17 @@ during training on that song (not shown).  The maximum-likelihood estimates of t
 
 This syllable detector is appropriate for zebra finch song, and although we did not test in other species, it is likely to work well for Bengalese finches and probably other species.  It offers the following benefits:
 \begin{itemize}
-\item The detector is accurate. False positive and false negative rates can both be well under 1\%, and trading these two numbers off against each other is through a single relative-cost parameter.
+\item The detector is accurate. False negative and
+  false positive rates can be well under 0.5\% and 0.01\% respectively, and trading these two numbers off against each other is through a single relative-cost parameter.
 \item Latency can be around $3\pm1.2$ ms or better depending on hardware.
-\item Works on a wide range of target syllables.
-\item A single detector can easily generate different target pulses for multiple syllables, at almost no additional computational cost.
-\item Requires no hand-tuning, although performance on certain syllables can be further improved if desired.
+\item Works on a wide range of target syllables using the default values evaluated here, generally eliminating the need for hand-tuning.
 \item Runs in near realtime on inexpensive consumer-grade hardware, although we recommend that the training phase be run on a computer with at least 32GB of RAM.
+\item A single detector can generate different target pulses for multiple syllables at almost no additional computational cost during runtime, although training time will increase.
 \end{itemize}
 
 As described, the detector only identifies matches that are similar to the training syllables.  A common experimental paradigm requires detecting the frequency of syllables.  Many pitch detection techniques rely on the spectrum, which is already available.  For example, \cite{Canopoli2014} achieved good results with the Harmonic Product Spectrum algorithm \cite{Noll1970}.
 
-Duration detection is similarly easy.  The beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band (approximately 1-7 kHz) to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.  Alternatively, the network can be trained to recognise both the beginning and the end of the syllable of interest.
+Duration detection is similarly easy.  The beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band (approximately 1-8 kHz) to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.  Alternatively, the network can be trained to recognise both the beginning and the end of the syllable of interest.
 
 In feedback experiments such as frequency- or duration-shifting, vocal output changes over the course of the experiment.  The neural network excels at identifying syllables close to its training set, so as vocal output changes the detector may not recognise a match.  If the detector must be robust to this shift, it may be retrained every so often as the bird learns, or data consisting of synthetically pitch-shifted or duration-shifted target syllables over the recognition region may be added to the training set.  We will test these approaches in future work.
 
