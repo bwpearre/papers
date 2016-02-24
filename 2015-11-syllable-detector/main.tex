@@ -168,7 +168,7 @@ Author \textsuperscript{a}~contributed the original Matlab and LabView implement
   advantage of this consistency by investigating the bird's ability to
   modify specific parts of song under external cues, and by examining
   timing relationships between neural activity and vocal output.  Such
-  experiments require that specific moments during song be identified in real time
+  experiments require that precise moments during song be identified in real time
   as the bird sings.  Various syllable-detection methods exist, but
   many require special hardware, software, and know-how, and details
   on their implementation and performance are scarce.  We present an
@@ -186,12 +186,12 @@ Author \textsuperscript{a}~contributed the original Matlab and LabView implement
 \section{Introduction}
 
 The adult zebra finch ({\em Taeniopygia guttata}) sings a song made up
-of 2-6 syllables, with longer songs taking on the order of a
+of 2--6 syllables, with longer songs taking on the order of a
 second. The song may be repeated hundreds of times per day, is
 almost identical each time, and several brain areas reflect this consistency in highly stereotyped neural firing patterns. This consistency makes the zebra finch one of the most popular models for the study of the neural basis of learning, audition, and
 control.
 
-This consistency allows a variety of experiments, if precise moments
+This consistency allows a variety of experiments if precise moments
 in song can reliably be detected quickly enough to trigger other
 apparatus during singing.  A common area of study with this song-triggering technique is the anterior forebrain pathway (AFP), a homologue of mammalian basal ganglia consisting of a few distinct brain areas concerned with the acquisition and learning of song.  For example, \cite{Kao2005} stimulated the
 lateral magnocellular nucleus of the anterior nidopallium (LMAN)---the
@@ -220,7 +220,7 @@ Despite the power and versatility of such experiments, there is no standard syll
 \item[Cost:] What are the hardware and software requirements?
 \end{description}
 
-A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As access to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filter bank techniques, it is not strictly a syllable detector but rather a pitch and timbre detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  It reported a latency of 4.3 ms, but further implementation and performance details are not available.  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8 ms segments.  It reported a jitter of 4.5 ms, and false-negative and false-positive rates of 0-2\% and 0-4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and equipped with a National Instruments data acquisition card, it boasts a hardware-only (not accounting for the time taken to compute a match with a syllable) latency and jitter of just a few microseconds, and the detection computation they use should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4\% and 7\% (for zebra finches and Bengalese finches, respectively) measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
+A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As access to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filter bank techniques, it is not strictly a syllable detector but rather a pitch and timbre detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  It reported a latency of 4.3 ms, but further implementation and performance details are not available.  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8-ms segments.  It reported a jitter of 4.5 ms, and false-negative and false-positive rates of up to 2\% and 4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and equipped with a National Instruments data acquisition card, it boasts a hardware-only (not accounting for the time taken to compute a match with a syllable) latency and jitter of just a few microseconds, and the detection computation they use should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4\% and 7\% for zebra finches and Bengalese finches respectively, measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
 
 We developed a standalone detector that learns to match moments in the
 song using a neural network applied to the song spectrogram, and
@@ -237,8 +237,8 @@ three steps:
 \end{enumerate}
 This method makes the following contributions:
 \begin{itemize}
-\item Fast: latencies in the 3-5 ms range, with jitter around 1.3 ms.
-\item Accurate: false positive rates under 0.02\%, and false negative rates well under 1\%, for a variety of syllables.  Balancing these rates depends on a single relative-cost parameter.
+\item Fast: latencies around 3 ms, with jitter around 1.3 ms.
+\item Accurate: false positive rates under 0.02\% and false negative rates under 0.5\% for a variety of syllables.  Balancing these rates depends on a single relative-cost parameter.
 \item State-of-the-art performance with default parameters.
 \item Runs on inexpensive hardware.
 \item Described in detail here, with reference implementations provided and benchmarked.
@@ -258,15 +258,15 @@ This method makes the following contributions:
 We begin with a few hundred time-aligned recordings of a given bird's
 song.  Time-alignment is described in \cite{Poole2012}.
 
-The spectrogram is computed at regular intervals---usually every 1-5
+The spectrogram is computed at regular intervals---the useful range seems to be roughly 1--5
 milliseconds, which we refer to as the frame time
-$t_f$.  The examples in this paper use $t_f=1.5$ ms.
+$t_f$.
 
 One or more moments during the song must be chosen.  Our interface
 presents the time-aligned spectrogram averaged over training songs,
 and requires manual input of the target times.  Then we assemble the
 training set from the song data, train the network, compute optimal
-output unit thresholds, and save the network file and an audio test
+output unit thresholds, and save the network object and an audio test
 file.
 
 
@@ -275,7 +275,7 @@ file.
 The neural network uses a contiguous set of the most recent timesteps (frames) from the song
 spectrogram.  The frequencies $F$ and duration
 $T$ of this recognition region may be chosen in order to contain
-unique features of the target syllable and surrounding areas.  We have found that a 30-ms time window of frequencies spanning 1-8 kHz works well for most syllables.
+unique features of the target syllable and surrounding areas.  We have found that a 30-ms time window of frequencies spanning 1--8 kHz works well for most syllables.
 
 %% \subsubsection{Song micro-realignment}
 
@@ -310,10 +310,10 @@ simply reshaped into a vector of length $|F||T|$. The frequency range is constan
 
 Training targets are, roughly, 1 if the input vector comes from the
 target time, 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
-alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the output
-vector in time, such that at the target moment it is 1,
+alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the target
+in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
-smoothing kernel around the target time with $\sigma\simeq 2$ ms serves
+smoothing kernel around the target time with $\sigma\approx 2$ ms serves
 well.
 
 With inputs well outside the space on which a neural network has been
@@ -328,8 +328,8 @@ although this will depend on the makeup of the non-song data.
 
 The network is trained using Matlab's neural network toolbox. We tried
 a variety of feedforward neural network geometries, from simple
-1-layer perceptrons to more complicated forms and many hidden
-nodes and autoencoders. Perhaps surprisingly, even the former yields excellent results
+1-layer perceptrons to geometries with many hidden
+nodes, as well as autoencoders. Perhaps surprisingly, even the former yields excellent results
 on many syllables, but a 2-layer perceptron with a very small hidden
 layer---with a unit count 3 times the number of target
 syllables, or even fewer---was a good compromise between accuracy and training
@@ -343,7 +343,7 @@ training. This is a fast algorithm, but is memory-intensive, so
 many target syllables or high FFT frame rates require a large
 amount of RAM and increase training time to hours. Other training
 algorithms that use less RAM are much slower, and by default they will
-often terminate before converging due to their performance gradient
+often terminate prematurely due to their performance gradient
 going to 0.
 
 \subsubsection{Computing optimal output thresholds}
@@ -360,8 +360,8 @@ detection. Then the optimal detection threshold $\tau$ is the one that
 minimises $\mbox{[false positives]} +C_n\cdot\mbox{[false negatives]}$
 over the training set, using the definitions of false positives and
 negatives given in Section~\ref{sec:accuracy}. Since large
-portions of the cost function are flat, random-restart hillclimbing
-would be effective, but a brute-force search requires fractions of a
+portions of the cost function are flat, hillclimbing is ineffective.  Random-restart hillclimbing
+would work, but a brute-force search requires fractions of a
 second. For the results presented here, we have used $C_n=1$ and $\Delta
 t=10$ ms.
 
@@ -374,13 +374,13 @@ Since the network may produce above-threshold responses to nearby frames, after 
 We used an FFT of size 256; a Hamming window; and chose a spectrogram
 frame time of $t_f=1.5$ milliseconds.  We usually define the
 network's input space to be 30 ms long, and to span frequencies
-from 1-8 kHz, which contains the fundamentals and several
+from 1--8 kHz, which contains the fundamentals and several
 overtones of most zebra finch vocalisations.
 
 We found these parameters to work well across a variety of target
 syllables, but various other parameter sets yield results similar to those
 presented here.  Some of the parameters trade off detection accuracy
-or detection timing vs.~training time. For example, detection latency
+or temporal precision vs.~training time. For example, detection latency
 and jitter cannot be much less than the frame interval, but increasing the
 frame rate increases the size of the training set and thus the
 training resources required and the detection latency.
@@ -440,7 +440,7 @@ adjusting the audio buffer sizes.
 
 This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a PC with an Intel Core i5-4590 processor at 3.7GHz (a relatively low-end machine) with 32 gigabytes of RAM, running Microsoft Windows 8.1 Pro.
 
-This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, and it requires Windows. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
+This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, and it requires Windows and expensive hardware and software. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
 
 \subsubsection{Matlab}
 
@@ -448,14 +448,14 @@ This detector uses the built-in audio input and output hardware on a compatible 
 
 Because of how Matlab's DSP toolbox interfaces with audio hardware, there is a double buffer both reading from and writing to audio hardware. As a result, much of the code focuses on a lightweight audio hardware interface, in order to have the smallest achievable audio buffer. To help achieve this, the Matlab implementation spreads data acquisition and processing across two threads, due to the higher computational overhead of the interpreted programming language.
 
-The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2014 Mac Mini running Matlab 2015b the smallest buffer size that did not result in read overruns was about 4 ms.
+The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is perhaps the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2014 Mac Mini running Matlab 2015b the smallest buffer size that did not result in read overruns was about 4 ms.
 
 \subsection{Quantification}
 \label{sec:quantify}
 
-We divided the data into training and test sets.  For the results reported in the following section, the training set consisted of 1000 instances of the song of one bird and 2000 instances of non-song data.  Our test set consisted of an additional 1818 iterations of the bird's song and 3636 more instances of non-song data.
+We divided the data into training and test sets.  For the results reported in the following section, the training set consisted of 1000 instances of the song of one bird and 1000 instances of non-song data.  Our test set consisted of an additional 1818 iterations of the bird's song and 1818 more instances of non-song data.
 
-The Matlab neural network toolbox further divides our ``training'' set into internal training, test, and final validation sets.  We did not stray from the toolbox's default values, and do not discuss Matlab's internal subdivision of our training set.
+The Matlab neural network toolbox further divides our ``training'' set into internal training, validation, and test sets.  We did not stray from the toolbox's default values, and do not discuss Matlab's internal subdivision of our training set.
 
 Because the dataset consists of temporally aligned songs, ground truth is available for each song, and thus the detector can be checked by
 presenting the recorded training songs as well as the canonical
@@ -515,14 +515,14 @@ according to the definitions above:
 
 We evaluate the time taken from the presentation of the target
 syllable to the firing of the detector's TTL pulse. While playing the
-audio test file from another device (such as a mobile phone), the TTL
+audio test file from any audio playback device, the TTL
 output from the ground-truth channel of the audio output may be used
 as the trigger pulse for an oscilloscope, and compared to the TTL pulse
 produced by the detector implementation, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse
-generator (Philips PM 5715, with a listed latency of 50ns, jitter 
-of $\leq 0.1\%$ or 50ps, whichever is greater) to widen the
-detector's output spike to a number much larger than the jitter (100 ms).  This obviates pulse length jitter in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
+generator (Philips PM 5715, with a listed latency of 50 ns, jitter 
+of $\leq 0.1\%$ or 50 ps, whichever is greater) to widen the
+detector's output spike to a number much larger than the jitter ($\sim 100$ ms).  This obviates pulse length jitter in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
 averaging mode (128-trigger average) in order to collect timing data. The canonical signal is the trigger at $t=0$, and the
 average of the detector's detection events will be seen as a
 low-to-high transition with form approximating the cumulative
@@ -531,7 +531,7 @@ response to the chosen song event.
 
 Mean latency is then given as the halfway point of that detection
 sigmoid. It is a helpful number, but not a critical one, since a
-detector with high but constant latency can be trained to trigger at a
+detector with high but constant latency can usually be trained to trigger at a
 point somewhat before the true moment of interest.  Often more
 important is latency jitter: how much random variability is there in
 the latency?
@@ -559,7 +559,7 @@ the neural network.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{song}
-    \caption{The top plot shows the superposition of the spectra of our 2818 aligned songs.  The detection points are shown as red lines, with the recognition regions (30 ms $\times$ 1-8 kHz) marked as rectangles.  Each subsequent plot shows one network output unit's responses to all 2818 presentations of the song. The horizontal axis is time relative to the beginning of the aligned song segment and corresponds to the top figure, and the
+    \caption{The top plot shows the superposition of the spectra of our 2818 aligned songs.  The detection points are shown as red lines, with the recognition regions (30 ms $\times$ 1--8 kHz) marked as rectangles.  Each subsequent plot shows one network output unit's responses to all 2818 presentations of the song. The horizontal axis is time relative to the beginning of the aligned song segment and corresponds to the top figure, and the
       vertical axis is an index for the 2818 single song
       presentations. The grey shading shows the total audio energy of
       song Y at time X. The bar on the left is the same width as the
@@ -572,13 +572,15 @@ the neural network.
 
 
 
-The top panel of \fig{fig:song} shows the song for which we present results.  Three target syllables are shown, at 150, 315, and 405 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1-8 kHz) for each instant in the song.
+The top panel of \fig{fig:song} shows the song for which we present results.  Three target syllables are shown, at 150, 315, and 405 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
 
-The first trigger, at 150 ms, is far from a pure tone, but is closer to white noise over the region.  It would be difficult for a harmonic-stack filterbank to detect.  The second trigger, at 315 ms, is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point midway through the syllable demands a detector that can use multiple timesteps.  The third syllable, at 405 ms, shows a steady pitch followed by a downward slide along with a change in timbre, and was chosen in order to test the detector's ability to discriminate between it and the similar region at 250 ms.
+The first trigger, at 150 ms, is far from a pure tone, but is closer to white noise over the region.  It would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  The second trigger, at 315 ms, is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point midway through the syllable demands a detector that can use multiple timesteps.  The third syllable, at 405 ms, shows a steady pitch followed by a downward slide along with a change in timbre, and was chosen in order to test the detector's ability to discriminate between it and the similar region at 250 ms.
 
 \subsection{Accuracy}
 
-We allowed our training software to allocate our default of 3 hidden units per syllable, for a total of 9.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we first evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the signal that the detector will see---only the non-song data may be different.  Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.  The confusion matrices are:
+We allowed our training software to allocate our default of 3 hidden units per syllable, for a total of 9.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
+%Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
+The confusion matrices are:
 
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
@@ -643,15 +645,15 @@ This syllable detector is appropriate for zebra finch song, and although we did 
   false positive rates can be well under 0.5\% and 0.01\% respectively, and trading these two numbers off against each other is through a single relative-cost parameter.
 \item Latency can be around $3\pm1.2$ ms or better depending on hardware.
 \item Works on a wide range of target syllables using the default values described here, generally eliminating the need for hand-tuning.
-\item Runs in near realtime on inexpensive consumer-grade hardware, although we recommend that the training phase be run on a computer with at least 32GB of RAM.
+\item Runs easily fast enough for syllable-modification experiments on inexpensive consumer-grade hardware, although we recommend that the training phase be run on a fast desktop system with 32 GB of RAM.
 \item A single detector can generate different target pulses for multiple syllables at almost no additional computational cost during runtime, although training time will increase.
 \end{itemize}
 
 As described, the detector only identifies matches that are similar to the training syllables.  A common experimental paradigm requires detecting the frequency of syllables.  Many pitch detection techniques rely on the spectrum, which is already available.  For example, \cite{Canopoli2014} achieved good results with the Harmonic Product Spectrum algorithm \cite{Noll1970}.
 
-Duration detection is similarly easy.  The beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band (approximately 1-8 kHz) to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.  Alternatively, the network can be trained to recognise both the beginning and the end of the syllable of interest.
+In order to monitor syllable duration, the beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.  Alternatively, the network can be trained to recognise both the beginning and the end of the syllable of interest.
 
-In feedback experiments such as frequency- or duration-shifting, vocal output changes over the course of the experiment.  The neural network excels at identifying syllables close to its training set, so as vocal output changes the detector may not recognise a match.  If the detector must be robust to this shift, it may be retrained every so often as the bird learns, or data consisting of synthetically pitch-shifted or duration-shifted target syllables over the recognition region may be added to the training set.  We will test these approaches in future work.
+In feedback experiments such as frequency- or duration-shifting, vocal output changes over the course of the experiment.  The neural network excels at identifying syllables close to its training set, so as vocal output changes the detector may not recognise a match.  If the detector must be robust to this shift, it may be retrained as often as necessary as the bird learns, or data consisting of synthetically pitch-shifted or duration-shifted target syllables over the recognition region may be added to the training set.  We will test these approaches in future work.
 
 \section{Acknowledgments}
 We would like to thank William A.~Liberti for his improvements to the draft.
