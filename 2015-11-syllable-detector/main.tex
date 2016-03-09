@@ -331,7 +331,7 @@ a variety of feedforward neural network geometries, from simple
 1-layer perceptrons to geometries with many hidden
 nodes, as well as autoencoders. Perhaps surprisingly, even the former yields excellent results
 on many syllables, but a 2-layer perceptron with a very small hidden
-layer---with a unit count 3 times the number of target
+layer---with a unit count 4 times the number of target
 syllables, or even fewer---was a good compromise between accuracy and training
 speed. Various other neural network geometries could be tried, as well
 as any other classifier that executes quickly.  For more variable
@@ -440,7 +440,7 @@ adjusting the audio buffer sizes.
 
 This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a PC with an Intel Core i5-4590 processor at 3.7GHz (a relatively low-end machine) with 32 gigabytes of RAM, running Microsoft Windows 8.1 Pro.
 
-This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, and it requires Windows and expensive hardware and software. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
+This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, it requires Windows and expensive hardware and software, and it does not work with more recent Matlab savefile versions (v7.3). However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
 
 \subsubsection{Matlab}
 
@@ -558,7 +558,7 @@ the neural network.
 \label{sec:results}
 
 \begin{figure}
-  \includegraphics[width=\textwidth]{song}
+  \includegraphics[width=\textwidth]{6syllables}
     \caption{The top plot shows the superposition of the spectra of our 2818 aligned songs.  The detection points are shown as red lines, with the recognition regions (30 ms $\times$ 1--8 kHz) marked as rectangles.  Each subsequent plot shows one network output unit's responses to all 2818 presentations of the song. The horizontal axis is time relative to the beginning of the aligned song segment and corresponds to the top figure, and the
       vertical axis is an index for the 2818 single song
       presentations. The grey shading shows the total audio energy of
@@ -572,13 +572,13 @@ the neural network.
 
 
 
-The top panel of \fig{fig:song} shows the song for which we present results.  Three target syllables are shown, at 150, 315, and 405 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
+The top panel of \fig{fig:song} shows the song for which we present results.  Six example target syllables are shown, at 150, 200, 250, 300, 350, and 400 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
 
-The first trigger, at 150 ms, is far from a pure tone, but is closer to white noise over the region.  It would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  The second trigger, at 315 ms, is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point midway through the syllable demands a detector that can use multiple timesteps.  The third syllable, at 405 ms, shows a steady pitch followed by a downward slide along with a change in timbre, and was chosen in order to test the detector's ability to discriminate between it and the similar region at 250 ms.
+The first two triggers, at 150 and 200 ms, are far from pure tones, but are closer to coloured noise.  They would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  The third and sixth triggers (at 250 and 400 ms) are rich in overtones and contain downward slides with changing timbres.  The fourth trigger, at 300 ms, is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point partway through the syllable demands a detector that can use multiple timesteps.  The fifth trigger, at 350 ms, shows a steady pitch followed by a complex changing tone structure.
 
 \subsection{Accuracy}
 
-We allowed our training software to allocate our default of 3 hidden units per syllable, for a total of 9.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
+We allowed our training software to allocate our default of 4 hidden units per syllable.  Because our timing test files are designed for our stereo playback software, allowing only one channel for the ground-truth pulse, we trained one detector for each syllable for the following results---but note that accuracy is generally slightly higher if one network is trained on multiple syllables.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
 %Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
 The confusion matrices are:
 
@@ -586,23 +586,45 @@ The confusion matrices are:
 \begin{tabular}{r|cc}
   {\bf At 150 ms} & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
-  \hline  Detected pos & 99.66611\% & 0.00153\%\\ 
-  neg & 0.33389\% & 99.99847\%\\ 
+  \hline  Detected pos & 99.96451\% & 0.000298\%\\ 
+  neg & 0.0355\% & 99.99970\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 315 ms} & \multicolumn{2}{c}{True} \\ 
+  {\bf At 200 ms} & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
-  \hline  Detected pos & 99.83306\% & 0.00024\%\\ 
-  neg & 0.16694\% & 99.99976\%\\ 
+  \hline  Detected pos & 99.92903\% & 0.000596\%\\ 
+  neg & 0.0710\% & 99.99940\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 405 ms} & \multicolumn{2}{c}{True} \\ 
+  {\bf At 250 ms} & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
-  \hline  Detected pos & 99.66611\% & 0.00243\%\\ 
-  neg & 0.33389\% & 99.99757\%\\ 
+  \hline  Detected pos & 99.68062\% & 0.00194\%\\ 
+  neg & 0.319\% & 99.99806\%\\ 
 \end{tabular}
+\vspace{8pt}\par\noindent
+\begin{tabular}{r|cc}
+  {\bf At 300 ms} & \multicolumn{2}{c}{True} \\ 
+  & pos & neg \\ 
+  \hline  Detected pos & 99.82257\% & 0.00239\%\\ 
+  neg & 0.177\% & 99.99761\%\\ 
+\end{tabular}
+\vspace{8pt}\par\noindent
+\begin{tabular}{r|cc}
+  {\bf At 350 ms} & \multicolumn{2}{c}{True} \\ 
+  & pos & neg \\ 
+  \hline  Detected pos & 99.78708\% & 0\\ 
+  neg & 0.213\% & 100\%\\ 
+\end{tabular}
+\vspace{8pt}\par\noindent
+\begin{tabular}{r|cc}
+  {\bf At 400 ms} & \multicolumn{2}{c}{True} \\ 
+  & pos & neg \\ 
+  \hline  Detected pos & 99.71611\% & 0.00552\%\\ 
+  neg & 0.284\% & 99.99448\%\\ 
+\end{tabular}
+\vspace{8pt}\par\noindent
 
 \subsection{Timing}
 
