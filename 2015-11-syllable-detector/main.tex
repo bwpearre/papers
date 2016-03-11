@@ -513,6 +513,7 @@ according to the definitions above:
 
 \subsubsection{Timing}
 
+
 We evaluate the time taken from the presentation of the target
 syllable to the firing of the detector's TTL pulse. While playing the
 audio test file from any audio playback device, the TTL
@@ -538,21 +539,29 @@ the latency?
 
 We obtain both of these numbers by performing a maximum-likelihood fit of a Gaussian distribution to the timing data obtained from the oscilloscope.
 
-It is possible to calculate the ideal latency and jitter, which 
-reflects the inherent latency and jitter in the time shift used in 
+When measuring timing, it is useful to compare against a theoretical optimal, in order to control for any imprecision in the song extraction
+and alignment of our real data inherent in the method we use (described in
+\cite{Poole2012}).  We propose two measures thereof:
+
+First, we tested the inherent ``frame'' latency and jitter in the time shift used in 
 calculating new columns of the spectrogram. By passing a recorded 
-audio sequence into the detector and assuming no input or output 
-latency, it is possible compare the how many additional audio 
+audio sequence into the detector offline, and assuming no input or output 
+latency, we compare how many additional audio 
 samples beyond the syllable are needed before the spectrogram 
-matches the inputs needed to trigger the neural network. Given 
-the network and FFT parameters used for benchmarking the LabView and Swift 
-implementations of the detector, the ideal implementation will 
-have a latency of $\mu = 1.1$ ms; $\sigma = 1.0$ ms. This latency reflects the 
+can match the inputs needed to trigger the neural network.  This latency reflects the 
 FFT size used for calculating the spectrogram, the FFT time shift 
 between columns in the spectrogram and the width of the Gaussian 
 smoothing kernel applied to the ground truth data when training 
-the neural network.
+the neural network, but ignores computation times, audio buffers, and other operating system overhead.
 
+Next, we designed a unique ``delta song'' consisting
+of a delta function in the time domain, and trained the network to
+trigger 5 ms after this pulse.  This song was fed into the live detector.  The results for this measurement show
+the best possible latency and jitter inherent in the complete detector
+including audio read and write buffers, classifier
+computation, and FFT time shift aliasing.
+
+Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  This extracts and aligns the centres of the sampled songs, and the canonical signal is given with respect to that alignment.  Thus timing measurements reflect not only detector performance, but also the variability of the bird's song.
 
 \section{Results}
 \label{sec:results}
@@ -578,9 +587,9 @@ The first two triggers, at 150 and 200 ms, are far from pure tones, but are clos
 
 \subsection{Accuracy}
 
-We allowed our training software to allocate our default of 4 hidden units per syllable.  Because our timing test files are designed for our stereo playback software, allowing only one channel for the ground-truth pulse, we trained one detector for each syllable for the following results---but note that accuracy is generally slightly higher if one network is trained on multiple syllables.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
+We allowed our training software to allocate our default of 4 hidden units per syllable, and sampled a new FFT every 1.5 ms.  Because our timing test files are designed for our stereo playback software, allowing only one channel for the ground-truth pulse, we trained one detector for each syllable for the following results---but note that accuracy is generally slightly higher if one network is trained on multiple syllables.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
 %Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
-The confusion matrices are:
+Typical confusion matrices for these syllables are:
 
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
@@ -626,30 +635,40 @@ The confusion matrices are:
 \end{tabular}
 \vspace{8pt}\par\noindent
 
+The accuracies for the synthetic delta-function songs were always 100\%.
+
 \subsection{Timing}
 
+First, our measures of optimal timing:
 
-\fig{fig:timing} shows the latency and jitter for the three implementations of our detector running on a
-single syllable from another bird, using the test audio file generated
-during training on that song (not shown).  The maximum-likelihood estimates of the mean $\mu$ and standard deviation $\sigma$ of the detector latencies on this training set are as follows:
+\subsubsection{Frame timing} Given 
+the network and FFT parameters used for benchmarking the LabView and Swift 
+implementations of the detector, the ideal implementation has a latency of $\mu = 2.3$ ms; $\sigma = 2.0$ ms.
+
+\subsubsection{Delta song timing}
+
+Detector latency and jitter depend on the FFT frame rate.  {\bf ??}\marginpar{fixme} shows how these numbers vary over a useful range of frame rates on our Swift detector with serial output, running on a 2014 Mac Mini.  For our chosen default frame rate of 1.5 ms, we measured latency of \marginpar{FIXME}.
+
+\subsubsection{Real song data}
+
+\fig{fig:timing} shows the latency and jitter for the three implementations of our detector trained on our test bird, for the syllable at 300 ms, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ and standard deviation $\sigma$ of the detector latencies on this training set are as follows:
 
 \vspace{8pt}
-
 \begin{tabular}{l|c|c}
   & \multicolumn{2}{c}{Latency (ms)}\\
   Detector & $\mu$ & $\sigma$ \\
   \hline
-  Ideal & 1.1 & 1.0 \\
-  Swift with serial out & 2.8 & 1.2 \\
-  LabView & 3.2 & 1.4 \\
-  Matlab with serial out & 6.7 & 1.3 \\
-  Swift with audio out & 6.8 & 1.3 \\
-  Matlab  with audio out & 16 & 2.9
+  Ideal & 2.3 & 2.0 \\
+  Swift with serial out & 4.7 & 1.9 \\
+  Swift with audio out & 8.9 & 1.9 \\
+  Matlab with serial out & 8.7 & 2.5 \\
+  Matlab  with audio out & 16 & 2.2 \\
+  LabView & 3.2 & 1.4
 \end{tabular}
 
 \vspace{8pt}
 
-The best performance is achieved by the Swift detector using USB serial out, with our LabView implementation performing almost as well.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of modifying and debugging LabView programmes.  With serial output, Matlab's performance is excellent, although its buffer handling is sensitive to system load.  Matlab's failure to produce precisely timed audio output makes that system the least desirable.
+The\marginpar{Update with new LabView data} best performance is achieved by the Swift detector using USB serial out, with our LabView implementation performing almost as well.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of modifying and debugging LabView programmes.  With serial output, Matlab's performance is excellent, although its buffer handling is sensitive to system load.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{timing}
@@ -676,6 +695,8 @@ As described, the detector only identifies matches that are similar to the train
 In order to monitor syllable duration, the beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.  Alternatively, the network can be trained to recognise both the beginning and the end of the syllable of interest.
 
 In feedback experiments such as frequency- or duration-shifting, vocal output changes over the course of the experiment.  The neural network excels at identifying syllables close to its training set, so as vocal output changes the detector may not recognise a match.  If the detector must be robust to this shift, it may be retrained as often as necessary as the bird learns, or data consisting of synthetically pitch-shifted or duration-shifted target syllables over the recognition region may be added to the training set.  We will test these approaches in future work.
+
+\marginpar{FIXME Include discussion of the measured jitter in actual zebra finch song.}
 
 \section{Acknowledgments}
 We would like to thank William A.~Liberti for his improvements to the draft.
