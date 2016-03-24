@@ -133,7 +133,7 @@ Timothy J.~Gardner\textsuperscript{1,d}
 % Primary Equal Contribution Note
 %\Yinyang These authors contributed equally to this work.
 Author \textsuperscript{a}~contributed the original Matlab and LabView implementations and most of the manuscript.
-\textsuperscript{b}~contributed the Swift implementation and its description herein.
+\textsuperscript{b}~contributed the Swift implementation and its description herein, helped debug the training code, and measured the timing for most of the detectors.
 \textsuperscript{c}~wrote several types of filterbank software against which we compared, made suggestions for the neural network detector, and prepared the final version of the Matlab code for distribution.
 \textsuperscript{d}~provided a stream of suggested techniques, metrics, and goals.
 
@@ -259,7 +259,7 @@ We begin with a few hundred time-aligned recordings of a given bird's
 song.  Time-alignment is described in \cite{Poole2012}.
 
 The spectrogram is computed at regular intervals---the useful range seems to be roughly 1--5
-milliseconds, which we refer to as the frame time
+milliseconds, which we refer to as the frame interval
 $t_f$.
 
 One or more moments during the song must be chosen.  Our interface
@@ -313,8 +313,7 @@ target time, 0 otherwise, for each target syllable (of which there may be any nu
 alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the target
 in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
-smoothing kernel around the target time with $\sigma\approx 2$ ms serves
-well.
+smoothing kernel around the target time with $\sigma\approx 2$ ms serves well.
 
 With inputs well outside the space on which a neural network has been
 trained, its outputs will be essentially random. In order to reduce
@@ -349,7 +348,7 @@ going to 0.
 \subsubsection{Computing optimal output thresholds}
 \label{sec:optimalthresholds}
 After the network is trained, outputs of the classifier for any input
-are now available, and will be in the
+are now available, and will be in (or, due to noisy inputs and imperfect training, close to) the
 interval (0, 1). We must choose a threshold above which the output is
 considered a positive detection. Finding the optimal threshold
 requires two choices. The first is the relative cost of false
@@ -372,10 +371,10 @@ Since the network may produce above-threshold responses to nearby frames, after 
 \subsubsection{Our parameter choices}
 
 We used an FFT of size 256; a Hamming window; and chose a spectrogram
-frame time of $t_f=1.5$ milliseconds.  We usually define the
-network's input space to be 30 ms long, and to span frequencies
-from 1--8 kHz, which contains the fundamentals and several
-overtones of most zebra finch vocalisations.
+frame interval of $t_f=1.5$ milliseconds.  We set the network's input
+space to 30 ms long, and to span frequencies from 1--8 kHz, which
+contains the fundamentals and several overtones of most zebra finch
+vocalisations.
 
 We found these parameters to work well across a variety of target
 syllables, but various other parameter sets yield results similar to those
@@ -388,8 +387,8 @@ training resources required and the detection latency.
 \subsection{Realtime detection}
 
 The architecture of the realtime detector requires that the most
-recent $|T|/t_f$ spectrograms be fed to the neural network at every
-timestep (1.5 ms in our example).  Audio samples from the microphone
+recent $|T|/t_f$ spectrograms be fed to the neural network every
+frame interval.  Audio samples from the microphone
 are appended to a circular buffer.  Every $t_f$ seconds a new
 spectrogram is calculated by applying the Hamming window to the
 contents of the buffer, performing an FFT, and extracting the
@@ -440,7 +439,7 @@ adjusting the audio buffer sizes.
 
 This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a PC with an Intel Core i5-4590 processor at 3.7GHz (a relatively low-end machine) with 32 gigabytes of RAM, running Microsoft Windows 8.1 Pro.
 
-This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, it requires Windows and expensive hardware and software, and it does not work with more recent Matlab savefile versions (v7.3). However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
+This implementation has several drawbacks: due to the programming language it is difficult to modify and debug, it requires Windows and expensive hardware and software, and it requires Matlab savefile versions no more recent than 'v7'. However, our test configuration achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
 
 \subsubsection{Matlab}
 
@@ -554,12 +553,12 @@ between columns in the spectrogram and the width of the Gaussian
 smoothing kernel applied to the ground truth data when training 
 the neural network, but ignores computation times, audio buffers, and other operating system overhead.
 
-Next, we designed a unique ``delta song'' consisting
-of a delta function in the time domain, and trained the network to
+Next, we designed a unique ``$\delta$ song'' consisting
+of a $\delta$ function in the time domain, and trained the network to
 trigger 5 ms after this pulse.  This song was fed into the live detector.  The results for this measurement show
 the best possible latency and jitter inherent in the complete detector
 including audio read and write buffers, classifier
-computation, and FFT time shift aliasing.
+computation, and FFT time shift aliasing, but excluding song alignment jitter and detection variability.
 
 Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  This extracts and aligns the centres of the sampled songs, and the canonical signal is given with respect to that alignment.  Thus timing measurements reflect not only detector performance, but also the variability of the bird's song.
 
@@ -635,19 +634,20 @@ Typical confusion matrices for these syllables are:
 \end{tabular}
 \vspace{8pt}\par\noindent
 
-The accuracies for the synthetic delta-function songs were always 100\%.
+The accuracies for the synthetic $\delta$-function songs were always 100\%.
 
 \subsection{Timing}
 
 First, our measures of optimal timing:
 
-\subsubsection{Frame timing} Given 
+\subsubsection{Frame timing}
+Given 
 the network and FFT parameters used for benchmarking the LabView and Swift 
 implementations of the detector, the ideal implementation has a latency of $\mu = 2.3$ ms; $\sigma = 2.0$ ms.
 
-\subsubsection{Delta song timing}
+\subsubsection{$\delta$ song timing}
 
-Detector latency and jitter depend on the FFT frame rate.  {\bf ??}\marginpar{fixme} shows how these numbers vary over a useful range of frame rates on our Swift detector with serial output, running on a 2014 Mac Mini.  For our chosen default frame rate of 1.5 ms, we measured latency of \marginpar{FIXME}.
+Detector latency and jitter depend on the FFT frame rate.  {\bf ??}\marginpar{fixme} shows how these numbers vary over a useful range of frame rates on our Swift detector with serial output, and for the LabView detector.  For our chosen default frame rate of 1.5 ms, we measured latency of \marginpar{FIXME}.
 
 \subsubsection{Real song data}
 
@@ -668,7 +668,7 @@ Detector latency and jitter depend on the FFT frame rate.  {\bf ??}\marginpar{fi
 
 \vspace{8pt}
 
-The\marginpar{Update with new LabView data} best performance is achieved by the Swift detector using USB serial out, with our LabView implementation performing almost as well.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of modifying and debugging LabView programmes.  With serial output, Matlab's performance is excellent, although its buffer handling is sensitive to system load.
+The\marginpar{Update with new LabView data} best performance is achieved by the Swift detector using USB serial out, with our LabView implementation performing almost as well.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of modifying and debugging LabView programmes.  With serial output, Matlab's performance is good, although its buffer handling is sensitive to system load.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{timing}
@@ -676,6 +676,7 @@ The\marginpar{Update with new LabView data} best performance is achieved by the 
   \label{fig:timing}
 \end{figure}
 
+Due to the randomness of neural network initialisation and training song presentation, multiple training runs yielded different networks.  We found that occasionally a network would perform unusually poorly, but that it was easy to spot these networks by their performance on the test audio file, and re-train when necessary.
 
 \section{Discussion}
 \label{sec:conclusion}
