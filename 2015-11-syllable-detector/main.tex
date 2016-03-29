@@ -214,7 +214,7 @@ Despite the power and versatility of such experiments, there is no standard syll
 \begin{description}
 \item[Accuracy:] How often does the system produce false positives or false negatives?
 \item[Latency:] The average delay between the target syllable being sung and the detection.
-\item[Jitter:] The amount that latency changes from instance to instance of song.
+\item[Jitter:] The amount that latency changes from instance to instance of song.  Our measure of jitter is the standard deviation $\sigma$ of latency.
 \item[Versatility:] Is detection possible at ``difficult'' syllables?
 \item[Ease of use:] How automated is the process of programming a detector?
 \item[Cost:] What are the hardware and software requirements?
@@ -260,7 +260,7 @@ song.  Time-alignment is described in \cite{Poole2012}.
 
 The spectrogram is computed at regular intervals---the useful range seems to be roughly 1--5
 milliseconds, which we refer to as the frame interval
-$t_f$.
+$t_f$.  The target frame interval may not line up with the sample rate, especially on consumer audio hardware that operates at 44.1 kHz, so the actual frame interval may be different from the target.  For example, at 44.1 kHz a 1 ms target frame interval requires a new FFT every 44.1 samples.  This is rounded to 44 samples, resulting in $t_f=\lfloor 44.1 \rceil / 44.1 \approx 0.9977$ ms.
 
 One or more moments during the song must be chosen.  Our interface
 presents the time-aligned spectrogram averaged over training songs,
@@ -370,8 +370,8 @@ Since the network may produce above-threshold responses to nearby frames, after 
 
 \subsubsection{Our parameter choices}
 
-We used an FFT of size 256; a Hamming window; and chose a spectrogram
-frame interval of $t_f=1.5$ milliseconds.  We set the network's input
+We used an FFT of size 256; a Hamming window; and chose a target spectrogram
+frame interval of $t_f=1.5$ milliseconds, resulting in a true frame interval of $t_f=\lfloor 1.5\cdot 44.1\rceil /44.1\approx 1.4966$ ms.  We set the network's input
 space to 30 ms long, and to span frequencies from 1--8 kHz, which
 contains the fundamentals and several overtones of most zebra finch
 vocalisations.
@@ -536,7 +536,7 @@ point somewhat before the true moment of interest.  Often more
 important is latency jitter: how much random variability is there in
 the latency?
 
-We obtain both of these numbers by performing a maximum-likelihood fit of a Gaussian distribution to the timing data obtained from the oscilloscope.
+We obtain both of these numbers by performing a maximum-likelihood fit of a Gaussian distribution to the timing data obtained from the oscilloscope.  We refer to the distribution's mean as latency and standard deviation as jitter.
 
 When measuring timing, it is useful to compare against a theoretical optimal, in order to control for any imprecision in the song extraction
 and alignment of our real data inherent in the method we use (described in
@@ -567,7 +567,8 @@ Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  T
 
 \begin{figure}
   \includegraphics[width=\textwidth]{6syllables}
-    \caption{The top plot shows the superposition of the spectra of our 2818 aligned songs.  The detection points are shown as red lines, with the recognition regions (30 ms $\times$ 1--8 kHz) marked as rectangles.  Each subsequent plot shows one network output unit's responses to all 2818 presentations of the song. The horizontal axis is time relative to the beginning of the aligned song segment and corresponds to the top figure, and the
+  \caption{This image was made by superposing the spectra of our 2818 aligned songs.  The detection points are shown as red lines, with the recognition regions (30 ms $\times$ 1--8 kHz) marked as rectangles.}
+  \noprint{Each subsequent plot shows one network output unit's responses to all 2818 presentations of the song. The horizontal axis is time relative to the beginning of the aligned song segment and corresponds to the top figure, and the
       vertical axis is an index for the 2818 single song
       presentations. The grey shading shows the total audio energy of
       song Y at time X. The bar on the left is the same width as the
@@ -578,9 +579,10 @@ Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  T
   \label{fig:song}
 \end{figure}
 
+\marginpar{Needed: song+detection rasters for at least a couple of the syllables}
 
 
-The top panel of \fig{fig:song} shows the song for which we present results.  Six example target syllables are shown, at 150, 200, 250, 300, 350, and 400 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
+\fig{fig:song} shows the song for which we present results.  Six example target syllables are shown, at 150, 200, 250, 300, 350, and 400 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
 
 The first two triggers, at 150 and 200 ms, are far from pure tones, but are closer to coloured noise.  They would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  The third and sixth triggers (at 250 and 400 ms) are rich in overtones and contain downward slides with changing timbres.  The fourth trigger, at 300 ms, is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point partway through the syllable demands a detector that can use multiple timesteps.  The fifth trigger, at 350 ms, shows a steady pitch followed by a complex changing tone structure.
 
@@ -638,20 +640,51 @@ The accuracies for the synthetic $\delta$-function songs were always 100\%.
 
 \subsection{Timing}
 
-First, our measures of optimal timing:
+Our 1.5-ms--frame default is a compromise: faster frames increase computational requirements both at runtime and during training, but also increase the precision of timing.  We evaluate our timing at our default, and then show how performance is affected across three variables:
+\begin{itemize}
+\item FFT frame interval
+\item Syllable
+\item Detector
+\end{itemize}
 
-\subsubsection{Frame timing}
-Given 
-the network and FFT parameters used for benchmarking the LabView and Swift 
-implementations of the detector, the ideal implementation has a latency of $\mu = 2.3$ ms; $\sigma = 2.0$ ms.
+\subsubsection{FFT Frame Interval}
 
-\subsubsection{$\delta$ song timing}
+\begin{figure}
+  \includegraphics[width=\textwidth]{TimingVsFrame}
+  \caption{Timing varies as the FFT frame interval changes.  Here we show results for the ``Ideal'' detector and the LabView and Swift+serial implementations, for the constructed $\delta$-song and for the real bird song at 300 ms.}
+  \label{fig:TimingVsFrame}
+\end{figure}
 
-Detector latency and jitter depend on the FFT frame rate.  {\bf ??}\marginpar{fixme} shows how these numbers vary over a useful range of frame rates on our Swift detector with serial output, and for the LabView detector.  For our chosen default frame rate of 1.5 ms, we measured latency of \marginpar{FIXME}.
+Detector latency and jitter depend on the FFT frame rate.  \fig{fig:TimingVsFrame} shows how these numbers vary over a useful range of frame rates on our Ideal detector, the Swift detector with serial output, and for the LabView detector.
 
-\subsubsection{Real song data}
+\subsubsection{Real song}
 
-\fig{fig:timing} shows the latency and jitter for the three implementations of our detector trained on our test bird, for the syllable at 300 ms, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ and standard deviation $\sigma$ of the detector latencies on this training set are as follows:
+\begin{figure}
+  \includegraphics[width=\textwidth]{TimingVsSyllable}
+  \caption{Syllable choice impacts detector performance, but despite the variety of syllables chosen here, performance was fairly stable across syllables.}
+  \label{fig:TimingVsSyllable}
+\end{figure}
+
+\marginpar{FFT interval? Show delta, and show average across our real syllables}
+
+\subsubsection{Detector Implementations}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{TimingVsDetector}
+  \caption{The different detectors for the constructed $\delta$-song and for the real bird song at 300 ms.}
+  \label{fig:TimingVsDetector}
+\end{figure}
+
+Again standardising on our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows latency and jitter across our detector implementations for the $\delta$-song and for our bird syllable at 300 ms.
+
+\begin{figure}
+  \includegraphics[width=7cm]{timing}
+  \caption{Timing curve for a syllable running a test file generated by training.}
+  \label{fig:timing}
+\end{figure}
+
+
+\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on our test bird, for the syllable at 300 ms, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ and standard deviation $\sigma$ of the detector latencies on this training set are as follows:\marginpar{Still useful?  Update, anyway!}
 
 \vspace{8pt}
 \begin{tabular}{l|c|c}
@@ -659,24 +692,18 @@ Detector latency and jitter depend on the FFT frame rate.  {\bf ??}\marginpar{fi
   Detector & $\mu$ & $\sigma$ \\
   \hline
   Ideal & 2.3 & 2.0 \\
-  Swift with serial out & 4.7 & 1.9 \\
-  Swift with audio out & 8.9 & 1.9 \\
-  Matlab with serial out & 8.7 & 2.5 \\
-  Matlab  with audio out & 16 & 2.2 \\
-  LabView & 3.2 & 1.4
+  LabView & 3.2 & 1.4\\
+  Swift+serial & 4.7 & 1.9 \\
+  Swift+audio & 8.9 & 1.9 \\
+  Matlab+serial & 8.7 & 2.5 \\
+  Matlab+audio & 16 & 2.2
 \end{tabular}
 
 \vspace{8pt}
 
-The\marginpar{Update with new LabView data} best performance is achieved by the Swift detector using USB serial out, with our LabView implementation performing almost as well.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of modifying and debugging LabView programmes.  With serial output, Matlab's performance is good, although its buffer handling is sensitive to system load.
+The Swift detector with serial out and the LabView implementation are approximately equivalent in performance.  We greatly prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of modifying and debugging LabView programmes---indeed, the LabView implementation still contains a bug that slightly decreases its accuracy compared to the Swift and Matlab detectors.  With serial output, Matlab's performance is good, although its buffer handling is highly sensitive to system load.
 
-\begin{figure}
-  \includegraphics[width=\textwidth]{timing}
-  \caption{Timing curve for a syllable running a test file generated by training.}
-  \label{fig:timing}
-\end{figure}
-
-Due to the randomness of neural network initialisation and training song presentation, multiple training runs yielded different networks.  We found that occasionally a network would perform unusually poorly, but that it was easy to spot these networks by their performance on the test audio file, and re-train when necessary.
+Due to the randomness of neural network initialisation and training song presentation, multiple training runs yield different networks.  We found that occasionally a network would perform unusually poorly, but that it was easy to spot these networks by their performance on the test audio file, and re-train when necessary.
 
 \section{Discussion}
 \label{sec:conclusion}
