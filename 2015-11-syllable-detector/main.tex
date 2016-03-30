@@ -174,7 +174,7 @@ Author \textsuperscript{a}~contributed the original Matlab and LabView implement
   on their implementation and performance are scarce.  We present an
   accurate, versatile, and fast syllable detector that can control
   hardware at precisely timed moments during zebra finch song.  Many
-  moments during song can be isolated and detected, with false negative and
+  moments during song can be isolated and detected with false negative and
   false positive rates well under 0.5\% and 0.01\% respectively. The
   detector can run on a stock Mac Mini with triggering delay of less than a millisecond and a jitter of $\sigma\approx 2$
   milliseconds.
@@ -461,7 +461,7 @@ learning code produces an audio file consisting of all of the training
 data on the left audio channel and a delta function at each aligned moment of
 target syllable presentation on the right channel. Thus, when
 played on any audio player, the left channel may be provided as input
-to the detector, and the the detector's detection pulses may be compared against the right channel.
+to the detector, and the the detector's output pulses may be compared against the right channel.
 
 
 \subsubsection{Accuracy}
@@ -520,7 +520,7 @@ produced by the detector implementation, which sees only the birdsong channel
 of the audio file. For this purpose we used a pulse
 generator (Philips PM 5715, with a listed latency of 50 ns, jitter 
 of $\leq 0.1\%$ or 50 ps, whichever is greater) to widen the
-detector's output spike to a number much larger than the jitter ($\sim 100$ ms).  This obviates pulse length jitter in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
+detector's output spike to a number much larger than the jitter ($\sim 100$ ms).  This obviates pulse length variability in the output device by essentially discarding the falling edge of the output pulse.  The oscilloscope is then set to
 averaging mode (128-trigger average) in order to collect timing data. The canonical signal is the trigger at $t=0$, and the
 average of the detector's detection events will be seen as a
 low-to-high transition with form approximating the cumulative
@@ -529,8 +529,8 @@ response to the chosen song event.
 
 Mean latency is then given as the halfway point of that detection
 sigmoid. It is a helpful number, but not a critical one, since a
-detector with high but constant latency can usually be trained to trigger at a
-point somewhat before the true moment of interest.  Often more
+detector with high but constant latency can often be trained to trigger at a
+point somewhat before the true moment of interest, especially given the stereotypy of zebra finch song.  Often more
 important is latency jitter: how much random variability is there in
 the latency?
 
@@ -547,7 +547,7 @@ latency, we compare how many additional audio
 samples beyond the syllable are needed before the spectrogram 
 can match the inputs needed to trigger the neural network.  This latency reflects the 
 FFT size used for calculating the spectrogram, the FFT time shift 
-between columns in the spectrogram and the width of the Gaussian 
+between columns in the spectrogram, and the width of the Gaussian 
 smoothing kernel applied to the ground truth data when training 
 the neural network, but ignores computation times, audio buffers, and other operating system overhead.
 
@@ -697,7 +697,7 @@ Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows 
 \end{figure}
 
 
-\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on our test bird, for the syllable at 300 ms, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ (latency) and standard deviation $\sigma$ (jitter) on this training set are as follows:
+\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on our test bird, for the syllable at 300 ms, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ (latency) and standard deviation $\sigma$ (jitter) on this syllable are as follows:
 
 \vspace{8pt}
 \begin{tabular}{l|c|c|c| c}
@@ -713,7 +713,6 @@ Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows 
 \end{tabular}
 
 \vspace{8pt}
-Although there are differences, the Swift+serial detector and the LabView implementation are roughly comparable in performance.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of debugging LabView programmes.  With serial output, Matlab's performance is good, although its buffer handling is sensitive to system load.
 
 \section{Discussion}
 \label{sec:conclusion}
@@ -728,9 +727,11 @@ This syllable detector is appropriate for zebra finch song, and although our tes
 \item A single detector can generate different target pulses for multiple syllables at almost no additional computational cost during runtime, although training time will increase.
 \end{itemize}
 
+Although there are differences, the Swift+serial detector and the LabView implementation are roughly comparable in performance.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of debugging LabView programmes.  With serial output, Matlab's performance is good, although its buffer handling is sensitive to system load.
+
 Due to the randomness of neural network initialisation and training song presentation, multiple training runs yield different networks.  We found that for difficult syllables, the training process would sometimes yield a network that performed unusually poorly, but that it was easy to spot these networks by their performance on the test audio file, and re-train when necessary.
 
-As described, the detector only identifies matches that are similar to the training syllables.  A common experimental paradigm requires detecting the frequency of syllables.  Many pitch detection techniques rely on the spectrum, which incurs no additional computational cost since it is already available.  For example, \cite{Canopoli2014} achieved good results with the Harmonic Product Spectrum algorithm \cite{Noll1970}.
+A common experimental paradigm requires detecting the frequency of syllables.  Many pitch detection techniques rely on the spectrum, which incurs no additional computational cost here since it is already available.  For example, \cite{Canopoli2014} achieved good results with the Harmonic Product Spectrum algorithm \cite{Noll1970}.
 
 In order to monitor syllable duration, the beginning and end of a syllable may be detected by looking at the ratio of total energy in the singing frequency band to the total energy, over some small time window.  Any syllable thus identified that also contains a trigger event may be monitored for duration.  Alternatively, the network can be trained to recognise both the beginning and the end of the syllable of interest.
 
