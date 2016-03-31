@@ -316,7 +316,7 @@ although this will depend on the makeup of the non-song data.
 To accommodate differences in amplitude due to changes in the relative position between the microphone and bird or other
 variations in recording, the incoming signal is normalised in order to ensure that the 
 detector is sensitive only to the relative spectral content.  We settled upon the following two-step normalisation scheme. First, each spectral time-frequency window $x_t$ is normalised (referred to here as $\hat{x}_t$) so that the content of that window has mean $\mu_{\hat{x}_t}=0$ and  standard deviation $\sigma_{\hat{x}_t}=1$: after each time-frequency window is reshaped into a vector $x_t$, it is normalised using Matlab's {\tt zscore} function $\hat{x}_t = (x_t - \mu_{x_t}) / \sigma_{x_t}$. This eliminates relative differences in song
-amplitude due to microphone position or line levels. Next, each element of the time-frequency window vector $\hat{x}^i_t\forall t$---one time-frequency point $\hat{x}^{i}$---is scaled to $\xi_t$ in the same way, so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  In training, this is accomplished by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and this scaling factor is saved as part of the network object used by the realtime detector so that it may be applied to unseen data during runtime.
+amplitude due to microphone position or line levels. Next, each element of the time-frequency window vector $\hat{x}^i_t\forall t$---one time-frequency point $\hat{x}^{i}$---is scaled to $\xi^i$ in the same way, so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  In training, this is accomplished by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and this scaling factor is saved as part of the network object used by the realtime detector so that it may be applied to unseen data during runtime.
 These two normalisation steps provide a set of inputs that are more
 robust to outliers and less likely to produce false positives during 
 silence when evaluated against other normalisation schemes, such as 
@@ -330,7 +330,7 @@ While any learned classifier might suffice, we chose a two-layer feedforward neu
 \end{equation*}
 The elements of each matrix are learned by back-propagation of errors over a training set.  A more detailed explanation of neural networks may be found in \cite{hkp}.
 
-Essentially, after training, the network is available in the form of the two matrices $W_0$ and $W_1$, and running the network consists of two matrix multiplications and the application of the squashing function.\marginpar{I've left out bias terms, and played fast and loose with notation post-normalisation.  Ok?}
+Essentially, after training, the network is available in the form of the two matrices $W_0$ and $W_1$, and running the network consists of two matrix multiplications and the application of the squashing function.\marginpar{I've left out bias terms and some other details.  Ok?}
 
 \subsubsection{Training the network}
 
