@@ -315,8 +315,8 @@ although this will depend on the makeup of the non-song data.
 
 To accommodate differences in amplitude due to changes in the relative position between the microphone and bird or other
 variations in recording, the incoming signal is normalised in order to ensure that the 
-detector is sensitive only to the relative spectral content.  We settled upon the following two-step normalisation scheme. First, each spectral time-frequency window is normalised so that the content of that window has mean $\mu=0$ and  standard deviation $\sigma=1$: after each time-frequency window is reshaped into a vector $x_t$, it is normalised using Matlab's {\tt zscore} function $z = (x - \mu) / \sigma$. This eliminates relative differences in song
-amplitude due to microphone position or line levels. Next, each time-frequency point throughout the training set is scaled so that the values of that point across the whole training set have mean zero and unit standard deviation by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd} , and this scaling factor is saved as part of the network object used by the realtime detector so that it may be applied to unseen data during runtime.
+detector is sensitive only to the relative spectral content.  We settled upon the following two-step normalisation scheme. First, each spectral time-frequency window $x_t$ is normalised (referred to here as $\xi_t$) so that the content of that window has mean $\mu_{\xi_t}=0$ and  standard deviation $\sigma_{\xi_t}=1$: after each time-frequency window is reshaped into a vector $x_t$, it is normalised using Matlab's {\tt zscore} function $\xi_t = (x_t - \mu_{x_t}) / \sigma_{x_t}$. This eliminates relative differences in song
+amplitude due to microphone position or line levels. Next, each element of the time-frequency window vector $\xi^i_t\forall t$---one time-frequency point $\xi^{i}$---is scaled so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  In training, this is accomplished by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and this scaling factor is saved as part of the network object used by the realtime detector so that it may be applied to unseen data during runtime.
 These two normalisation steps provide a set of inputs that are more
 robust to outliers and less likely to produce false positives during 
 silence when evaluated against other normalisation schemes, such as 
@@ -324,9 +324,9 @@ linear or L\textsubscript{2} normalisation.
 
 \subsubsection{Neural Networks}
 
-While any learned classifier might suffice, we chose a two-layer feedforward neural network.  In brief, our network takes an input vector $x_t$---as described above---to an output vector $y_t$, and when any element of $y_t$ is above a threshold (described below), the detector reports a detection event.  The network uses two matrices of weights, $W_0$ and $W_ 1$.  The first takes the input $x_t$ to an intermediate stage---the ``hidden layer'' vector.  To each element of this vector is applied a nonlinear squashing function such as {\tt tanh}, and then the second weight matrix $W_1$ is applied.  This produces output $y_t$:
+While any learned classifier might suffice, we chose a two-layer feedforward neural network.  In brief, our network takes an input vector $\xi_t$---as described above---to an output vector $y_t$, and when any element of $y_t$ is above a threshold (described below), the detector reports a detection event.  The network uses two matrices of weights, $W_0$ and $W_ 1$.  The first takes the input $\xi_t$ to an intermediate stage---the ``hidden layer'' vector.  To each element of this vector is applied a nonlinear squashing function such as {\tt tanh}, and then the second weight matrix $W_1$ is applied.  This produces output $y_t$:
 \begin{equation*}
-  y_t = W_2 \cdot \tanh (W_1 \cdot x_t)
+  y_t = W_2 \cdot \tanh (W_1 \cdot \xi_t)
 \end{equation*}
 The elements of each matrix are learned by back-propagation of errors over a training set.  A more detailed explanation of neural networks may be found in \cite{hkp}.
 
