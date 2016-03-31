@@ -289,26 +289,15 @@ unique features of the target syllable and surrounding areas.  We have found tha
 %% average over the training set.\marginpar{I hope that's the right thing
 %%   to do. Seems to work, anyway\dots}
 
-\subsubsection{Normalisation}
-
-To accommodate differences in amplitude due to changes in the relative position between the microphone and bird or other
-variations in recording, normalisation ensures that the 
-detector is sensitive only to the relative spectral content.  We settled upon the following two-step normalisation scheme. First, each spectral time-frequency window is normalised so that the content of that window has mean zero and 
-unit standard deviation. This eliminates relative differences in song
-amplitude due to microphone position or line levels. Next, each time-frequency point is scaled so that the values of that point across the whole training set have mean zero and unit standard deviation, and this scaling factor is saved as part of the network object used by the realtime detector.
-These two normalisation steps provide a set of inputs that are more
-robust to outliers and less likely to produce false positives during 
-silence when evaluated against other normalisation schemes, such as 
-linear or L2 normalisation.
 
 \subsubsection{Building the training set}
 
-The neural network's training set is created in the typical fashion:
+The training set is created in the typical fashion:
 the rectangular $|F|\times |T|$ recognition region in the spectrogram is
-simply reshaped into a vector of length $|F||T|$. The frequency range is constant, and every possible time interval of length $|T|$ is converted into a training input vector.
+simply reshaped into a vector of length $|F||T|$. The frequency range is constant, and every possible time interval of length $|T|$ at time $t$ is converted into a training input vector $x_t$.
 
-Training targets are, roughly, 1 if the input vector comes from the
-target time, 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
+Training targets $y_t$ are vectors with one element for each desired detection syllable.  That element is, roughly, 1 if the input vector comes from the
+target time ($t=t^*$), 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
 alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the target
 in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
@@ -321,6 +310,27 @@ examples that include silence, cage noise, non-song vocalisations, and
 perhaps songs from other birds.  We have found that training with
 as low as a 1:1 ratio of non-song to song yields excellent results,
 although this will depend on the makeup of the non-song data.
+
+\subsubsection{Normalisation}
+
+To accommodate differences in amplitude due to changes in the relative position between the microphone and bird or other
+variations in recording, the incoming signal is normalised in order to ensure that the 
+detector is sensitive only to the relative spectral content.  We settled upon the following two-step normalisation scheme. First, each spectral time-frequency window is normalised so that the content of that window has mean $\mu=0$ and  standard deviation $\sigma=1$: after each time-frequency window is reshaped into a vector $x_t$, it is normalised using Matlab's {\tt zscore} function $z = (x - \mu) / \sigma$. This eliminates relative differences in song
+amplitude due to microphone position or line levels. Next, each time-frequency point throughout the training set is scaled so that the values of that point across the whole training set have mean zero and unit standard deviation by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd} , and this scaling factor is saved as part of the network object used by the realtime detector so that it may be applied to unseen data during runtime.
+These two normalisation steps provide a set of inputs that are more
+robust to outliers and less likely to produce false positives during 
+silence when evaluated against other normalisation schemes, such as 
+linear or L\textsubscript{2} normalisation.
+
+\subsubsection{Neural Networks}
+
+While any learned classifier might suffice, we chose a two-layer feedforward neural network.  In brief, our network takes an input vector $x_t$---as described above---to an output vector $y_t$, and when any element of $y_t$ is above a threshold (described below), the detector reports a detection event.  The network uses two matrices of weights, $W_0$ and $W_ 1$.  The first takes the input $x_t$ to an intermediate stage---the ``hidden layer'' vector.  To each element of this vector is applied a nonlinear squashing function such as {\tt tanh}, and then the second weight matrix $W_1$ is applied.  This produces output $y_t$:
+\begin{equation*}
+  y_t = W_2 \cdot \tanh (W_1 \cdot x_t)
+\end{equation*}
+The elements of each matrix are learned by back-propagation of errors over a training set.  A more detailed explanation of neural networks may be found in \cite{hkp}.
+
+Essentially, after training, the network is available in the form of the two matrices $W_0$ and $W_1$, and running the network consists of two matrix multiplications and the application of the squashing function.\marginpar{I've left out bias terms, and played fast and loose with notation post-normalisation.  Ok?}
 
 \subsubsection{Training the network}
 
@@ -346,7 +356,7 @@ going to 0.
 
 \subsubsection{Computing optimal output thresholds}
 \label{sec:optimalthresholds}
-After the network is trained, outputs of the classifier for any input
+After the network is trained, outputs of the network for any input
 are now available, and will be in (or, due to noisy inputs and imperfect training, close to) the
 interval (0, 1). We must choose a threshold above which the output is
 considered a positive detection. Finding the optimal threshold
