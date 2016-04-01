@@ -255,7 +255,7 @@ This method makes the following contributions:
 \subsection{Learning a detector}
 
 We begin with a few hundred time-aligned recordings of a given bird's
-song.  Time-alignment is described in \cite{Poole2012}.
+song.  The recordings were made inside a sound-isolating chamber in which was mounted a recording microphone.  Time-alignment is described in \cite{Poole2012}.
 
 The spectrogram is computed at regular intervals---the useful range seems to be roughly 1--5
 milliseconds, which we refer to as the frame interval
@@ -740,6 +740,8 @@ This syllable detector is appropriate for zebra finch song, and although our tes
 Although there are differences, the Swift+serial detector and the LabView implementation are roughly comparable in performance.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of debugging LabView programmes.  With serial output, Matlab's performance is good, although its buffer handling is sensitive to system load.
 
 Due to the randomness of neural network initialisation and training song presentation, multiple training runs yield different networks.  We found that for difficult syllables, the training process would sometimes yield a network that performed unusually poorly, but that it was easy to spot these networks by their performance on the test audio file, and re-train when necessary.
+
+The song presented here was recorded with a fixed microphone mounted inside the cage.  We found that higher accuracy is achieved when a microphone is instead mounted on the bird's head, which maintains volume and reduces changes in timbre as the bird moves.
 
 A common experimental paradigm requires detecting the frequency of syllables.  Many pitch detection techniques rely on the spectrum, which incurs no additional computational cost here since it is already available.  For example, \cite{Canopoli2014} achieved good results with the Harmonic Product Spectrum algorithm \cite{Noll1970}.
 
