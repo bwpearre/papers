@@ -313,13 +313,14 @@ although this will depend on the makeup of the non-song data.
 
 \subsubsection{Normalisation}
 
-To accommodate differences in amplitude due to changes in the relative position between the microphone and bird or other
-variations in recording, the incoming signal is normalised in order to ensure that the 
-detector is sensitive only to the relative spectral content.  We settled upon the following two-step normalisation scheme. First, each spectral time-frequency window $x_t$ is normalised (referred to here as $\hat{x}_t$) so that the content of that window has mean $\mu_{\hat{x}_t}=0$ and  standard deviation $\sigma_{\hat{x}_t}=1$: after each time-frequency window is reshaped into a vector $x_t$, it is normalised using Matlab's {\tt zscore} function $\hat{x}_t = (x_t - \mu_{x_t}) / \sigma_{x_t}$. This eliminates relative differences in song
-amplitude due to microphone position or line levels. Next, each element of the time-frequency window vector $\hat{x}^i_t\forall t$---one time-frequency point $\hat{x}^{i}$---is scaled to $\xi^i$ in the same way, so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  In training, this is accomplished by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and this scaling factor is saved as part of the network object used by the realtime detector so that it may be applied to unseen data during runtime.
+In order to eliminate differences in amplitude due to changes in the relative position between the microphone and bird or other
+variations in recording, leaving only relative spectral content, incoming data are normalised before being passed to the neural network.  We settled upon the following two-step normalisation scheme.
+
+Let $i$ be an index into the elements of the frequency-time window $x$.  Each such window is available at time $t$.  In the first normalisation step, at each time $t$ the time-frequency-window vector $x_t$ is normalised over its elements $i$ using Matlab's {\tt zscore} function $\hat{x}_t = (x_t - \mu_{x_t}) / \sigma_{x_t}$, so that the content of each window has mean $\mu_{\hat{x}_t}=0$ and  standard deviation $\sigma_{\hat{x}_t}=1$.  Next, each element $i$ of the time-frequency window vector---each time-frequency point $\hat{x}^{i}$---is normalised across $t$ in the training set in the same way: $\xi^i = (\hat{x}^i - \mu_{\hat{x}^i})/\sigma_{\hat{x}^i}$, so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  This is accomplished during training by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and the scaling transform is saved as part of the network object used by the realtime detector so that it may be applied to unseen data at runtime.
+
 These two normalisation steps provide a set of inputs that are more
 robust to outliers and less likely to produce false positives during 
-silence when evaluated against other normalisation schemes, such as 
+silence than other normalisation schemes, such as 
 linear or L\textsubscript{2} normalisation.
 
 \subsubsection{Neural Networks}
