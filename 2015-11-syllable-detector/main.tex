@@ -219,7 +219,7 @@ Despite the power and versatility of such experiments, there is no standard syll
 \item[Cost:] What are the hardware and software requirements?
 \end{description}
 
-A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As access to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filter bank techniques, it is not strictly a syllable detector but rather a pitch and timbre detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  It reported a latency of 4.3 ms, but further implementation and performance details are not available.  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8-ms segments.  It reported a jitter of 4.5 ms, and false-negative and false-positive rates of up to 2\% and 4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and equipped with a National Instruments data acquisition card, it boasts a hardware-only (not accounting for the time taken to compute a match with a syllable) latency and jitter of just a few microseconds, and the detection computation they use should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4\% and 7\% for zebra finches and Bengalese finches respectively, measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
+A variety of syllable-triggering systems have been used, but few have been documented or characterised in detail.  In 1999, \cite{Leonardo1999}  used groups of IIR filters with hand-tuned logical operators.  Their system had a latency of 50 or 100 milliseconds (ms), and they do not report on jitter or accuracy.  As access to computational resources has improved, approaches have changed: in 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them on a Tucker-Davis Technologies digital signal processor.  They report a latency of around 4 ms, but as with other filter bank techniques, it is not strictly a syllable detector but rather a pitch and timbre detector---it cannot identify a frequency sweep, or distinguish a short chirp from a long one---and thus requires careful selection of target syllables.  Furthermore, the method is neither inexpensive nor, based on our experience with a similar technique, accurate.  \cite{Keller2009} applied a neural network to a spectral image of song.  They report a latency of 4.3 ms, but further implementation and performance details are not available.  In 2011, \cite{Warren2011} matched spectral templates to stable portions of syllables in 8-ms segments.  They report a jitter of 4.5 ms, and false-negative and false-positive rates of up to 2\% and 4\%, respectively.  Hardware requirements and ease of use were not reported.  In 2013, \cite{Skocik2013} described in detail a system that matches spectral images of template syllables using a correlation coefficient.  With a fast desktop (Intel i7 six-core) running Linux and equipped with a National Instruments data acquisition card, it boasts a hardware-only (not accounting for the time taken to compute a match with a syllable) latency and jitter of just a few microseconds, and the detection computation they use should not much increase that.  Drawbacks are that some hand-tuning is still required, and that they report false-negative rates around 4\% and 7\% for zebra finches and Bengalese finches respectively, measured on a small dataset.  In much other work, an allusion is made to a syllable detector, but no further information is provided.
 
 We developed a standalone detector that learns to match moments in the
 song using a neural network applied to the song spectrogram, and
@@ -324,13 +324,13 @@ linear or L\textsubscript{2} normalisation.
 
 \subsubsection{Neural Networks}
 
-While any learned classifier might suffice, we chose a two-layer feedforward neural network.  In brief, our network takes an input vector $\xi_t$---as described above---to an output vector $y_t$, and when any element of $y_t$ is above a threshold (described below), the detector reports a detection event.  The network uses two matrices of weights, $W_0$ and $W_ 1$.  The first takes the input $\xi_t$ to an intermediate stage---the ``hidden layer'' vector.  To each element of this vector is applied a nonlinear squashing function such as {\tt tanh}, and then the second weight matrix $W_1$ is applied.  This produces output $y_t$:
+While any learned classifier might suffice, we chose a two-layer feedforward neural network.  In brief, our network takes an input vector $\xi_t$---as described above---and produces an output vector $y_t$, and when any element of $y_t$ is above a threshold (described below), the detector reports a detection event.  The network uses two matrices of weights, $W_0$ and $W_1$, and two vectors of biases, $b_0$ and $b_1$.  The first takes the input $\xi_t$ to an intermediate stage---the ``hidden layer'' vector.  To each element of this vector is applied a nonlinear squashing function such as {\tt tanh}, and then the second weight matrix $W_1$ is applied.  This produces output $y_t$:
 \begin{equation*}
-  y_t = W_2 \cdot \tanh (W_1 \cdot \xi_t)
+  y_t = W_1 \cdot \tanh (W_0 \cdot \xi_t + b_0) + b_1
 \end{equation*}
 The elements of each matrix are learned by back-propagation of errors over a training set.  A more detailed explanation of neural networks may be found in \cite{hkp}.
 
-Essentially, after training, the network is available in the form of the two matrices $W_0$ and $W_1$, and running the network consists of two matrix multiplications and the application of the squashing function.\marginpar{I've left out bias terms and some other details.  Ok?}
+Essentially, after training, the network is available in the form of the two matrices $W_0$ and $W_1$ and the two vectors $b_0$ and $b_1$, and running the network consists of two matrix multiplications, two vector additions and the application of the squashing function.\marginpar{I've left some other details.  Ok?}
 
 \subsubsection{Training the network}
 
@@ -339,10 +339,9 @@ a variety of feedforward neural network geometries, from simple
 1-layer perceptrons to geometries with many hidden
 nodes, as well as autoencoders. Perhaps surprisingly, even the former yields excellent results
 on many syllables, but a 2-layer perceptron with a very small hidden
-layer---with a unit count 4 times the number of target
-syllables, or even fewer---was a good compromise between accuracy and training
-speed. Various other neural network geometries could be tried, as well
-as any other classifier that executes quickly.  For more variable
+layer---with a unit count 2-4 times the number of target
+syllables---was a good compromise between accuracy and training
+speed. For more variable
 songs, deep structure-preserving networks may be more appropriate, but
 they are slow to train and unnecessary for zebra finch song.
 
@@ -447,7 +446,7 @@ adjusting the audio buffer sizes.
 
 This implementation requires special software and hardware: LabView from National Instruments, and a data acquisition card---we use the National Instruments PCI-6251 card on a PC with an Intel Core i5-4590 processor at 3.7GHz (a relatively low-end machine) with 32 gigabytes of RAM, running Microsoft Windows 8.1 Pro.
 
-This implementation has several drawbacks: it requires Windows and expensive hardware and software, it requires Matlab savefile versions no more recent than 'v7', and due to the programming language it is difficult to modify and debug---indeed, a persistent bug in our implementation currently renders it substantially less accurate than the other detector implementations on some syllables. However, our test configuration usually achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
+This implementation has several drawbacks: it requires Windows and expensive hardware and software and due to the programming language it is difficult to modify and debug---indeed, a persistent bug in our implementation currently renders it substantially less accurate than the other detector implementations on some syllables. However, our test configuration usually achieved excellent performance, and further gains should be possible if the implementation were retargeted onto FPGA hardware---which would have the additional benefit of providing deterministic ``hard realtime'' guarantees---or just run on a faster desktop system.
 
 \subsubsection{Matlab}
 
@@ -457,13 +456,16 @@ Because of how Matlab's DSP toolbox interfaces with audio hardware, there is a d
 
 The most versatile implementation, Matlab runs on a variety of hardware and operating systems, and is perhaps the easiest to modify.  While it did not perform as well on our test system as the other implementations, the convenience may outweigh the slight timing performance penalty for some experiments.  Key to minimising jitter is the size of the audio buffer: on a 2014 Mac Mini running Matlab 2015b the smallest buffer size that did not result in read overruns was about 4 ms.
 
+Similar to the Swift implementation, it is also possible to modify the Matlab implementation to generate the TTL pulse from a microcontroller (Arduino) controlled via a serial over USB interface. This eliminates the double buffer required when sending triggers via the audio interface, reducing latency in half.
+
 \subsection{Quantification}
 \label{sec:quantify}
 
 We divided the data into training and test sets.  For the results reported in the following section, the training set consisted of 1000 instances of the song of one bird and 1000 instances of non-song data.  Our test set consisted of an additional 1818 iterations of the bird's song and 1818 more instances of non-song data.
 
-The Matlab neural network toolbox further divides our ``training'' set into internal training, validation, and test sets.  We did not stray from the toolbox's default values, and do not discuss Matlab's internal subdivision of our training set.
+The Matlab neural network toolbox further divides our ``training'' set into internal training, validation, and test sets.  We did not stray from the toolbox's default values, and do not discuss Matlab's internal subdivision of our training set. % The test set generated by Matlab is wasted, we probably should have zeroed that out...
 
+% is it worth mentioning that the ground truth is not perfectly reliable? something akin to "(albeit with minor variations due to the alignment process used \cite{Poole2012})"
 Because the dataset consists of temporally aligned songs, ground truth is available for each song, and thus the detector can be checked by
 presenting the recorded training songs as well as the canonical
 detection events. To this end, besides the trained network object, our
@@ -541,7 +543,7 @@ Mean latency is then given as the halfway point of that detection
 sigmoid. It is a helpful number, but not a critical one, since a
 detector with high but constant latency can often be trained to trigger at a
 point somewhat before the true moment of interest, especially given the stereotypy of zebra finch song.  Often more
-important is latency jitter: how much random variability is there in
+important is latency jitter: how much variability is there in
 the latency?
 
 We obtain both of these numbers by performing a maximum-likelihood fit of a Gaussian distribution to the timing data obtained from the oscilloscope.  We refer to the distribution's mean as latency and its standard deviation as jitter.
@@ -605,7 +607,7 @@ The detector's output for three of these syllables is shown in \fig{fig:detectio
 
 \subsection{Accuracy}
 
-We allowed our training software to allocate our default of 4 hidden units per syllable, and sampled a new FFT every 1.5 ms.  Because our timing test files are designed for our stereo playback software, allowing only one channel for the ground-truth pulse, we trained one detector for each syllable for the following results---but note that accuracy is generally slightly higher if one network is trained on multiple syllables.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
+We allowed our training software to allocate our default of 4 hidden units per syllable, and sampled a new FFT every 1.5 ms.  Because our timing test files are designed for our stereo playback software, allowing only one channel for the ground-truth pulse, we trained one detector for each syllable for the following results.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
 %Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
 Typical confusion matrices for these syllables are:
 
@@ -652,6 +654,8 @@ Typical confusion matrices for these syllables are:
   neg & 0.284\% & 99.99448\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
+
+% this sentence is easy to miss in the paper, it might make sense to move it before the table
 The accuracies for the synthetic $\delta$-function songs were always 100\%.
 
 \subsection{Timing}
@@ -733,7 +737,7 @@ This syllable detector is appropriate for zebra finch song, and although our tes
   false positive rates can be well under 0.5\% and 0.01\% respectively, and trading these two numbers off against each other is through a single relative-cost parameter.
 \item Latency is generally under a millisecond, with jitter around 2 ms.
 \item Works on a wide range of target syllables using the default values described here, generally eliminating the need for hand-tuning.
-\item Runs easily fast enough for syllable-modification experiments on inexpensive consumer-grade hardware, although we recommend that the training phase be run on a fast desktop system with 32 GB of RAM.
+\item Runs fast enough for syllable-modification experiments on inexpensive consumer-grade hardware, although we recommend that the training phase be run on a fast desktop system with 32 GB of RAM.
 \item A single detector can generate different target pulses for multiple syllables at almost no additional computational cost during runtime, although training time will increase.
 \end{itemize}
 
