@@ -272,9 +272,9 @@ file.
 \subsubsection{Recognition region}
 
 The neural network uses a contiguous set of the most recent timesteps (frames) from the song
-spectrogram.  The frequencies $F$ and duration
+spectrogram.  The set of frequencies $F$ and frames
 $T$ of this recognition region may be chosen in order to contain
-unique features of the target syllable and surrounding areas.  We have found that a 30-ms time window of frequencies spanning 1--8 kHz works well for most syllables.
+unique features of the target syllable and surrounding areas.  We have found that a 30-ms time window (which will yield $|T|=\lfloor 30\mbox{ ms}/t_f\rceil$ frames) of frequencies spanning 1--8 kHz works well for most syllables.
 
 %% \subsubsection{Song micro-realignment}
 
@@ -293,8 +293,8 @@ unique features of the target syllable and surrounding areas.  We have found tha
 \subsubsection{Building the training set}
 
 The training set is created in the typical fashion:
-the rectangular $|F|\times |T|$ recognition region in the spectrogram is
-simply reshaped into a vector of length $|F||T|$. The frequency range is constant, and every possible time interval of length $|T|$ at time $t$ is converted into a training input vector $x_t$.
+at each time $t$ the rectangular $|F|\times |T|$ recognition region in the spectrogram is
+simply reshaped into a vector $x_t$ of length $|F||T|$. The frequency range is constant, and every possible time interval of length $|T|$ at time $t$ is converted into a training input vector $x_t$.  These are placed into a training matrix, $X$, in which each column is one $x_t$, and each row is one ``pixel'' of the spectrogram image.
 
 Training targets $y_t$ are vectors with one element for each desired detection syllable.  That element is, roughly, 1 if the input vector comes from the
 target time ($t=t^*$), 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
@@ -316,7 +316,7 @@ although this will depend on the makeup of the non-song data.
 In order to eliminate differences in amplitude due to changes in the relative position between the microphone and bird or other
 variations in recording, leaving only relative spectral content, incoming data are normalised before being passed to the neural network.  We settled upon the following two-step normalisation scheme.
 
-Let $i$ be an index into the elements of the frequency-time window $x$.  Each such window is available at time $t$.  In the first normalisation step, at each time $t$ the time-frequency-window vector $x_t$ is normalised over its elements $i$ using Matlab's {\tt zscore} function $\hat{x}_t = (x_t - \mu_{x_t}) / \sigma_{x_t}$, so that the content of each window has mean $\mu_{\hat{x}_t}=0$ and  standard deviation $\sigma_{\hat{x}_t}=1$.  Next, each element $i$ of the time-frequency window vector---each time-frequency point $\hat{x}^{i}$---is normalised across $t$ in the training set in the same way: $\xi^i = (\hat{x}^i - \mu_{\hat{x}^i})/\sigma_{\hat{x}^i}$, so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  This is accomplished during training by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and the scaling transform is saved as part of the network object used by the realtime detector so that it may be applied to unseen data at runtime.
+In the first normalisation step, each recognition region vector $x_t$---during training, each column of the training matrix $X$---is normalised using Matlab's {\tt zscore} function $\hat{x}_t = (x_t - \mu_{x_t}) / \sigma_{x_t}$, so that the content of each window has mean $\mu_{\hat{x}_t}=0$ and  standard deviation $\sigma_{\hat{x}_t}=1$.  Next, each element $i$ of the time-frequency window vector is normalised across $t$---in the training set, each row of the training set $X$---in the same way: $\xi^i = (\hat{x}^i - \mu_{\hat{x}^i})/\sigma_{\hat{x}^i}$, so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  This is accomplished during training by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and the scaling transform is saved as part of the network object used by the realtime detector so that it may be applied to unseen data at runtime.
 
 These two normalisation steps provide a set of inputs that are more
 robust to outliers and less likely to produce false positives during 
