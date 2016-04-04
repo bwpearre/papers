@@ -1,3 +1,12 @@
+% Recognition region at one time but consisting of many times
+% sigma vs other-sigma (shotgun)?
+% Column of training matrix =/= column of spectrogram
+% zscore question for Jeff
+% What does each normalisation step do?
+% ``detection point 4'', ``delta-function detection''
+
+
+
 \documentclass[10pt,letterpaper]{article}
 \usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
 
@@ -252,14 +261,33 @@ This method makes the following contributions:
 \section{Materials and Methods}
 \label{sec:method}
 
+
 \subsection{Learning a detector}
 
-We begin with a few hundred recordings of a given bird's
-song, in this case made inside a sound-isolating chamber in which was mounted a recording microphone (Audio-Technica AT803).  The songs are time-aligned as described in \cite{Poole2012}.
+We begin with a few hundred recordings of a given bird's song, in this
+case made inside a sound-isolating chamber in which was mounted a
+recording microphone (Audio-Technica AT803).  The songs are
+time-aligned as described in \cite{Poole2012}.
 
-The spectrogram is computed at regular intervals---the useful range seems to be roughly 1--5
-milliseconds, which we refer to as the frame interval
-$t_f$.  The target frame interval may not line up with the sample rate, especially on consumer audio hardware that operates at 44.1 kHz, so the actual frame interval may be different from the target.  For example, at 44.1 kHz a 1 ms target frame interval requires a new FFT every 44.1 samples.  This is rounded to 44 samples, resulting in $t_f=\lfloor 44.1 \rceil / 44.1 \approx 0.9977$ ms.
+\begin{figure}
+  \includegraphics[width=\textwidth]{6syllables}
+  \caption{This image was made by superposing the spectra of our 2818 aligned songs.  The detection points are shown as red lines, with the recognition regions (30 ms $\times$ 1--8 kHz) marked as rectangles.}
+  \label{fig:song}
+\end{figure}
+
+The spectrogram is computed at regular intervals---the useful range
+seems to be roughly 1--5 milliseconds, which we refer to as the frame
+interval $t_f$.  At each frame, a spectrogram is computed from the
+most recent 256 audio samples, and the result is stored in an FFT
+buffer.  Over time, the successive spectra will look something
+like \fig{fig:song}.
+
+The target frame interval may not line up with the sample rate,
+especially on consumer audio hardware that operates at 44.1 kHz, so
+the actual frame interval may be different from the target.  For
+example, at 44.1 kHz a 1 ms target frame interval requires a new FFT
+every 44.1 samples.  This is rounded to 44 samples, resulting in
+$t_f=\lfloor 44.1 \rceil / 44.1 \approx 0.9977$ ms.
 
 One or more moments during the song must be chosen.  Our interface
 presents the time-aligned spectrogram averaged over training songs,
@@ -268,13 +296,20 @@ training set from the song data, train the network, compute optimal
 output unit thresholds, and save the network object and an audio test
 file.
 
-
 \subsubsection{Recognition region}
 
-The neural network uses a contiguous set of the most recent timesteps (frames) from the song
-spectrogram.  The set of frequencies $F$ and frames
-$T$ of this recognition region may be chosen in order to contain
-unique features of the target syllable and surrounding areas.  We have found that a 30-ms time window (which will yield $|T|=\lfloor 30\mbox{ ms}/t_f\rceil$ frames) of frequencies spanning 1--8 kHz works well for most syllables.
+
+The neural network's inputs are the FFT values from a rectangular region of the spectrogram
+covering some range of frequency values for some number of time
+frames.
+
+---the same frequency range is used for each point in time.  The region consists of the FFT
+values over some range of frequencies $F$ (e.g. 1--8 Hz) and frames
+$T = \{$ $t$, $t-t_f$, $t-{2t_f}$, $t-{3t_f}\ldots$ $t-{|T|}+1\}$) , chosen
+in order to contain unique features of the target syllable and
+surrounding areas.  We have found that a 30-ms time window (which will
+yield $|T|=\lfloor 30\mbox{ ms}/t_f\rceil$ frames) of frequencies
+spanning 1--8 kHz works well for most syllables.
 
 %% \subsubsection{Song micro-realignment}
 
@@ -292,9 +327,13 @@ unique features of the target syllable and surrounding areas.  We have found tha
 
 \subsubsection{Building the training set}
 
-The training set is created in the typical fashion:
-at each time $t$ the rectangular $|F|\times |T|$ recognition region in the spectrogram is
-simply reshaped into a vector $x_t$ of length $|F||T|$. The frequency range is constant, and every possible time interval of length $|T|$ at time $t$ is converted into a training input vector $x_t$.  These are placed into a training matrix, $X$, in which each column is one $x_t$, and each row is one ``pixel'' of the spectrogram image.
+The training set is created in a fashion typical for neural networks:
+at each time frame $t$ the rectangular $|F|\times |T|$ recognition
+region in the spectrogram is reshaped into a vector $x_t$, which will
+have length $|F||T|$.  These vectors are placed into a training
+matrix, $X$, such that each column holds the contents of the
+recognition region at one value of $x_t$, and each row is one
+``pixel'' of the recognition region.
 
 Training targets $y_t$ are vectors with one element for each desired detection syllable.  That element is, roughly, 1 if the input vector comes from the
 target time ($t=t^*$), 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
@@ -577,15 +616,9 @@ Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  T
 \label{sec:results}
 
 \begin{figure}
-  \includegraphics[width=\textwidth]{6syllables}
-  \caption{This image was made by superposing the spectra of our 2818 aligned songs.  The detection points are shown as red lines, with the recognition regions (30 ms $\times$ 1--8 kHz) marked as rectangles.}
-  \label{fig:song}
-\end{figure}
-
-\begin{figure}
   \includegraphics[width=\textwidth]{detection_raster}
   \caption{Each plot shows one network output unit's responses to all
-    2818 presentations of the song shown ing \fig{fig:song}.  For
+    2818 presentations of the song shown in \fig{fig:song}.  For
     simplicity, we show only the syllables at 200, 300, and 400 ms. The
     horizontal axis is time relative to the beginning of the aligned
     song, and the vertical axis is an index for the 2818 single song
@@ -687,8 +720,8 @@ Syllable choice impacts detector performance, but despite the variety of syllabl
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
   Detector & Latency & Jitter \\ 
-  \hline   Ideal & $-0.8\pm 0.3$ s & $2.1\pm 0.1$ s \\
-  Swift+serial & $0.0\pm 0.6$ s & $2.0\pm 0.1$ s
+  \hline   Ideal & $-0.8\pm 0.3$ ms & $2.1\pm 0.1$ ms \\
+  Swift+serial & $0.0\pm 0.6$ ms & $2.0\pm 0.1$ ms
 \end{tabular}
 \vspace{8pt}\par\noindent
 The negative latency is due to the way in which the network responds to the song through time: as the recognition region looks increasingly similar to the trained match, the network's evaluation of similarity rises, and will generally cross the triggering threshold before it reaches its maximum value.
@@ -721,7 +754,7 @@ Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows 
 \vspace{8pt}
 \begin{tabular}{l|c|c|c| c}
   & \multicolumn{2}{c}{$\delta$-syllable} & \multicolumn{2}{c}{Bird: 300 ms} \\
-  Detector & Latency & Jitter & Latency & Jitter \\
+  Detector & Latency (ms) & Jitter (ms) & Latency (ms) & Jitter (ms) \\
   \hline
   Ideal & 0.66 & 0.38 & -1.0 & 2.0 \\
   LabView & 1.5 & 0.69 & -0.18 & 2.4 \\
@@ -760,7 +793,7 @@ In feedback experiments such as frequency- or duration-shifting, vocal output ch
 
 \section{Acknowledgments}
 We would like to thank William A.~Liberti for his improvements to the draft.
-This work was funded by someone.\marginpar{But by whom?}
+This work was funded by NIH grants 5R01NS089679-02 and 5U01NS090454-02.
 
 \appendix
 
