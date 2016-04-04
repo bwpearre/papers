@@ -667,7 +667,7 @@ We evaluate variability in timing performance across three variables: FFT frame 
 
 \begin{figure}
   \includegraphics[width=\textwidth]{TimingVsFrame}
-  \caption{Timing varies as the FFT frame interval changes.  Here we show results for the ideal detector and the LabView and Swift+serial implementations, for the constructed $\delta$-syllable and for the real bird song at 300 ms.}
+  \caption{Timing varies as the FFT frame interval changes.  Here we show results for the ideal detector and the LabView and Swift+serial implementations, for the constructed $\delta$-syllable and for the real bird song at 300 ms.  The lines show latency, with errorbars reprenting jitter.  Points have been shifted slightly for clarity; original positions are [0.5 1 1.5 2 4] ms.}
   \label{fig:TimingVsFrame}
 \end{figure}
 
@@ -676,8 +676,10 @@ Detector latency and jitter depend on the FFT frame rate.  Our 1.5-ms--frame def
 \subsubsection{Syllable choice}
 
 \begin{figure}
-  \includegraphics[width=\textwidth]{TimingVsSyllable}
-  \caption{Timing data for our 6 test syllables, for the ideal and the Swift+serial detectors, with an FFT frame rate of 1.5 ms.}
+  \begin{center}
+    \includegraphics[width=8cm]{TimingVsSyllable}
+  \end{center}
+  \caption{Timing data for our 6 test syllables, for the ideal and the Swift+serial detectors, with an FFT frame rate of 1.5 ms.  Point centres show latency; error bars show jitter.  Centres have been shifted slightly for clarity; original positions are [150, 200, 250, 300, 350, 400] ms.}
   \label{fig:TimingVsSyllable}
 \end{figure}
 
@@ -696,8 +698,10 @@ By choosing easy syllables, jitter can be reduced, although it will never be muc
 \subsubsection{Detector Implementations}
 
 \begin{figure}
-  \includegraphics[width=\textwidth]{TimingVsDetector}
-  \caption{The different detectors for the constructed $\delta$-syllable and for the real bird song at 300 ms.}
+  \begin{center}
+    \includegraphics[width=8cm]{TimingVsDetector}
+  \end{center}
+  \caption{The different detectors for the constructed $\delta$-syllable and for the real bird song at 300 ms.  Point centres show latency; error bars show jitter.}
   \label{fig:TimingVsDetector}
 \end{figure}
 
