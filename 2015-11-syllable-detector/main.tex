@@ -1,12 +1,3 @@
-% Recognition region at one time but consisting of many times
-% sigma vs other-sigma (shotgun)?
-% Column of training matrix =/= column of spectrogram
-% zscore question for Jeff
-% What does each normalisation step do?
-% ``detection point 4'', ``delta-function detection''
-
-
-
 \documentclass[10pt,letterpaper]{article}
 \usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
 
@@ -275,23 +266,23 @@ time-aligned as described in \cite{Poole2012}.
   \label{fig:song}
 \end{figure}
 
+Audio is recorded at some sample rate (for example, 44.1 kHz), and new data are appended to a circular audio buffer that retains enough to compute the spectrogram (usually 256 samples).
+
 The spectrogram is computed at regular intervals---the useful range
 seems to be roughly 1--5 milliseconds, which we refer to as the frame
-interval $t_f$.  At each frame, a spectrogram is computed from the
-most recent 256 audio samples, and the result is stored in an FFT
-buffer.  Over time, the successive spectra will look something
+interval $t_f$.  At each frame, a spectrum is computed from the
+most recent 256 audio samples, and the most recent results are stored in a second circular buffer.  For example, if $t_f=1$ ms and the recording sample rate is 40 kHz, then in order to compute a new FFT, $40000\cdot 0.001=40$ new audio samples must be appended to the audio buffer, the FFT is computed using the most recent 256 samples in that buffer, and the result is appended to the FFT buffer.  Over time, the successive spectra will look something
 like \fig{fig:song}.
 
-The target frame interval may not line up with the sample rate,
-especially on consumer audio hardware that operates at 44.1 kHz, so
-the actual frame interval may be different from the target.  For
-example, at 44.1 kHz a 1 ms target frame interval requires a new FFT
+When using consumer audio hardware that operates best at 44.1 kHz, the target frame interval may not line up with the sample rate, so
+the actual frame interval may be different from the indended.  For
+example, at 44.1 kHz a 1-ms frame interval requires a new FFT
 every 44.1 samples.  This is rounded to 44 samples, resulting in
 $t_f=\lfloor 44.1 \rceil / 44.1 \approx 0.9977$ ms.
 
-One or more moments during the song must be chosen.  Our interface
+One or more target moments during the song must be chosen.  Our interface
 presents the time-aligned spectrogram averaged over training songs,
-and requires manual input of the target times.  Then we assemble the
+and requires manual input of the target times, $t^*$.  Then we assemble the
 training set from the song data, train the network, compute optimal
 output unit thresholds, and save the network object and an audio test
 file.
@@ -299,17 +290,13 @@ file.
 \subsubsection{Recognition region}
 
 
-The neural network's inputs are the FFT values from a rectangular region of the spectrogram
-covering some range of frequency values for some number of time
-frames.
-
----the same frequency range is used for each point in time.  The region consists of the FFT
-values over some range of frequencies $F$ (e.g. 1--8 Hz) and frames
-$T = \{$ $t$, $t-t_f$, $t-{2t_f}$, $t-{3t_f}\ldots$ $t-{|T|}+1\}$) , chosen
-in order to contain unique features of the target syllable and
-surrounding areas.  We have found that a 30-ms time window (which will
-yield $|T|=\lfloor 30\mbox{ ms}/t_f\rceil$ frames) of frequencies
+The neural network's inputs are the FFT values from a rectangular
+region of the spectrogram covering a predefined range of frequency values $F$ (for example, 1--8 kHz) at
+some number of the most recent frames $n_f$.  Any time $t$ falls within one of the frames, $\tau(t)$, and $t-t_f$ falls within the previous frame.  The recognition region that the neural network receives as input consists of the spectrogram values over $F$ at $\tau(t)$ and those from the contiguous set of recent frames: $T = \{$ $\tau(t)$, $\tau(t-t_f)$, $\tau(t-{2t_f})\ldots$ $\tau(t-n_ft_f)\}$.  We have found that a 30-ms time window (which will
+yield $n_f = |T|=\lfloor 30\mbox{ ms}/t_f\rceil$ frames) of frequencies
 spanning 1--8 kHz works well for most syllables.
+
+Six examples of chosen target moments in the song, and their corresponding recognition regions $F$ and $T$, are shown in \fig{fig:song}.
 
 %% \subsubsection{Song micro-realignment}
 
@@ -329,18 +316,17 @@ spanning 1--8 kHz works well for most syllables.
 
 The training set is created in a fashion typical for neural networks:
 at each time frame $t$ the rectangular $|F|\times |T|$ recognition
-region in the spectrogram is reshaped into a vector $x_t$, which will
-have length $|F||T|$.  These vectors are placed into a training
-matrix, $X$, such that each column holds the contents of the
-recognition region at one value of $x_t$, and each row is one
-``pixel'' of the recognition region.
+region in the spectrogram as of time $t$ is reshaped into a vector $\xi_t$, which will
+have length $|F||T|$ and contain the spectra in $F$ taken at all of the times in the set $T$: from $\tau(t-n_ft_f)$ to $\tau(t)$.  These vectors are placed into a training
+matrix, $\Xi$, such that each column $\xi_t$ holds the contents of the
+recognition region---containing multiple columns from the spectrogram---as of one value of $t$
 
 Training targets $y_t$ are vectors with one element for each desired detection syllable.  That element is, roughly, 1 if the input vector comes from the
 target time ($t=t^*$), 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
 alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the target
 in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
-smoothing kernel around the target time with $\sigma\approx 2$ ms serves well.
+smoothing kernel around the target time with a standard deviation of 2 ms serves well.
 
 With inputs well outside the space on which a neural network has been
 trained, its outputs will be essentially random. In order to reduce
@@ -352,10 +338,11 @@ although this will depend on the makeup of the non-song data.
 
 \subsubsection{Normalisation}
 
-In order to eliminate differences in amplitude due to changes in the relative position between the microphone and bird or other
-variations in recording, leaving only relative spectral content, incoming data are normalised before being passed to the neural network.  We settled upon the following two-step normalisation scheme.
+In order to present consistent and meaningful inputs to the neural network, we normalise the incoming data stream so that changes in the song structure of the sound are emphasised over changes in volume, and to maximise the effectiveness of the neural network's training algorithm...
 
-In the first normalisation step, each recognition region vector $x_t$---during training, each column of the training matrix $X$---is normalised using Matlab's {\tt zscore} function $\hat{x}_t = (x_t - \mu_{x_t}) / \sigma_{x_t}$, so that the content of each window has mean $\mu_{\hat{x}_t}=0$ and  standard deviation $\sigma_{\hat{x}_t}=1$.  Next, each element $i$ of the time-frequency window vector is normalised across $t$---in the training set, each row of the training set $X$---in the same way: $\xi^i = (\hat{x}^i - \mu_{\hat{x}^i})/\sigma_{\hat{x}^i}$, so that the values of that point across the whole training set have mean $\mu_{\xi^i}=0$ and standard deviation $\sigma_{\xi^i}=1$.  This is accomplished during training by setting Matlab's neural network toolbox training set normalisation scheme to {\tt mapstd}, and the scaling transform is saved as part of the network object used by the realtime detector so that it may be applied to unseen data at runtime.
+The first normalisation step is designed to eliminate differences in amplitude due to changes in the bird's location and other variations in recording.  Each recognition region vector $\xi_t$---during training, each {\em column} of the training matrix $\Xi$---is normalised using Matlab's {\tt zscore} function $\hat{\xi}_t = (\xi_t - \mu_{\xi_t}) / \sigma_{\xi_t}$, so that the content of each window has mean $\mu_{\hat{\xi}_t}=0$ and  standard deviation $\sigma_{\hat{\xi}_t}=1$.
+
+The second step is designed to ensure that the neural network's inputs have a range and distribution for which the training function can easily converge.  Each element $i$ of $\hat{\xi}$ is normalised across the entire training set---each {\em row} of $\Xi$---in the same way: $\check{\xi}^i = (\hat{\xi}^i - \mu_{\hat{\xi}^i})/\sigma_{\hat{\xi}^i}$, so that the values of that point across the whole training set have mean $\mu_{\check{\xi}^i}=0$ and standard deviation $\sigma_{\check{\xi}^i}=1$.  This is accomplished during training by setting Matlab's neural network toolbox normalisation scheme to {\tt mapstd}, and the scaling transform is saved as part of the network object used by the realtime detector so that it may be applied to unseen data at runtime.
 
 These two normalisation steps provide a set of inputs that are more
 robust to outliers and less likely to produce false positives during 
@@ -619,11 +606,11 @@ Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  T
   \includegraphics[width=\textwidth]{detection_raster}
   \caption{Each plot shows one network output unit's responses to all
     2818 presentations of the song shown in \fig{fig:song}.  For
-    simplicity, we show only the syllables at 200, 300, and 400 ms. The
+    simplicity, we show only the syllables $t*^_2$, $t^*_4$, and $t^*_6$. The
     horizontal axis is time relative to the beginning of the aligned
     song, and the vertical axis is an index for the 2818 single song
     presentations. The grey shading shows the total audio energy of
-    song Y at time X. The bar on the left is the same width as the
+    song Y at time T. The bar on the left is the same width as the
     detection window, and its colour code shows training songs
     adjacent to cyan regions and unseen test songs adjacent to red
     regions. For visualisation of the distribution, songs have been
@@ -633,11 +620,11 @@ Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  T
 \end{figure}
 
 
-\fig{fig:song} shows the song for which we present results.  Six example target syllables are shown, at 150, 200, 250, 300, 350, and 400 milliseconds after the beginning of the aligned samples, as indicated by the red lines.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
+\fig{fig:song} shows the song for which we present results.  Six example target trigger points are shown, at 150, 200, 250, 300, 350, and 400 milliseconds after the beginning of the aligned samples, as indicated by the red lines, and referred to henceforth as $t^*_1\ldots t^*_6$ respectively.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
 
-The first two triggers, at 150 and 200 ms, are far from pure tones, but are closer to coloured noise.  They would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  The third and sixth triggers (at 250 and 400 ms) are rich in overtones and contain downward slides with changing timbres.  The fourth trigger, at 300 ms, is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point partway through the syllable demands a detector that can use multiple timesteps.  The fifth trigger, at 350 ms, shows a steady pitch followed by a complex changing tone structure.
+The first two triggers, $t^*_1$ at 150 ms and $t^*_2$ at 200 ms, are far from pure tones, but are closer to coloured noise.  They would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  $t^*_3$ (250 ms) and $t^*_6$ (400 ms) are rich in overtones and contain downward slides with changing timbres.  $t^*_4$ (300 ms) is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point partway through the syllable demands a detector that can use multiple timesteps.  $t^*_5$ (350 ms) shows a steady pitch followed by a complex changing tone structure.
 
-The detector's output for three of these syllables is shown in \fig{fig:detection_raster}.   By sorting according to time of each syllable's detection, the rest of the song is shown in the context of the timing for that moment, giving an intuition of the variability of intrasong timing.
+An example of the detector's output for three of these syllables is shown in \fig{fig:detection_raster}.   By sorting according to time of each syllable's detection, the rest of the song is shown in the context of the timing for that moment, giving an intuition of the variability of intrasong timing.
 
 \subsection{Accuracy}
 
@@ -647,42 +634,43 @@ Typical confusion matrices for these syllables are:
 
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 150 ms} & \multicolumn{2}{c}{True} \\ 
+  $t^*_1$
+  & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
   \hline  Detected pos & 99.96451\% & 0.000298\%\\ 
   neg & 0.0355\% & 99.99970\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 200 ms} & \multicolumn{2}{c}{True} \\ 
+  $t^*_2$ & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
   \hline  Detected pos & 99.92903\% & 0.000596\%\\ 
   neg & 0.0710\% & 99.99940\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 250 ms} & \multicolumn{2}{c}{True} \\ 
+  $t^*_3$ & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
   \hline  Detected pos & 99.68062\% & 0.00194\%\\ 
   neg & 0.319\% & 99.99806\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 300 ms} & \multicolumn{2}{c}{True} \\ 
+  $t^*_4$ & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
   \hline  Detected pos & 99.82257\% & 0.00239\%\\ 
   neg & 0.177\% & 99.99761\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 350 ms} & \multicolumn{2}{c}{True} \\ 
+  $t^*_5$ & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
   \hline  Detected pos & 99.78708\% & 0\\ 
   neg & 0.213\% & 100\%\\ 
 \end{tabular}
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
-  {\bf At 400 ms} & \multicolumn{2}{c}{True} \\ 
+  $t^*_6$ & \multicolumn{2}{c}{True} \\ 
   & pos & neg \\ 
   \hline  Detected pos & 99.71611\% & 0.00552\%\\ 
   neg & 0.284\% & 99.99448\%\\ 
@@ -700,11 +688,11 @@ We evaluate variability in timing performance across three variables: FFT frame 
 
 \begin{figure}
   \includegraphics[width=\textwidth]{TimingVsFrame}
-  \caption{Timing varies as the FFT frame interval changes.  Here we show results for the ideal detector and the LabView and Swift+serial implementations, for the constructed $\delta$-syllable and for the real bird song at 300 ms.  The lines show latency, with errorbars reprenting jitter.  Points have been shifted slightly for clarity; original positions are [0.5 1 1.5 2 4] ms.}
+  \caption{Timing varies as the FFT frame interval changes.  Here we show results for the ideal detector and the LabView and Swift+serial implementations, for the constructed $\delta$-syllable and for trigger $t^*_4$ of the bird song.  The lines show latency, with errorbars reprenting jitter.  Points have been shifted slightly for clarity; original positions are [0.5 1 1.5 2 4] ms.}
   \label{fig:TimingVsFrame}
 \end{figure}
 
-Detector latency and jitter depend on the FFT frame rate.  Our 1.5-ms--frame default is a compromise: shorter frames increase the precision of timing, but also increase computational requirements both during training and at runtime.  \fig{fig:TimingVsFrame} shows how these numbers vary over a useful range of frame rates on our ideal detector, the Swift detector with serial output, and for the LabView detector, for both the $\delta$-syllable and for the real bird song at the 300-ms detection point.
+Detector latency and jitter depend on the FFT frame rate.  Our 1.5-ms--frame default is a compromise: shorter frames increase the precision of timing, but also increase computational requirements both during training and at runtime.  \fig{fig:TimingVsFrame} shows how these numbers vary over a useful range of frame rates on our ideal detector, the Swift detector with serial output, and for the LabView detector, for both the $\delta$-syllable and for the real bird song at $t^*_4$.
 
 \subsubsection{Syllable choice}
 
@@ -712,7 +700,7 @@ Detector latency and jitter depend on the FFT frame rate.  Our 1.5-ms--frame def
   \begin{center}
     \includegraphics[width=8cm]{TimingVsSyllable}
   \end{center}
-  \caption{Timing data for our 6 test syllables, for the ideal and the Swift+serial detectors, with an FFT frame rate of 1.5 ms.  Point centres show latency; error bars show jitter.  Centres have been shifted slightly for clarity; original positions are [150, 200, 250, 300, 350, 400] ms.}
+  \caption{Timing data for our 6 test syllables, for the ideal and the Swift+serial detectors, with an FFT frame rate of 1.5 ms.  Point centres show latency; error bars show jitter.  Centres have been shifted slightly for clarity.}
   \label{fig:TimingVsSyllable}
 \end{figure}
 
@@ -734,26 +722,26 @@ By choosing easy syllables, jitter can be reduced, although it will never be muc
   \begin{center}
     \includegraphics[width=8cm]{TimingVsDetector}
   \end{center}
-  \caption{The different detectors for the constructed $\delta$-syllable and for the real bird song at 300 ms.  Point centres show latency; error bars show jitter.}
+  \caption{The different detectors for the constructed $\delta$-syllable and for the real bird song at $t^*_4$.  Point centres show latency; error bars show jitter.}
   \label{fig:TimingVsDetector}
 \end{figure}
 
-Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows latency and jitter across all detector implementations for the $\delta$-syllable and for our bird syllable at 300 ms.
+Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows latency and jitter across all detector implementations for the $\delta$-syllable and for our bird syllable $t^*_4$.
 
 \begin{figure}
   \begin{center}
     \includegraphics[width=8cm]{timing}
   \end{center}
-  \caption{Raw timing curves for all detectors measured during detection of the syllable at 300 ms, using 1.5-ms frames.}
+  \caption{Raw timing curves for all detectors measured during detection of $t^*_4$ using 1.5-ms frames.}
   \label{fig:timing}
 \end{figure}
 
 
-\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on our test bird, for the syllable at 300 ms, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ (latency) and standard deviation $\sigma$ (jitter) on this syllable are as follows:
+\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on our test bird, for $t^*_4$, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ (latency) and standard deviation $\sigma$ (jitter) on this syllable are as follows:
 
 \vspace{8pt}
 \begin{tabular}{l|c|c|c| c}
-  & \multicolumn{2}{c}{$\delta$-syllable} & \multicolumn{2}{c}{Bird: 300 ms} \\
+  & \multicolumn{2}{c}{$\delta$-syllable} & \multicolumn{2}{c}{Bird: $t^*_4$} \\
   Detector & Latency (ms) & Jitter (ms) & Latency (ms) & Jitter (ms) \\
   \hline
   Ideal & 0.66 & 0.38 & -1.0 & 2.0 \\
