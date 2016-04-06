@@ -331,13 +331,16 @@ in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
 smoothing kernel around the target time with a standard deviation of 2 ms serves well.
 
-With inputs well outside the space on which a neural network has been
+\noprint{
+  % I screwed up: the results are without cage noise.  Rather than repeat all measurements, let's just not mention it.
+  With inputs well outside the space on which a neural network has been
 trained, its outputs will be essentially random. In order to reduce
 the false positive rate it is useful to provide negative training
 examples that include silence, cage noise, non-song vocalisations, and
 perhaps songs from other birds.  We have found that training with
 as low as a 1:1 ratio of non-song to song yields excellent results,
 although this will depend on the makeup of the non-song data.
+}
 
 \subsubsection{Normalisation}
 
@@ -509,6 +512,7 @@ to the detector, and the the detector's output pulses may be compared against th
 \subsubsection{Accuracy}
 \label{sec:accuracy}
 
+
 We define the accuracy of the network based on its classification performance per frame. In order to avoid the apparent problem of every non-detected non-syllable counting as a true negative, we also tried defining accuracy on a per-song basis, such that a song without the target syllable counted as a single true negative.  Computing the optimal output thresholds on a per-frame basis resulted in higher thresholds and thus a lower false-positive rate, with minimal consequences to the false-negative rate, while also providing a valid definition of false-positive rate for data streams that had not been segmented into songs.
 
 
@@ -605,6 +609,11 @@ Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  T
 \section{Results}
 \label{sec:results}
 
+
+\fig{fig:song} shows the song for which we present results.  Six example target trigger points are shown, at 150, 200, 250, 300, 350, and 400 milliseconds after the beginning of the aligned samples, as indicated by the red lines, and referred to henceforth as $t^*_1\ldots t^*_6$ respectively.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
+
+The first two triggers, $t^*_1$ at 150 ms and $t^*_2$ at 200 ms, are far from pure tones, but are closer to coloured noise.  They would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  $t^*_3$ (250 ms) and $t^*_6$ (400 ms) are rich in overtones and contain downward slides with changing timbres.  $t^*_4$ (300 ms) is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point partway through the syllable demands a detector that can use multiple timesteps.  $t^*_5$ (350 ms) shows a steady pitch followed by a complex changing tone structure.
+
 \begin{figure}
   \includegraphics[width=\textwidth]{detection_raster}
   \caption{Each plot shows one network output unit's responses to all
@@ -622,66 +631,74 @@ Finally, we measure latency on real bird song aligned as in \cite{Poole2012}.  T
   \label{fig:detection_raster}
 \end{figure}
 
-
-\fig{fig:song} shows the song for which we present results.  Six example target trigger points are shown, at 150, 200, 250, 300, 350, and 400 milliseconds after the beginning of the aligned samples, as indicated by the red lines, and referred to henceforth as $t^*_1\ldots t^*_6$ respectively.  The rectangles show the recognition window (30 ms, 1--8 kHz) for each instant in the song.
-
-The first two triggers, $t^*_1$ at 150 ms and $t^*_2$ at 200 ms, are far from pure tones, but are closer to coloured noise.  They would be difficult for a harmonic-stack filterbank to detect, and especially to pinpoint in time.  $t^*_3$ (250 ms) and $t^*_6$ (400 ms) are rich in overtones and contain downward slides with changing timbres.  $t^*_4$ (300 ms) is a more typical harmonic stack amenable to a variety of recognition techniques, although consistently detecting a point partway through the syllable demands a detector that can use multiple timesteps.  $t^*_5$ (350 ms) shows a steady pitch followed by a complex changing tone structure.
-
 An example of the detector's output for three of these syllables is shown in \fig{fig:detection_raster}.   By sorting according to time of each syllable's detection, the rest of the song is shown in the context of the timing for that moment, giving an intuition of the variability of intrasong timing.
 
 \subsection{Accuracy}
 
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\textwidth]{Accuracies}
+  \end{center}
+  \caption{Accuracies for the six test syllables.  Each dot shows the test-set accuracy for an independently trained detector.  Because the horizontal positions have been randomised slightly to show same-valued measurements, test syllable is also indicated by colour.}
+  \label{fig:accuracies}
+\end{figure}
+
+
 We allowed our training software to allocate our default of 4 hidden units per syllable, and computed a new FFT every 1.5 ms.  Because our timing test files are designed for our stereo playback software, allowing only one channel for the ground-truth pulse, we trained one detector for each syllable for the following results.  In order to eliminate the large number of variables involved in microphone, cage, playback and re-digitising, we evaluated the neural network's accuracy directly on the digitised recording.  When training and runtime data are gathered on the same hardware setup, this is the digital signal that the detector will see---only the non-song data may be different.
 %Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
-Typical confusion matrices for these syllables are:
+\noprint{
+  Typical confusion matrices for these syllables are:
 
-\vspace{8pt}\par\noindent
-\begin{tabular}{r|cc}
-  $t^*_1$
-  & \multicolumn{2}{c}{True} \\ 
-  & pos & neg \\ 
-  \hline  Detected pos & 99.96451\% & 0.000298\%\\ 
-  neg & 0.0355\% & 99.99970\%\\ 
-\end{tabular}
-\vspace{8pt}\par\noindent
-\begin{tabular}{r|cc}
-  $t^*_2$ & \multicolumn{2}{c}{True} \\ 
-  & pos & neg \\ 
-  \hline  Detected pos & 99.92903\% & 0.000596\%\\ 
-  neg & 0.0710\% & 99.99940\%\\ 
-\end{tabular}
-\vspace{8pt}\par\noindent
-\begin{tabular}{r|cc}
-  $t^*_3$ & \multicolumn{2}{c}{True} \\ 
-  & pos & neg \\ 
-  \hline  Detected pos & 99.68062\% & 0.00194\%\\ 
-  neg & 0.319\% & 99.99806\%\\ 
-\end{tabular}
-\vspace{8pt}\par\noindent
-\begin{tabular}{r|cc}
-  $t^*_4$ & \multicolumn{2}{c}{True} \\ 
-  & pos & neg \\ 
-  \hline  Detected pos & 99.82257\% & 0.00239\%\\ 
-  neg & 0.177\% & 99.99761\%\\ 
-\end{tabular}
-\vspace{8pt}\par\noindent
-\begin{tabular}{r|cc}
-  $t^*_5$ & \multicolumn{2}{c}{True} \\ 
-  & pos & neg \\ 
-  \hline  Detected pos & 99.78708\% & 0\\ 
-  neg & 0.213\% & 100\%\\ 
-\end{tabular}
-\vspace{8pt}\par\noindent
-\begin{tabular}{r|cc}
-  $t^*_6$ & \multicolumn{2}{c}{True} \\ 
-  & pos & neg \\ 
-  \hline  Detected pos & 99.71611\% & 0.00552\%\\ 
-  neg & 0.284\% & 99.99448\%\\ 
-\end{tabular}
-\vspace{8pt}\par\noindent
+  \vspace{8pt}\par\noindent
+  \begin{tabular}{r|cc}
+    $t^*_1$
+    & \multicolumn{2}{c}{True} \\ 
+    & pos & neg \\ 
+    \hline  Detected pos & 99.96451\% & 0.000298\%\\ 
+    neg & 0.0355\% & 99.99970\%\\ 
+  \end{tabular}
+  \vspace{8pt}\par\noindent
+  \begin{tabular}{r|cc}
+    $t^*_2$ & \multicolumn{2}{c}{True} \\ 
+    & pos & neg \\ 
+    \hline  Detected pos & 99.92903\% & 0.000596\%\\ 
+    neg & 0.0710\% & 99.99940\%\\ 
+  \end{tabular}
+  \vspace{8pt}\par\noindent
+  \begin{tabular}{r|cc}
+    $t^*_3$ & \multicolumn{2}{c}{True} \\ 
+    & pos & neg \\ 
+    \hline  Detected pos & 99.68062\% & 0.00194\%\\ 
+    neg & 0.319\% & 99.99806\%\\ 
+  \end{tabular}
+  \vspace{8pt}\par\noindent
+  \begin{tabular}{r|cc}
+    $t^*_4$ & \multicolumn{2}{c}{True} \\ 
+    & pos & neg \\ 
+    \hline  Detected pos & 99.82257\% & 0.00239\%\\ 
+    neg & 0.177\% & 99.99761\%\\ 
+  \end{tabular}
+  \vspace{8pt}\par\noindent
+  \begin{tabular}{r|cc}
+    $t^*_5$ & \multicolumn{2}{c}{True} \\ 
+    & pos & neg \\ 
+    \hline  Detected pos & 99.78708\% & 0\\ 
+    neg & 0.213\% & 100\%\\ 
+  \end{tabular}
+  \vspace{8pt}\par\noindent
+  \begin{tabular}{r|cc}
+    $t^*_6$ & \multicolumn{2}{c}{True} \\ 
+    & pos & neg \\ 
+    \hline  Detected pos & 99.71611\% & 0.00552\%\\ 
+    neg & 0.284\% & 99.99448\%\\ 
+  \end{tabular}
+  \vspace{8pt}\par\noindent
+}
 
-% this sentence is easy to miss in the paper, it might make sense to move it before the table
-The accuracies for the synthetic $\delta$-function songs were always 100\%.
+
+Accuracies for our six test syllables are shown in \fig{fig:accuracies} (accuracies for the synthetic $\delta$-function songs were always 100\%).  For each test syllable, we trained three\marginpar{FIXME: more runs now.} different networks, which differ from each other in the random initialisation of network weights and on which random subset of our songs was used for training.  Each network's accuracy is shown as a single point in each chart in \fig{fig:accuracies}.  For difficult syllables, the training process occasionally yields a network that performs unusually poorly, but it is easy to spot these networks by their performance on the test audio file, and re-train when necessary.
+
 
 \subsection{Timing}
 
@@ -695,7 +712,7 @@ We evaluate variability in timing performance across three variables: FFT frame 
   \label{fig:TimingVsFrame}
 \end{figure}
 
-Detector latency and jitter depend on the FFT frame rate.  Our 1.5-ms--frame default is a compromise: shorter frames increase the precision of timing, but also increase computational requirements both during training and at runtime.  \fig{fig:TimingVsFrame} shows how these numbers vary over a useful range of frame rates on our ideal detector, the Swift detector with serial output, and for the LabView detector, for both the $\delta$-syllable and for the real bird song at $t^*_4$.
+Detector latency and jitter depend on the FFT frame rate.  Our 1.5-ms--frame default is a compromise: shorter frames increase the precision of timing, but also increase computational requirements both during training and at runtime.  \fig{fig:TimingVsFrame} shows how these numbers vary over a useful range of frame rates on our ideal detector, the Swift detector with serial output, and for the LabView detector, for both the $\delta$-syllable and for the bird song at $t^*_4$.
 
 \subsubsection{Syllable choice}
 
@@ -715,9 +732,7 @@ Syllable choice impacts detector performance, but despite the variety of syllabl
   Swift+serial & $0.0\pm 0.6$ ms & $2.0\pm 0.1$ ms
 \end{tabular}
 \vspace{8pt}\par\noindent
-The negative latency is due to the way in which the network responds to the song through time: as the recognition region looks increasingly similar to the trained match, the network's evaluation of similarity rises, and will generally cross the triggering threshold before it reaches its maximum value.
-
-By choosing easy syllables, jitter can be reduced, although it will never be much less than $t_f$.
+The negative latency is due to the way in which the network responds to the song through time: as the recognition region looks increasingly similar to the trained match, the network's evaluation of similarity rises, and will generally cross the triggering threshold before it reaches its maximum value.  A heuristic as simple as triggering at an apparent turning point after crossing the threshold may improve timing further, but we did not test this.
 
 \subsubsection{Detector Implementations}
 
@@ -725,7 +740,7 @@ By choosing easy syllables, jitter can be reduced, although it will never be muc
   \begin{center}
     \includegraphics[width=8cm]{TimingVsDetector}
   \end{center}
-  \caption{The different detectors for the constructed $\delta$-syllable and for the real bird song at $t^*_4$.  Point centres show latency; error bars show jitter.}
+  \caption{The different detectors for the constructed $\delta$-syllable and for the bird song at $t^*_4$.  Point centres show latency; error bars show jitter.}
   \label{fig:TimingVsDetector}
 \end{figure}
 
@@ -771,8 +786,6 @@ This syllable detector is appropriate for zebra finch song, and although our tes
 \end{itemize}
 
 Although there are differences, the Swift+serial detector and the LabView implementation are roughly comparable in performance.  We prefer the Swift implementation due to its lower hardware and software requirements and the difficulty of debugging LabView programmes.  With serial output, Matlab's performance is good, although its buffer handling is sensitive to system load.
-
-Due to the randomness of neural network initialisation and training song presentation, multiple training runs yield different networks.  We found that for difficult syllables, the training process would sometimes yield a network that performed unusually poorly, but that it was easy to spot these networks by their performance on the test audio file, and re-train when necessary.
 
 The song presented here was recorded with a fixed microphone mounted inside the cage.  We found that higher accuracy is achieved when a microphone is instead mounted on the bird's head, which maintains volume and reduces changes in timbre as the bird moves.
 
