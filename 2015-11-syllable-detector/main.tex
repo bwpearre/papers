@@ -1,6 +1,4 @@
 % zscore question for Jeff
-% Chart showing multiple runs from detector on all syllables
-
 \documentclass[10pt,letterpaper]{article}
 \usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
 
@@ -640,7 +638,7 @@ An example of the detector's output for three of these syllables is shown in \fi
   \begin{center}
     \includegraphics[width=\textwidth]{Accuracies}
   \end{center}
-  \caption{Accuracies for the six test syllables.  Each dot shows the test-set accuracy for an independently trained detector.  Because the horizontal positions have been randomised slightly to show same-valued measurements, test syllable is also indicated by colour.}
+  \caption{Accuracy variability over different training runs for each of the six test syllables.  Each dot shows the test-set accuracy for an independently trained detector.  Because the horizontal positions have been randomised slightly to show same-valued measurements, test syllable is also indicated by colour.}
   \label{fig:accuracies}
 \end{figure}
 
@@ -697,7 +695,7 @@ We allowed our training software to allocate our default of 4 hidden units per s
 }
 
 
-Accuracies for our six test syllables are shown in \fig{fig:accuracies} (accuracies for the synthetic $\delta$-function songs were always 100\%).  For each test syllable, we trained three\marginpar{FIXME: more runs now.} different networks, which differ from each other in the random initialisation of network weights and on which random subset of our songs was used for training.  Each network's accuracy is shown as a single point in each chart in \fig{fig:accuracies}.  For difficult syllables, the training process occasionally yields a network that performs unusually poorly, but it is easy to spot these networks by their performance on the test audio file, and re-train when necessary.
+Accuracies for our six test syllables are shown in \fig{fig:accuracies} (accuracies for the synthetic $\delta$-function songs were always 100\%).  For each test syllable, we trained some\marginpar{FIXME: how many runs in the end?} different networks, which differ from each other in the random initialisation of network weights and on which random subset of our songs was used for training.  Each network's accuracy is shown as a single point in each chart in \fig{fig:accuracies}.  For difficult syllables, the training process occasionally yields a network that performs unusually poorly, but it is easy to spot these networks by their performance on the test audio file, and re-train when necessary.
 
 
 \subsection{Timing}
