@@ -730,7 +730,7 @@ Syllable choice impacts detector performance, but despite the variety of syllabl
   Swift+serial & $0.0\pm 0.6$ ms & $2.0\pm 0.1$ ms
 \end{tabular}
 \vspace{8pt}\par\noindent
-The negative latency is due to the way in which the network responds to the song through time: as the recognition region looks increasingly similar to the trained match, the network's evaluation of similarity rises, and will generally cross the triggering threshold before it reaches its maximum value.  A heuristic as simple as triggering at an apparent turning point after crossing the threshold may improve timing further, but we did not test this.
+The negative latency is due to the way in which the network responds to the song through time: as the recognition region looks increasingly similar to the trained match, the network's evaluation of similarity rises, and will generally cross the triggering threshold before it reaches its maximum value.  A heuristic as simple as triggering at an apparent turning point after crossing the threshold might improve timing consistency, but we did not test this.
 
 \subsubsection{Detector Implementations}
 
@@ -742,18 +742,7 @@ The negative latency is due to the way in which the network responds to the song
   \label{fig:TimingVsDetector}
 \end{figure}
 
-Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows latency and jitter across all detector implementations for the $\delta$-syllable and for our bird syllable $t^*_4$.
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=8cm]{timing}
-  \end{center}
-  \caption{Raw timing curves for all detectors measured during detection of $t^*_4$ using 1.5-ms frames.}
-  \label{fig:timing}
-\end{figure}
-
-
-\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on our test bird, for $t^*_4$, using an FFT frame rate of 1.5 ms.  The maximum-likelihood estimates of the mean $\mu$ (latency) and standard deviation $\sigma$ (jitter) on this syllable are as follows:
+Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows latency and jitter across all detector implementations for the $\delta$-syllable and for syllable $t^*_4$.  We also present the measurements in the following table:
 
 \vspace{8pt}
 \begin{tabular}{l|c|c|c| c}
@@ -769,6 +758,16 @@ Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows 
 \end{tabular}
 
 \vspace{8pt}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=8cm]{timing}
+  \end{center}
+  \caption{Raw timing curves for all detectors measured during detection of $t^*_4$ using 1.5-ms frames.  A maximum-likelihood fit of a Gaussian cumumative distribution function was computed for each curve, from which were extracted the mean---latency---and standard deviation---jitter.}
+  \label{fig:timing}
+\end{figure}
+
+\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on $t^*_4$.
 
 \section{Discussion}
 \label{sec:conclusion}
