@@ -715,7 +715,7 @@ We allowed our training software to allocate our default of 4 hidden units per s
 }
 
 
-Accuracies for our six test syllables are shown in \fig{fig:accuracies} (accuracies for the synthetic $\delta$-function songs were always 100\%).  For each test syllable, we trained fifteen\marginpar{FIXME: how many runs in the end?} different networks, which differ from each other in the random initialisation of network weights and on which random subset of our songs was used for training.  Each network's accuracy is shown as a single point in each chart in \fig{fig:accuracies}.  Some syllables are easier to identify reliably than others, allowing detection point choice to impact the detector's accuracy.  For difficult syllables, the training process occasionally yields a network that performs unusually poorly, but it is easy to spot these networks by their performance on the test audio file, and re-train when necessary.
+Accuracies for our six test syllables are shown in \fig{fig:accuracies} (accuracies for the synthetic $\delta$-function songs were always 100\%).  For each test syllable, we trained fifteen\marginpar{FIXME: how many runs in the end?} different networks, which differ from each other in the random initialisation of network weights and on which random subset of our songs was used for training.  Each network's accuracy is shown as a single point in each chart in \fig{fig:accuracies}.  Some syllables are easier to identify reliably than others, allowing detection point choice to impact the detector's accuracy.  For difficult syllables, the training process occasionally yields a network that performs unusually poorly, but it is easy to spot these networks by their performance either as measured as part of the training process or on the test audio file, and re-train when necessary.
 
 
 \subsection{Timing}
@@ -779,9 +779,9 @@ We compared latency and jitter across our different detector implementations for
   Ideal & 0.66 & 0.38 & -1.0 & 2.0 \\
   LabView & 1.5 & 0.69 & -0.18 & 2.4 \\
   Swift+serial & 0.88 & 1.6 & -0.075 & 2.0 \\
-  Swift+audio & 5.89 & 2.6 & 1.24 & 4.9 \\
+  Swift+audio & 5.9 & 2.6 & 1.2 & 4.9 \\
   Matlab+serial & 8.1 & 2.3 & 3.8 & 2.0 \\
-  Matlab+audio & 12.5 & 5.9 & 8.4 & 5.9
+  Matlab+audio & 13 & 5.9 & 8.4 & 5.9
 \end{tabular}
 \vspace{8pt}\par\noindent
 These data are also plotted in \fig{fig:TimingVsDetector}, and \fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector on $t^*_4$.
