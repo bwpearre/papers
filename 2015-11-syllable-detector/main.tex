@@ -344,7 +344,7 @@ recognition region---containing multiple columns from the spectrogram---as of on
 
 Training targets $y_t$ are vectors with one element for each desired detection syllable.  That element is, roughly, 1 if the input vector comes from the
 target time ($t=t^*$), 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
-alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that one of two practically identical samples should be a match and the other not. Thus it is preferable to spread the target
+alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that, of two practically identical frames, one should be a match and the other not. Thus it is preferable to spread the target
 in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
 smoothing kernel around the target time with a standard deviation of 2 ms serves well.
