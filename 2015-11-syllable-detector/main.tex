@@ -269,16 +269,16 @@ time-aligned as described in \cite{Poole2012}.
 
 We rely on two circular buffers:
 \begin{description}
-\item[Audio buffer:] This contains the most recent audio samples, and is of the length required to compute the Fourier transform (FFT)---usually 256 samples.
+\item[Audio buffer:] This contains the most recent audio samples, and is of the length required to compute the Fast Fourier Transform (FFT)---usually 256 samples.
 \item[FFT buffer:] The results of each new FFT are placed here.  It contains the $n_\textrm{fft}$ most recent FFTs, which will serve as inputs to the neural network (described below).
 \end{description}
 
-Audio is recorded at some sample rate $1/t_\mathrm{sample}$ (for example, 44.1 kHz), and new data are appended to a circular audio buffer that retains enough to compute the spectrogram (usually 256 samples).
+Audio is recorded at some sample rate $1/t_\mathrm{sample}$ (for example, 44.1 kHz), and new data are appended to the circular audio buffer.
 
 The spectrogram is computed at regular intervals---the useful range
 seems to be roughly 1--5 milliseconds, which we refer to as the frame
 interval $t_\textrm{fft}$.  At each frame, a spectrum is computed from the
-most recent 256 audio samples, and the result is appended to a second circular buffer.  For example, if $t_\textrm{fft}=1$ ms and the recording sample rate $1/t_\textrm{sample}=40$ kHz, then in order to compute a new FFT, $40000\cdot 0.001=40$ new audio samples must be appended to the audio buffer, the FFT is computed using the most recent 256 samples in that buffer, and the result is appended to the FFT buffer.  Over time, the successive spectra will look something
+most recent 256 audio samples in the audio buffer, and the result is appended to the FFT buffer.  For example, if $t_\textrm{fft}=1$ ms and the recording sample rate $1/t_\textrm{sample}=40$ kHz, then in order to compute a new FFT, $40000\cdot 0.001=40$ new audio samples must be appended to the audio buffer, the FFT is computed using the most recent 256 samples in that buffer, and the result is appended to the FFT buffer.  Over time, the successive spectra will look something
 like \fig{fig:song}.
 
 Note that this results in time being discretised into chunks of length
@@ -445,13 +445,13 @@ training resources required and the detection latency.
 \subsection{Realtime detection}
 
 The architecture of the realtime detector requires that the most
-recent $|T|/t_\textrm{fft}$ spectrograms be fed to the neural network every
+recent $n_\textrm{fft}$ spectrograms be fed to the neural network every
 frame interval.  Audio samples from the microphone
-are appended to a circular buffer.  Every $t_\textrm{fft}$ seconds a new
+are appended to the circular audio buffer.  Every $t_\textrm{fft}$ seconds a new
 spectrogram is calculated by applying the Hamming window to the
 contents of the buffer, performing an FFT, and extracting the
 power. Outputs of the spectrogram from the target frequency band are
-appended to a second circular buffer.  The spectrograms are sent to a
+appended to the circular FFT buffer.  The spectrograms are sent to a
 static implementation of the previously trained neural network.
 
 We tested three implementations of the realtime detector.  For all of
@@ -465,11 +465,11 @@ had ample memory resources.
 This detector uses the Swift programming language and Core Audio
 interface included in Apple's operating systems.
 
-The Core Audio frameworks provide an adjustable buffer size for 
-reading from and writing to audio hardware. Tuning this buffer size
+The Core Audio frameworks provide an adjustable hardware buffer size for 
+reading from and writing to audio hardware (different from our two circular buffers). Tuning this buffer size
 provides a tradeoff between the jitter in the detection and the 
 processor usage needed to run the detector. We settled on a buffer 
-size of 32 samples (0.7 ms at 44.1 kHz), as this created minimal system
+size of 32 samples (0.7 ms at 44.1 kHz),\marginpar{Nathan: we played with this, especially for $t_\mathrm{fft}=0.5$ s.  Update?} as this created minimal system
 load while achieving detection within the desired lag and jitter.
 
 Vector operations---applying the Hamming window, the FFT, input
