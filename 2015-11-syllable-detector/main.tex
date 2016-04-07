@@ -381,7 +381,7 @@ While any learned classifier might suffice, we chose a two-layer feedforward neu
 \end{equation*}
 The elements of each matrix are learned by back-propagation of errors over a training set.  A more detailed explanation of neural networks may be found in \cite{hkp}.
 
-Essentially, after training, the network is available in the form of the two matrices $W_0$ and $W_1$ and the two vectors $b_0$ and $b_1$, and running the network consists of two matrix multiplications, two vector additions and the application of the squashing function.\marginpar{I've left some other details.  Ok?}
+Essentially, after training, the network is available in the form of the two matrices $W_0$ and $W_1$ and the two vectors $b_0$ and $b_1$, and running the network consists of two matrix multiplications, two vector additions and the application of the squashing function.
 
 \subsubsection{Training the network}
 
@@ -762,8 +762,15 @@ The negative latency is due to the way in which the network responds to the song
   \label{fig:TimingVsDetector}
 \end{figure}
 
-Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows latency and jitter across all detector implementations for the $\delta$-syllable and for syllable $t^*_4$.  We also present the measurements in the following table:
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=8cm]{timing}
+  \end{center}
+  \caption{Raw timing curves for all detectors measured during detection of $t^*_4$ using 1.5-ms frames.  A maximum-likelihood fit of a Gaussian cumumative distribution function was computed for each curve, from which were extracted the mean---latency---and standard deviation---jitter.}
+  \label{fig:timing}
+\end{figure}
 
+We compared latency and jitter across our different detector implementations for the $\delta$-syllable and $t^*_4$, again with $t_\mathrm{fft}=1.5$ ms.  Results are as follows:
 \vspace{8pt}
 \begin{tabular}{l|c|c|c| c}
   & \multicolumn{2}{c}{$\delta$-syllable} & \multicolumn{2}{c}{Bird: $t^*_4$} \\
@@ -776,18 +783,9 @@ Again exploring our 1.5-ms FFT frame interval, \fig{fig:TimingVsDetector} shows 
   Matlab+serial & 8.1 & 2.3 & 3.8 & 2.0 \\
   Matlab+audio & 12.5 & 5.9 & 8.4 & 5.9
 \end{tabular}
+\vspace{8pt}\par\noindent
+These data are also plotted in \fig{fig:TimingVsDetector}, and \fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector on $t^*_4$.
 
-\vspace{8pt}
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=8cm]{timing}
-  \end{center}
-  \caption{Raw timing curves for all detectors measured during detection of $t^*_4$ using 1.5-ms frames.  A maximum-likelihood fit of a Gaussian cumumative distribution function was computed for each curve, from which were extracted the mean---latency---and standard deviation---jitter.}
-  \label{fig:timing}
-\end{figure}
-
-\fig{fig:timing} gives a more detailed view of what the timing curves look like for the five implementations of our detector trained on $t^*_4$.
 
 \section{Discussion}
 \label{sec:conclusion}
