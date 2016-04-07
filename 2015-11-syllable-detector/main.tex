@@ -97,7 +97,7 @@
 \setlength{\marginparwidth}{55mm}
 
 
-\newcommand\argmin{\mathop{\mbox{{\rm argmin}}}\limits}
+\newcommand\argmin{\mathop{\textrm{{\rm argmin}}}\limits}
 \newcommand{\noprint}[1]{}
 
 
@@ -267,19 +267,39 @@ time-aligned as described in \cite{Poole2012}.
   \label{fig:song}
 \end{figure}
 
-Audio is recorded at some sample rate (for example, 44.1 kHz), and new data are appended to a circular audio buffer that retains enough to compute the spectrogram (usually 256 samples).
+We rely on two circular buffers:
+\begin{description}
+\item[Audio buffer:] This contains the most recent audio samples, and is of the length required to compute the Fourier transform (FFT)---usually 256 samples.
+\item[FFT buffer:] The results of each new FFT are placed here.  It contains the $n_\textrm{fft}$ most recent FFTs, which will serve as inputs to the neural network (described below).
+\end{description}
+
+Audio is recorded at some sample rate $1/t_\mathrm{sample}$ (for example, 44.1 kHz), and new data are appended to a circular audio buffer that retains enough to compute the spectrogram (usually 256 samples).
 
 The spectrogram is computed at regular intervals---the useful range
 seems to be roughly 1--5 milliseconds, which we refer to as the frame
-interval $t_f$.  At each frame, a spectrum is computed from the
-most recent 256 audio samples, and the most recent results are stored in a second circular buffer.  For example, if $t_f=1$ ms and the recording sample rate is 40 kHz, then in order to compute a new FFT, $40000\cdot 0.001=40$ new audio samples must be appended to the audio buffer, the FFT is computed using the most recent 256 samples in that buffer, and the result is appended to the FFT buffer.  Over time, the successive spectra will look something
+interval $t_\textrm{fft}$.  At each frame, a spectrum is computed from the
+most recent 256 audio samples, and the result is appended to a second circular buffer.  For example, if $t_\textrm{fft}=1$ ms and the recording sample rate $1/t_\textrm{sample}=40$ kHz, then in order to compute a new FFT, $40000\cdot 0.001=40$ new audio samples must be appended to the audio buffer, the FFT is computed using the most recent 256 samples in that buffer, and the result is appended to the FFT buffer.  Over time, the successive spectra will look something
 like \fig{fig:song}.
 
-When using consumer audio hardware that operates best at 44.1 kHz, the target frame interval may not line up with the sample rate, so
+Note that this results in time being discretised into chunks of length
+$t_\mathrm{fft}$.  Because each Fourier transform computation contains
+a small number $n_\mathrm{fft}$ of new audio samples (in the example
+above, 40 new samples and $256-40$ that have already been examined),
+we tried implementing the Sliding Discrete Fourier transform (SDFT)
+\cite{Jacobsen2003SlidingDFT}.  This allows
+$t_\textrm{fft}=t_\textrm{sample}$.  Practically, the operating system
+retrieves new audio samples from the hardware several at a time, so
+the full benefit of the SDFT is difficult to see in practice.
+Furthermore, we found that FFT implementations are sufficiently highly
+optimised that discretising time into chunks of $t_\mathrm{fft}$ as we
+have done produced similar results with lower software development
+effort.
+
+When using consumer audio hardware that operates best at 44.1 kHz, the requested frame interval may not line up with the sample rate, so
 the actual frame interval may be different from the indended.  For
 example, at 44.1 kHz a 1-ms frame interval requires a new FFT
-every 44.1 samples.  This is rounded to 44 samples, resulting in
-$t_f=\lfloor 44.1 \rceil / 44.1 \approx 0.9977$ ms.
+every 44.1 samples.  This must be rounded to 44 samples, resulting in
+$t_\textrm{fft}=\lfloor 44.1 \rceil / 44.1 \approx 0.9977$ ms.
 
 One or more target moments during the song must be chosen.  Our interface
 presents the time-aligned spectrogram averaged over training songs,
@@ -289,12 +309,12 @@ output unit thresholds, and save the network object and an audio test
 file.
 
 \subsubsection{Recognition region}
-
+\label{sec:recognitionregion}
 
 The neural network's inputs are the FFT values from a rectangular
 region of the spectrogram covering a predefined range of frequency values $F$ (for example, 1--8 kHz) at
-some number of the most recent frames $n_f$.  Any time $t$ falls within one of the frames, $\tau(t)$, and $t-t_f$ falls within the previous frame.  The recognition region that the neural network receives as input consists of the spectrogram values over $F$ at $\tau(t)$ and those from the contiguous set of recent frames: $T = \{$ $\tau(t)$, $\tau(t-t_f)$, $\tau(t-{2t_f})\ldots$ $\tau(t-n_ft_f)\}$.  We have found that a 30-ms time window (which will
-yield $n_f = |T|=\lfloor 30\mbox{ ms}/t_f\rceil$ frames) of frequencies
+some number of the most recent frames $n_\textrm{fft}$.  Any time $t$ falls within one of the frames, $\tau(t)$, and $t-t_\textrm{fft}$ falls within the previous frame.  The recognition region that the neural network receives as input consists of the spectrogram values over $F$ at $\tau(t)$ and those from the contiguous set of recent frames: $T = \{$ $\tau(t)$, $\tau(t-t_\textrm{fft})$, $\tau(t-{2t_\textrm{fft}})\ldots$ $\tau(t-n_\textrm{fft}t_\textrm{fft})\}$.  We have found that a 30-ms time window (which will
+yield $n_\textrm{fft} = |T|=\lfloor 30\textrm{ ms}/t_\textrm{fft}\rceil$ frames) of frequencies
 spanning 1--8 kHz works well for most syllables.
 
 Six examples of chosen target moments in the song, and their corresponding recognition regions $F$ and $T$, are shown in \fig{fig:song}.
@@ -318,13 +338,13 @@ Six examples of chosen target moments in the song, and their corresponding recog
 The training set is created in a fashion typical for neural networks:
 at each time frame $t$ the rectangular $|F|\times |T|$ recognition
 region in the spectrogram as of time $t$ is reshaped into a vector $\xi_t$, which will
-have length $|F||T|$ and contain the spectra in $F$ taken at all of the times in the set $T$: from $\tau(t-n_ft_f)$ to $\tau(t)$.  These vectors are placed into a training
+have length $|F||T|$ and contain the spectra in $F$ taken at all of the times in the set $T$: from $\tau(t-n_\textrm{fft}t_\textrm{fft})$ to $\tau(t)$.  These vectors are placed into a training
 matrix, $\Xi$, such that each column $\xi_t$ holds the contents of the
 recognition region---containing multiple columns from the spectrogram---as of one value of $t$
 
 Training targets $y_t$ are vectors with one element for each desired detection syllable.  That element is, roughly, 1 if the input vector comes from the
 target time ($t=t^*$), 0 otherwise, for each target syllable (of which there may be any number, although they increase training time, and in our implementations the number of distinct output pulses is constrained by hardware).  Since the song
-alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that practically identical samples should have opposite targets. Thus it is preferable to spread the target
+alignment may not be perfect, due to sample aliasing, and because the song spectrogram appears not to vary faster than the frame rate we chose, a strict binary target may ask the network to learn that one of two practically identical samples should be a match and the other not. Thus it is preferable to spread the target
 in time, such that at the target moment it is 1,
 and at neighbouring moments it is nonzero. We found that a Gaussian
 smoothing kernel around the target time with a standard deviation of 2 ms serves well.
@@ -376,8 +396,8 @@ speed. For more variable
 songs, deep structure-preserving networks may be more appropriate, but
 they are slow to train and unnecessary for zebra finch song.
 
-Matlab's neural network toolbox defaults to Levenburg-Marquardt
-training. This is a fast algorithm, but is memory-intensive, so
+We used the Levenburg-Marquardt
+algorithm, which is the Matlab toolbox's default.  It is a fast algorithm, but is memory-intensive, so
 many target syllables or high FFT frame rates require a large
 amount of RAM and increase training time to hours. Other training
 algorithms that use less RAM are much slower, and by default they will
@@ -395,7 +415,7 @@ negatives to false positives, $C_n$. The second is the acceptable time
 interval: if the true event occurs at time $t$, and the detector
 triggers at any time $t\pm\Delta t$, then it is considered a correct
 detection. Then the optimal detection threshold $\tau$ is the one that
-minimises $\mbox{[false positives]} +C_n\cdot\mbox{[false negatives]}$
+minimises $\textrm{[false positives]} +C_n\cdot\textrm{[false negatives]}$
 over the training set, using the definitions of false positives and
 negatives given in Section~\ref{sec:accuracy}. Since large
 portions of the cost function are flat, hillclimbing is ineffective.  Random-restart hillclimbing
@@ -409,7 +429,7 @@ Since the network may produce above-threshold responses to nearby frames, after 
 \subsubsection{Our parameter choices}
 
 We used an FFT of size 256; a Hamming window; and chose a target spectrogram
-frame interval of $t_f=1.5$ milliseconds, resulting in a true frame interval of $t_f=\lfloor 1.5\cdot 44.1\rceil /44.1\approx 1.4966$ ms.  We set the network's input
+frame interval of $t_\textrm{fft}=1.5$ milliseconds, resulting in a true frame interval of $t_\textrm{fft}=\lfloor 1.5\cdot 44.1\rceil /44.1\approx 1.4966$ ms.  We set the network's input
 space to 30 ms long, and to span frequencies from 1--8 kHz, which
 contains the fundamentals and several overtones of most zebra finch
 vocalisations.
@@ -425,9 +445,9 @@ training resources required and the detection latency.
 \subsection{Realtime detection}
 
 The architecture of the realtime detector requires that the most
-recent $|T|/t_f$ spectrograms be fed to the neural network every
+recent $|T|/t_\textrm{fft}$ spectrograms be fed to the neural network every
 frame interval.  Audio samples from the microphone
-are appended to a circular buffer.  Every $t_f$ seconds a new
+are appended to a circular buffer.  Every $t_\textrm{fft}$ seconds a new
 spectrogram is calculated by applying the Hamming window to the
 contents of the buffer, performing an FFT, and extracting the
 power. Outputs of the spectrogram from the target frequency band are
@@ -545,10 +565,10 @@ acceptable time difference between target syllable and correct output
 $\Delta t_d$, we compute the optimal threshold for an output element
 according to the definitions above:
 \begin{eqnarray*}
-  \mbox{true positives}_\tau &=& \mbox{size of set}_{s\in \mbox{target songs}} o_t > \tau, \left| t \leq \Delta t_d \right| \\
-  \mbox{false negatives}_\tau &=& \mbox{size of set} {s\in\mbox{target songs}} - \mbox{size of set} \mbox{true positives} \\
-  \mbox{false positives}_\tau &=& \mbox{size of set}_{s\in \mbox{target songs}} o_t > \tau, \left| t > \Delta t_d \right| \\
-  \widehat{\tau} &=& \argmin_\tau C\mbox{false positive} + \mbox{false negatives}
+  \textrm{true positives}_\tau &=& \textrm{size of set}_{s\in \textrm{target songs}} o_t > \tau, \left| t \leq \Delta t_d \right| \\
+  \textrm{false negatives}_\tau &=& \textrm{size of set} {s\in\textrm{target songs}} - \textrm{size of set} \textrm{true positives} \\
+  \textrm{false positives}_\tau &=& \textrm{size of set}_{s\in \textrm{target songs}} o_t > \tau, \left| t > \Delta t_d \right| \\
+  \widehat{\tau} &=& \argmin_\tau C\textrm{false positive} + \textrm{false negatives}
 \end{eqnarray*}
 }
 
@@ -722,7 +742,7 @@ Detector latency and jitter depend on the FFT frame rate.  Our 1.5-ms--frame def
   \label{fig:TimingVsSyllable}
 \end{figure}
 
-Syllable choice impacts detector performance, but despite the variety of syllables chosen here, performance was fairly stable across syllables.  \fig{fig:TimingVsSyllable} shows measured timing data for the Swift+serial detector compared to the ideal, with $t_f=1.5$ ms.  Given the variety of the test syllables, the variability is surprisingly low, and is summarised here with 95\% confidence intervals (with n=6):
+Syllable choice impacts detector performance, but despite the variety of syllables chosen here, performance was fairly stable across syllables.  \fig{fig:TimingVsSyllable} shows measured timing data for the Swift+serial detector compared to the ideal, with $t_{\textrm{fft}}=1.5$ ms.  Given the variety of the test syllables, the variability is surprisingly low, and is summarised here with 95\% confidence intervals (with n=6):
 \vspace{8pt}\par\noindent
 \begin{tabular}{r|cc}
   Detector & Latency & Jitter \\ 
