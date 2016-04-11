@@ -350,7 +350,7 @@ effort.
 
 When using consumer audio hardware that operates best at 44.1 kHz, the
 requested frame interval may not line up with the sample rate, so the
-actual frame interval may be different from the indended.  For
+actual frame interval may be different from the intended.  For
 example, at 44.1 kHz a 1-ms frame interval requires a new FFT every
 44.1 samples.  This must be rounded to 44 samples, resulting in
 $t_\textrm{fft}=\lfloor 44.1 \rceil / 44.1 \approx 0.9977$ ms.
@@ -838,13 +838,13 @@ ms, 1--8 kHz) for each instant in the song.
 
 The first two triggers, $t^*_1$ at 150 ms and $t^*_2$ at 200 ms, are
 far from pure tones, but are closer to coloured noise.  They would be
-difficult for a harmonic-stack filterbank to detect, and especially to
+difficult for a harmonic-stack filter bank to detect, and especially to
 pinpoint in time.  $t^*_3$ (250 ms) and $t^*_6$ (400 ms) are rich in
 overtones and contain downward slides with changing timbres.  $t^*_4$
 (300 ms) is a more typical harmonic stack amenable to a variety of
 recognition techniques, although consistently detecting a point
 partway through the syllable demands a detector that can use multiple
-timesteps.  $t^*_5$ (350 ms) shows a steady pitch followed by a
+time steps.  $t^*_5$ (350 ms) shows a steady pitch followed by a
 complex changing tone structure.
 
 \begin{figure}
@@ -1154,13 +1154,13 @@ their improvements to the draft.  This work was funded by NIH grants
       detector training code is available under the GNU GPL at:
       \\ {\tt https://github.com/bwpearre/}
 
-    \item[Runtime:] The Matlab, Swift, and LabView implementations for executing the trained
-      network:\\
-      {\tt https://github.com/nathanntg/syllable-detector}
-      % Should probably put in separate links for each implementation:
-      % Matlab https://github.com/jmarkow/nndetector-live
-      % Swift https://github.com/nathanntg/syllable-detector
-      % LabView unsure?
+    \item[Runtime:] The Matlab implementation for executing the trained network:\\
+      \\ {\tt https://github.com/jmarkow/nndetector-live}\\
+      The Swift implementation for executing the trained network:\\
+      \\ {\tt https://github.com/nathanntg/syllable-detector}\\
+      The LabView implementation for executing the trained network:\\
+      \\ {\tt coming soon}
+
 \end{description}
 
 \bibliography{birds}
