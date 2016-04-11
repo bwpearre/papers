@@ -133,9 +133,9 @@ Timothy J.~Gardner\textsuperscript{1,d}
 %
 % Primary Equal Contribution Note
 %\Yinyang These authors contributed equally to this work.
-Author \textsuperscript{a}~contributed the original Matlab and LabView implementations and most of the manuscript.
+Author \textsuperscript{a}~contributed the original MATLAB and LabVIEW implementations and most of the manuscript.
 \textsuperscript{b}~contributed the Swift implementation and its description herein, helped debug the training code, and measured the timing for most of the detectors.
-\textsuperscript{c}~wrote several types of filter bank software against which we compared, made suggestions for the neural network detector, and prepared the final version of the Matlab code for distribution.
+\textsuperscript{c}~wrote several types of filter-bank software against which we compared, made suggestions for the neural network detector, and prepared the final version of the MATLAB code for distribution.
 \textsuperscript{d}~provided a stream of suggested techniques, metrics, and goals.
 
 % Additional Equal Contribution Note
@@ -236,7 +236,7 @@ and they do not report on jitter or accuracy.  As access to
 computational resources has improved, approaches have changed: in
 2009, \cite{Andalman2009} still used hand-tuned filters, but ran them
 on a Tucker-Davis Technologies digital signal processor.  They report
-a latency of around 4 ms, but as with other filter bank techniques, it
+a latency of around 4 ms, but as with other filter-bank techniques, it
 is not strictly a syllable detector but rather a pitch and timbre
 detector---it cannot identify a frequency sweep, or distinguish a
 short chirp from a long one---and thus requires careful selection of
@@ -270,7 +270,7 @@ three steps:
 \begin{enumerate}
 \item Record and align a corpus of training songs.  The technique has been published in \cite{Poole2012}.
 \item Choose one or more instants in the song that should create a trigger event, and train a
-  neural network to recognise them. This step is carried out offline.  While any neural network software would produce equivalent results, we used Matlab 2015b's neural network toolbox.
+  neural network to recognise them. This step is carried out offline.  While any neural network software would produce equivalent results, we used MATLAB 2015b's neural network toolbox.
 \item Once trained and saved, the neural network is used by a realtime
   detection program that listens to an audio signal and indicates detection of the target
   syllables via a TTL pulse.  We present three implementations that trade off hardware requirements, ease of maintenance, and performance.
@@ -447,7 +447,7 @@ The first normalisation step is designed to eliminate differences in
 amplitude due to changes in the bird's location and other variations
 in recording.  Each recognition region vector $\xi_t$---during
 training, each {\em column} of the training matrix $\Xi$---is
-normalised using Matlab's {\tt zscore} function $\hat{\xi}_t = (\xi_t
+normalised using MATLAB's {\tt zscore} function $\hat{\xi}_t = (\xi_t
 - \mu_{\xi_t}) / \sigma_{\xi_t}$, so that the content of each window
 has mean $\mu_{\hat{\xi}_t}=0$ and standard deviation
 $\sigma_{\hat{\xi}_t}=1$.
@@ -460,7 +460,7 @@ $\check{\xi}^i = (\hat{\xi}^i -
 \mu_{\hat{\xi}^i})/\sigma_{\hat{\xi}^i}$, so that the values of that
 point across the whole training set have mean $\mu_{\check{\xi}^i}=0$
 and standard deviation $\sigma_{\check{\xi}^i}=1$.  This is
-accomplished during training by setting Matlab's neural network
+accomplished during training by setting MATLAB's neural network
 toolbox normalisation scheme to {\tt mapstd}, and the scaling
 transform is saved as part of the network object used by the realtime
 detector so that it may be applied to unseen data at runtime.
@@ -497,7 +497,7 @@ vector additions and the application of the squashing function.
 
 \subsubsection{Training the network}
 
-The network is trained using Matlab's neural network toolbox. We tried
+The network is trained using MATLAB's neural network toolbox. We tried
 a variety of feedforward neural network geometries, from simple
 1-layer perceptrons to geometries with many hidden nodes, as well as
 autoencoders. Perhaps surprisingly, even the former yields excellent
@@ -508,7 +508,7 @@ speed. For more variable songs, deep structure-preserving networks may
 be more appropriate, but they are slow to train and unnecessary for
 zebra finch song.
 
-We used the Levenburg-Marquardt algorithm, which is the Matlab
+We used the Levenburg-Marquardt algorithm, which is the MATLAB
 toolbox's default.  It is a fast algorithm, but is memory-intensive,
 so many target syllables or high FFT frame rates require a large
 amount of RAM and increase training time to hours. Other training
@@ -557,10 +557,8 @@ We found these parameters to work well across a variety of target
 syllables, but various other parameter sets yield results similar to
 those presented here.  Some of the parameters trade off detection
 accuracy or temporal precision vs.~training time. For example,
-detection latency and jitter cannot be much less than the frame
-interval, but increasing the frame rate increases the size of the
-training set and thus the training resources required.
-% detection latency goes down when increasing the frame rate
+decreasing the frame interval generally decreases both latency and
+jitter, but also increases training time.
 
 \subsection{Realtime detection}
 
@@ -602,7 +600,7 @@ instructions to perform calculations.
 When the neural network detects a match, it instructs the computer to
 generate a TTL pulse that can be used to trigger downstream hardware.
 This pulse can be either written to the computer's audio output buffer
-(again, in 8-sample to 32-sample chunks) or sent to a microcontroller
+(again, in 8- to 32-sample chunks) or sent to a microcontroller
 (Arduino) via a USB serial interface. Sending the trigger pulse via
 the serial interface and microcontroller is noticeably faster (2.2 ms
 lower latency), likely due to the fact that the audio buffer goes
@@ -618,10 +616,10 @@ We ran the Swift detector on a Late 2014 Mac Mini with a Intel Core i5
 processor at 2.6GHz  with 16 gigabytes of RAM, running Mac OS X 10.11.
 
 % technically, it is LabVIEW
-\subsubsection{LabView}
+\subsubsection{LabVIEW}
 
-This implementation requires special software and hardware: LabView
-from National Instruments, and a data acquisition card---we use the
+This implementation requires special software and hardware: LabVIEW
+from National Instruments---we used 2014 service pack 1---and a data acquisition card---we use the
 National Instruments PCI-6251 card on a PC with an Intel Core i5-4590
 processor at 3.7GHz (a relatively low-end machine) with 32 gigabytes
 of RAM, running Microsoft Windows 8.1 Pro.
@@ -637,7 +635,7 @@ FPGA hardware---which would have the additional benefit of providing
 deterministic ``hard realtime'' guarantees---or just run on a faster
 desktop system.
 
-\subsubsection{Matlab}
+\subsubsection{MATLAB}
 
 This detector uses the built-in audio input and output hardware on a
 compatible computer.  We tested on a 2014 Mac Mini (the same machine used
@@ -647,25 +645,25 @@ M-Audio MobilePre external USB audio interface.  Despite the faster
 processor, the latter system did not achieve higher performance than
 the former, due to USB data transfer overhead.
 
-Because of how Matlab's DSP toolbox interfaces with audio hardware,
+Because of how MATLAB's DSP toolbox interfaces with audio hardware,
 there is a double buffer both reading from and writing to audio
 hardware. As a result, much of the code focuses on a lightweight audio
 hardware interface, in order to have the smallest achievable audio
-buffer. To help achieve this, the Matlab implementation spreads data
+buffer. To help achieve this, the MATLAB implementation spreads data
 acquisition and processing across two threads, due to the higher
 computational overhead of the interpreted programming language.
 
-The most versatile implementation, Matlab runs on a variety of
+The most versatile implementation, MATLAB runs on a variety of
 hardware and operating systems, and is perhaps the easiest to modify.
 While it did not perform as well on our test system as the other
 implementations, the convenience may outweigh the slight timing
 performance penalty for some experiments.  Key to minimising jitter is
-the size of the audio buffer: on a 2014 Mac Mini running Matlab 2015b
+the size of the audio buffer: on a 2014 Mac Mini running MATLAB 2015b
 the smallest buffer size that did not result in read overruns was
 about 4 ms.
 
 Similar to the Swift implementation, it is also possible to modify the
-Matlab implementation to generate the TTL pulse from a microcontroller
+MATLAB implementation to generate the TTL pulse from a microcontroller
 (Arduino) controlled via a serial over USB interface. This eliminates
 the double buffer required when sending triggers via the audio
 interface, reducing latency by half.
@@ -679,9 +677,9 @@ instances of the song of one bird and 1000 instances of non-song data.
 Our test set consisted of an additional 1818 iterations of the bird's
 song and 1818 more instances of non-song data.
 
-The Matlab neural network toolbox further divides our ``training'' set
+The MATLAB neural network toolbox further divides our ``training'' set
 into internal training, validation, and test sets.  We did not stray
-from the toolbox's default values, and do not discuss Matlab's
+from the toolbox's default values, and do not discuss MATLAB's
 internal subdivision of our training set.  Because the dataset
 consists of temporally aligned songs, ground truth is available for
 each song (albeit with minor variations due to the alignment process
@@ -897,7 +895,7 @@ playback and re-digitising, we evaluated the neural network's accuracy
 directly on the digitised recording.  When training and runtime data
 are gathered on the same hardware setup, this is the digital signal
 that the detector will see---only the non-song data may be different.
-%Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabView implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
+%Accuracy \marginpar{Should be! Verify! And/or explain that there is a bug in the LabVIEW implementation, if there in fact is. ALSO need to present a picture of the test syllable or etc\dots} is identical across the three detectors.
 \noprint{
   Typical confusion matrices for these syllables are:
 
@@ -950,8 +948,8 @@ that the detector will see---only the non-song data may be different.
 
 Accuracies for our six test syllables are shown in
 \fig{fig:accuracies} (accuracies for the synthetic $\delta$-function
-songs were always 100\%).  For each test syllable, we trained
-30\marginpar{How many runs in the end?} different
+songs were always 100\%).  For each test syllable we trained
+80\marginpar{How many runs in the end?} different
 networks, which differ from each other in the random initialisation of
 network weights and on which random subset of our songs was used for
 training.  Each network's accuracy is shown as a single point in each
@@ -974,7 +972,7 @@ FFT frame interval; syllable choice; and detector implementation.
 \begin{figure}
   \includegraphics[width=\textwidth]{TimingVsFrame}
   \caption{Timing varies as the FFT frame interval changes.  Here we
-    show results for the ideal detector and the LabView and
+    show results for the ideal detector and the LabVIEW and
     Swift+serial implementations, for the constructed
     $\delta$-syllable and for trigger $t^*_4$ of the bird song.  The
     lines show latency, with error bars representing jitter.  Points have
@@ -988,7 +986,7 @@ Detector latency and jitter depend on the FFT frame rate.  Our
 precision of timing, but also increase computational requirements both
 during training and at runtime.  \fig{fig:TimingVsFrame} shows how
 these numbers vary over a useful range of frame rates on our ideal
-detector, the Swift detector with serial output, and for the LabView
+detector, the Swift detector with serial output, and for the LabVIEW
 detector, for both the $\delta$-syllable and for the bird song at
 $t^*_4$.
 
@@ -1059,11 +1057,11 @@ $t_\mathrm{fft}=1.5$ ms.  Results are as follows:
   Detector & Latency (ms) & Jitter (ms) & Latency (ms) & Jitter (ms) \\
   \hline
   Ideal & 0.66 & 0.38 & -1.0 & 2.0 \\
-  LabView & 1.5 & 0.69 & -0.18 & 2.4 \\
+  LabVIEW & 1.5 & 0.69 & -0.18 & 2.4 \\
   Swift+serial & 0.88 & 1.6 & -0.075 & 2.0 \\
   Swift+audio & 5.9 & 2.6 & 1.2 & 4.9 \\
-  Matlab+serial & 8.1 & 2.3 & 3.8 & 2.0 \\
-  Matlab+audio & 13 & 5.9 & 8.4 & 5.9
+  MATLAB+serial & 8.1 & 2.3 & 3.8 & 2.0 \\
+  MATLAB+audio & 13 & 5.9 & 8.4 & 5.9
 \end{tabular}
 \vspace{8pt}\par\noindent
 These data are also plotted in \fig{fig:TimingVsDetector}, and
@@ -1097,10 +1095,10 @@ following benefits:
 \end{itemize}
 
 Although there are differences, the Swift+serial detector and the
-LabView implementation are roughly comparable in performance.  We
+LabVIEW implementation are roughly comparable in performance.  We
 prefer the Swift implementation due to its lower hardware and software
-requirements and the difficulty of debugging LabView programmes.  With
-serial output, Matlab's performance is good, although its buffer
+requirements and the difficulty of debugging LabVIEW programmes.  With
+serial output, MATLAB's performance is good, although its buffer
 handling is sensitive to system load.
 
 The song presented here was recorded with a fixed microphone mounted
@@ -1144,22 +1142,24 @@ their improvements to the draft.  This work was funded by NIH grants
 \section{Resources}
 \label{sec:resources}
 \marginpar{PLOS doesn't really say where such things should go.}
-\marginpar{Cleanup: mostly done.  But it would be nice to move all this to the lab's Github group.}
+\marginpar{Cleanup: mostly done.  But it would be nice to move all this to the lab's GitHub group.}
 \begin{description}
   \item[Song alignment:] Last we checked, Jeff Markowitz's song
-    alignment software could be found at \\
-    {\tt https://github.com/jmarkow}.
+    alignment software could be found at
+    {\tt https://github.com/jmarkow}
+\end{description}
 
-    \item[Training the neural network:] Our implementation of the syllable
-      detector training code is available under the GNU GPL at:
-      \\ {\tt https://github.com/bwpearre/}
+ \noindent Our implementation of the syllable
+    detector is available under the GNU GPL:
+    \begin{description}
+    \item[Training the neural network:] {\tt https://github.com/bwpearre/birds/align}
 
-    \item[Runtime:] The Matlab implementation for executing the trained network:\\
-      \\ {\tt https://github.com/jmarkow/nndetector-live}\\
-      The Swift implementation for executing the trained network:\\
-      \\ {\tt https://github.com/nathanntg/syllable-detector}\\
-      The LabView implementation for executing the trained network:\\
-      \\ {\tt coming soon}
+    \item[Runtime:]\hfill
+      \begin{description}
+      \item[MATLAB:] {\tt https://github.com/jmarkow/nndetector-live}
+      \item[Swift:] {\tt https://github.com/nathanntg/syllable-detector}
+      \item[LabVIEW:] {\tt https://github.com/bwpearre/birds/align}
+      \end{description}
 
 \end{description}
 
