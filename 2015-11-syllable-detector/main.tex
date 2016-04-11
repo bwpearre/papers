@@ -135,7 +135,7 @@ Timothy J.~Gardner\textsuperscript{1,d}
 %\Yinyang These authors contributed equally to this work.
 Author \textsuperscript{a}~contributed the original Matlab and LabView implementations and most of the manuscript.
 \textsuperscript{b}~contributed the Swift implementation and its description herein, helped debug the training code, and measured the timing for most of the detectors.
-\textsuperscript{c}~wrote several types of filterbank software against which we compared, made suggestions for the neural network detector, and prepared the final version of the Matlab code for distribution.
+\textsuperscript{c}~wrote several types of filter bank software against which we compared, made suggestions for the neural network detector, and prepared the final version of the Matlab code for distribution.
 \textsuperscript{d}~provided a stream of suggested techniques, metrics, and goals.
 
 % Additional Equal Contribution Note
@@ -441,7 +441,7 @@ In order to present consistent and meaningful inputs to the neural
 network, we normalise the incoming data stream so that changes in the
 song structure of the sound are emphasised over changes in volume, and
 to maximise the effectiveness of the neural network's training
-algorithm...
+algorithm.
 
 The first normalisation step is designed to eliminate differences in
 amplitude due to changes in the bird's location and other variations
@@ -484,7 +484,7 @@ is applied a nonlinear squashing function such as {\tt tanh}, and then
 the second weight matrix $W_1$ is applied.  This produces output
 $y_t$:
 \begin{equation*}
-  y_t = W_1 \cdot \tanh (W_0 \cdot \xi_t + b_0) + b_1
+  y_t = W_1 \tanh (W_0 \xi_t + b_0) + b_1
 \end{equation*}
 The elements of each matrix are learned by back-propagation of errors
 over a training set.  A more detailed explanation of neural networks
@@ -559,8 +559,8 @@ those presented here.  Some of the parameters trade off detection
 accuracy or temporal precision vs.~training time. For example,
 detection latency and jitter cannot be much less than the frame
 interval, but increasing the frame rate increases the size of the
-training set and thus the training resources required and the
-detection latency.
+training set and thus the training resources required.
+% detection latency goes down when increasing the frame rate
 
 \subsection{Realtime detection}
 
@@ -589,10 +589,9 @@ The Core Audio frameworks provide an adjustable hardware buffer size
 for reading from and writing to audio hardware (different from our two
 circular buffers). Tuning this buffer size provides a tradeoff between
 the jitter in the detection and the processor usage needed to run the
-detector. We settled on a buffer size of 32 samples (0.7 ms at 44.1
-kHz),\marginpar{Nathan: we played with this, especially for
-  $t_\mathrm{fft}=0.5$ s.  Update?} as this created minimal system
-load while achieving detection within the desired lag and jitter.
+detector. We used buffer sizes ranging from 8 samples (0.18 ms at 44.1
+kHz) to 32 samples (0.7 ms at 44.1 kHz) depending on the frame size 
+used by the detector.
 
 Vector operations---applying the Hamming window, the FFT, input
 normalisation, matrix multiplication, and the neural network's
@@ -603,7 +602,7 @@ instructions to perform calculations.
 When the neural network detects a match, it instructs the computer to
 generate a TTL pulse that can be used to trigger downstream hardware.
 This pulse can be either written to the computer's audio output buffer
-(again, in 32-sample or 0.7-ms chunks) or sent to a microcontroller
+(again, in 8-sample to 32-sample chunks) or sent to a microcontroller
 (Arduino) via a USB serial interface. Sending the trigger pulse via
 the serial interface and microcontroller is noticeably faster (2.2 ms
 lower latency), likely due to the fact that the audio buffer goes
@@ -611,10 +610,14 @@ through hardware mixing and filtering prior to output.
 
 The above code can be run on multiple channels of audio on consumer
 hardware (such as a 2014 Mac Mini) with little impact on CPU usage
-($<15\%$). Depending on the experimental needs, latency can be further
-decreased (at the expense of processor usage) by adjusting the audio
+($<15\%$). Depending on the experimental needs, latency can potentially
+be further decreased (at the expense of processor usage) by adjusting the audio
 buffer sizes.
 
+We ran the Swift detector on a Late 2014 Mac Mini with a Intel Core i5
+processor at 2.6GHz  with 16 gigabytes of RAM, running Mac OS X 10.11.
+
+% technically, it is LabVIEW
 \subsubsection{LabView}
 
 This implementation requires special software and hardware: LabView
@@ -637,11 +640,12 @@ desktop system.
 \subsubsection{Matlab}
 
 This detector uses the built-in audio input and output hardware on a
-compatible computer.  We tested on a 2014 Mac Mini and 2015 Mac Pro.
+compatible computer.  We tested on a 2014 Mac Mini (the same machine used
+for the Swift detector described above) and 2015 Mac Pro.
 The Mac Pro does not have an audio input jack, so input was through an
 M-Audio MobilePre external USB audio interface.  Despite the faster
 processor, the latter system did not achieve higher performance than
-the former, perhaps due to USB data transfer overhead.
+the former, due to USB data transfer overhead.
 
 Because of how Matlab's DSP toolbox interfaces with audio hardware,
 there is a double buffer both reading from and writing to audio
@@ -766,8 +770,18 @@ low-to-high transition with form approximating the cumulative
 probability distribution function (CDF) of the detector's output in
 response to the chosen song event.
 
-Mean latency is then given as the halfway point of that detection
-sigmoid. It is a helpful number, but not a critical one, since a
+% Use to say: "Mean latency is then given as the halfway point of that detection 
+% sigmoid."
+%
+% I don't think this description matches the calculation, this description
+% seems to better match a "median" latency. The mean latency is calculated
+% as an average latency of all detection events, which is the same as 
+% fitting a normal distribution to the detection events and taking the mean
+% of the normal distribution (the MLE estimator is the same as the sample mean).
+
+Mean latency is then given as the average time between the 
+canonical signal and the corresponding detection event. 
+It is a helpful number, but not a critical one, since a
 detector with high but constant latency can often be trained to
 trigger at a point somewhat before the true moment of interest,
 especially given the stereotypy of zebra finch song.  Often more
@@ -955,7 +969,7 @@ re-train when necessary.
 We evaluate variability in timing performance across three variables:
 FFT frame interval; syllable choice; and detector implementation.
 
-\subsubsection{FFT Frame Interval}
+\subsubsection{FFT frame interval}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{TimingVsFrame}
@@ -963,8 +977,8 @@ FFT frame interval; syllable choice; and detector implementation.
     show results for the ideal detector and the LabView and
     Swift+serial implementations, for the constructed
     $\delta$-syllable and for trigger $t^*_4$ of the bird song.  The
-    lines show latency, with errorbars reprenting jitter.  Points have
-    been shifted slightly for clarity; original positions are [0.5 1
+    lines show latency, with error bars representing jitter.  Points have
+    been shifted horizontally slightly for clarity; original positions are [0.5 1
       1.5 2 4] ms.}
   \label{fig:TimingVsFrame}
 \end{figure}
@@ -1030,7 +1044,7 @@ timing consistency, but we did not test this.
   \end{center}
   \caption{Raw timing curves for all detectors measured during
     detection of $t^*_4$ using 1.5-ms frames.  A maximum-likelihood
-    fit of a Gaussian cumumative distribution function was computed
+    fit of a Gaussian cumulative distribution function was computed
     for each curve, from which were extracted the mean---latency---and
     standard deviation---jitter.}
   \label{fig:timing}
@@ -1093,6 +1107,7 @@ The song presented here was recorded with a fixed microphone mounted
 inside the cage.  We found that higher accuracy is achieved when a
 microphone is instead mounted on the bird's head, which maintains
 volume and reduces changes in timbre as the bird moves.
+% We have head mounted microphone data?
 
 A common experimental paradigm requires detecting the frequency of
 syllables.  Many pitch detection techniques rely on the spectrum,
@@ -1129,7 +1144,7 @@ their improvements to the draft.  This work was funded by NIH grants
 \section{Resources}
 \label{sec:resources}
 \marginpar{PLOS doesn't really say where such things should go.}
-\marginpar{Cleanup: mostly done.  But it would be nice to move all this to the lab's github group.}
+\marginpar{Cleanup: mostly done.  But it would be nice to move all this to the lab's Github group.}
 \begin{description}
   \item[Song alignment:] Last we checked, Jeff Markowitz's song
     alignment software could be found at \\
@@ -1139,9 +1154,13 @@ their improvements to the draft.  This work was funded by NIH grants
       detector training code is available under the GNU GPL at:
       \\ {\tt https://github.com/bwpearre/}
 
-    \item[Runtime:] The Matlab, Swift, and Labview implementations for executing the trained
+    \item[Runtime:] The Matlab, Swift, and LabView implementations for executing the trained
       network:\\
       {\tt https://github.com/nathanntg/syllable-detector}
+      % Should probably put in separate links for each implementation:
+      % Matlab https://github.com/jmarkow/nndetector-live
+      % Swift https://github.com/nathanntg/syllable-detector
+      % LabView unsure?
 \end{description}
 
 \bibliography{birds}
