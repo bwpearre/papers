@@ -243,7 +243,7 @@ short chirp from a long one---and thus requires careful selection of
 target syllables.  Furthermore, the method is neither inexpensive nor,
 based on our experience with a similar technique, accurate.
 \cite{Keller2009} applied a neural network to a spectral image of
-song.  They report a latency of 4.3 ms, but further implementation and
+song.  They report a jitter of 4.3 ms, but further implementation and
 performance details are not available.  In 2011, \cite{Warren2011}
 matched spectral templates to stable portions of syllables in 8-ms
 segments.  They report a jitter of 4.5 ms, and false-negative and
@@ -264,7 +264,7 @@ information is provided.
 
 We developed a standalone detector that learns to match moments in the
 song using a neural network applied to the song spectrogram, and
-outputs a TTL pulse at the chosen moment. The approach consists of
+outputs a TTL pulse (a brief 5-volt pulse) at the chosen moment. The approach consists of
 three steps:
 
 \begin{enumerate}
@@ -273,7 +273,7 @@ three steps:
   neural network to recognise them. This step is carried out offline.  While any neural network software would produce equivalent results, we used MATLAB 2015b's neural network toolbox.
 \item Once trained and saved, the neural network is used by a realtime
   detection program that listens to an audio signal and indicates detection of the target
-  syllables via a TTL pulse.  We present three implementations that trade off hardware requirements, ease of maintenance, and performance.
+  syllables via a TTL pulse.  We present three implementations, in MATLAB, LabVIEW, and Swift, that trade off hardware requirements, ease of maintenance, and performance.
 \end{enumerate}
 This method makes the following contributions:
 \begin{itemize}
@@ -368,15 +368,14 @@ and an audio test file.
 The neural network's inputs are the FFT values from a rectangular
 region of the spectrogram covering a predefined range of frequency
 values $F$ (for example, 1--8 kHz) at some number of the most recent
-frames $n_\textrm{fft}$.  Any time $t$ falls within one of the frames,
-$\tau(t)$, and $t-t_\textrm{fft}$ falls within the previous frame.
-The recognition region that the neural network receives as input
+frames $n_\textrm{fft}$.  Any time $t$ falls within frame
+$\tau(t)$, and $t-t_\textrm{fft}$ falls within the previous frame, so the recognition region that the neural network receives as input
 consists of the spectrogram values over $F$ at $\tau(t)$ and those
 from the contiguous set of recent frames: $T = \{$ $\tau(t)$,
 $\tau(t-t_\textrm{fft})$, $\tau(t-{2t_\textrm{fft}})\ldots$
 $\tau(t-n_\textrm{fft}t_\textrm{fft})\}$.  We have found that a 30-ms
-time window (which will yield $n_\textrm{fft} = |T|=\lfloor 30\textrm{
-  ms}/t_\textrm{fft}\rceil$ frames) of frequencies spanning 1--8 kHz
+time window---which will yield $n_\textrm{fft} = |T|=\lfloor 30\textrm{
+  ms}/t_\textrm{fft}\rceil$ frames---of frequencies spanning 1--8 kHz
 works well for most syllables.
 
 Six examples of chosen target moments in the song, and their
@@ -407,7 +406,7 @@ $F$ taken at all of the times in the set $T$: from
 $\tau(t-n_\textrm{fft}t_\textrm{fft})$ to $\tau(t)$.  These vectors
 are placed into a training matrix, $\Xi$, such that each column
 $\xi_t$ holds the contents of the recognition region---containing
-multiple columns from the spectrogram---as of one value of $t$
+multiple frames from the spectrogram---as of one value of $t$.
 
 Training targets $y_t$ are vectors with one element for each desired
 detection syllable.  That element is, roughly, 1 if the input vector
@@ -415,8 +414,7 @@ comes from the target time ($t=t^*$), 0 otherwise, for each target
 syllable (of which there may be any number, although they increase
 training time, and in our implementations the number of distinct
 output pulses is constrained by hardware).  Since the song alignment
-may not be perfect, due to sample aliasing, and because the song
-spectrogram appears not to vary faster than the frame rate we chose, a
+may not be perfect, and due to sample aliasing, a
 strict binary target may ask the network to learn that, of two
 practically identical frames, one should be a match and the other
 not. Thus it is preferable to spread the target in time, such that at
@@ -486,7 +484,7 @@ $y_t$:
 \begin{equation*}
   y_t = W_1 \tanh (W_0 \xi_t + b_0) + b_1
 \end{equation*}
-The elements of each matrix are learned by back-propagation of errors
+During the network's training phase, the elements of the matrices and bias vectors are learned by back-propagation of errors
 over a training set.  A more detailed explanation of neural networks
 may be found in \cite{hkp}.
 
@@ -527,7 +525,7 @@ of false negatives to false positives, $C_n$. The second is the
 acceptable time interval: if the true event occurs at time $t$, and
 the detector triggers at any time $t\pm\Delta t$, then it is
 considered a correct detection. Then the optimal detection threshold
-$\tau$ is the one that minimises $\textrm{[false positives]}
+is the number that minimises $\textrm{[false positives]}
 +C_n\cdot\textrm{[false negatives]}$ over the training set, using the
 definitions of false positives and negatives given in
 Section~\ref{sec:accuracy}. Since large portions of the cost function
@@ -538,8 +536,8 @@ $\Delta t=10$ ms.
 
 \subsubsection{De-bouncing}
 
-Since the network may produce above-threshold responses to nearby
-frames, after the first response, subsequent responses are suppressed
+During runtime, the network may produce above-threshold responses to nearby
+frames.  Thus, after the first response, subsequent responses are suppressed
 for 100 ms.  However, for the accuracy figures presented here, we used
 the un-de-bounced network response.
 
@@ -631,7 +629,7 @@ implementation currently renders it substantially less accurate than
 the other detector implementations on some syllables. However, our
 test configuration usually achieved excellent performance, and further
 gains should be possible if the implementation were retargeted onto
-FPGA hardware---which would have the additional benefit of providing
+field-programmable gate array (FPGA) hardware---which would have the additional benefit of providing
 deterministic ``hard realtime'' guarantees---or just run on a faster
 desktop system.
 
@@ -673,9 +671,9 @@ interface, reducing latency by half.
 
 We divided the data into training and test sets.  For the results
 reported in the following section, the training set consisted of 1000
-instances of the song of one bird and 1000 instances of non-song data.
+instances of the song of one bird.
 Our test set consisted of an additional 1818 iterations of the bird's
-song and 1818 more instances of non-song data.
+song.
 
 The MATLAB neural network toolbox further divides our ``training'' set
 into internal training, validation, and test sets.  We did not stray
@@ -847,9 +845,11 @@ complex changing tone structure.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{detection_raster}
+  % 9x10 inches
+  % Fonts: Helvetica, scaled 130%
   \caption{Each plot shows one network output unit's responses to all
     2818 presentations of the song shown in \fig{fig:song}.  For
-    simplicity, we show only the syllables $t^*_2$, $t^*_4$, and
+    simplicity, we show only the syllables $t^*_1$, $t^*_4$, and
     $t^*_6$. The horizontal axis is time relative to the beginning of
     the aligned song, and the vertical axis is an index for the 2818
     single song presentations. The grey shading shows the total audio
@@ -1042,7 +1042,7 @@ timing consistency, but we did not test this.
   \end{center}
   \caption{Raw timing curves for all detectors measured during
     detection of $t^*_4$ using 1.5-ms frames.  A maximum-likelihood
-    fit of a Gaussian cumulative distribution function was computed
+    fit of a Gaussian cumulative distribution function (CDF) was computed
     for each curve, from which were extracted the mean---latency---and
     standard deviation---jitter.}
   \label{fig:timing}
@@ -1133,7 +1133,7 @@ recognition region may be added to the training set.  We will test
 these approaches in future work.
 
 \section{Acknowledgments}
-We would like to thank William A.~Liberti and Winthrop F.~Gillis for
+We would like to thank Winthrop F.~Gillis, William A.~Liberti, and Sanne Moorman for
 their improvements to the draft.  This work was funded by NIH grants
 5R01NS089679-02 and 5U01NS090454-02.
 
