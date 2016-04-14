@@ -837,7 +837,7 @@ far from pure tones, but are closer to coloured noise.  They would be
 difficult for a harmonic-stack filter bank to detect, and especially to
 pinpoint in time.  $t^*_3$ (250 ms) and $t^*_6$ (400 ms) are rich in
 overtones and contain downward slides with changing timbres.  $t^*_4$
-(300 ms) is a more typical harmonic stack amenable to a variety of
+(300 ms) occurs near the beginning of a more typical harmonic stack amenable to a variety of
 recognition techniques, although consistently detecting a point
 partway through the syllable demands a detector that can use multiple
 time steps.  $t^*_5$ (350 ms) shows a steady pitch followed by a
@@ -852,21 +852,19 @@ complex changing tone structure.
     simplicity, we show only the syllables $t^*_1$, $t^*_4$, and
     $t^*_6$. The horizontal axis is time relative to the beginning of
     the aligned song, and the vertical axis is an index for the 2818
-    single song presentations. The grey shading shows the total audio
-    energy of song Y at time T. The bar on the left is the same width
-    as the detection window, and its colour code shows training songs
-    adjacent to cyan regions and unseen test songs adjacent to red
-    regions. For visualisation of the distribution, songs have been
+    individual song presentations. The grey shading shows the total audio
+    energy of song Y at time T. Detection events on training songs
+    are shown in cyan, with detections of unseen test songs in red.  To provide an intuition of intra-song variability, songs have been
     stably sorted by the time of detection events; thus, each of the
     three detection graphs shows the songs in a different order.}
   \label{fig:detection_raster}
 \end{figure}
 
 An example of the detector's output for three of these syllables is
-shown in \fig{fig:detection_raster}.  By sorting according to time of
+shown in \fig{fig:detection_raster}.  The total audio energy of each song is shown as a single grayscale row.  By sorting according to time of
 each syllable's detection, the rest of the song is shown in the
 context of the timing for that moment.  This gives an intuition of the
-timing variability across different songs (which may be responsible
+timing variability within each song and across songs (which may be responsible
 for some of our measured jitter).
 
 \subsection{Accuracy}
