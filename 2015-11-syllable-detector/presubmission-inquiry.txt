@@ -1,0 +1,111 @@
+Problem:
+
+The zebra finch sings a strikingly stereotyped song.  The highly
+reproducible link between neural activity and motor output has made it
+a unique model for studying the neural basis of learning, audition,
+and motor control. "Feedback" experiments, in which some controlled
+condition is altered during some moment of motor output over many
+instances of almost identical behaviour, have proven especially
+fruitful (please see the Introduction of the attached paper for a few
+examples).  The nature of feedback experiments requires that
+experimental apparatus be triggered as consistently as possible: a
+triggering device must be both fast and accurate.  Despite the common
+need for this technique among birdsong researchers, no standard tool
+exists, and of the tools that are described thoroughly enough to
+implement, little information is available on their performance.  Labs
+have thus been required to implement their own detectors, with mixed
+results.
+
+Prior work:
+
+A variety of syllable-triggering systems have been used, but few have
+been documented or characterised in detail.  Leonardo [1999] used
+groups of IIR filters with hand-tuned logical operators.  Their system
+had a latency of 50 or 100 milliseconds (ms), and they do not report
+on jitter or accuracy.  As access to computational resources has
+improved, approaches have changed: Andalman [2009] still used
+hand-tuned filters, but ran them on a Tucker-Davis Technologies
+digital signal processor.  They report a latency of around 4 ms, but
+as with other filter-bank techniques, it is not strictly a syllable
+detector but rather a pitch and timbre detector---it cannot identify a
+frequency sweep, or distinguish a short chirp from a long one---and
+thus requires careful selection of target syllables.  Furthermore, the
+method is neither inexpensive nor, based on our experience with a
+similar technique, accurate.  Keller [2009] applied a neural network
+to a spectral image of song.  They report a jitter of 4.3 ms, but
+further implementation and performance details are not available.
+Warren [2011] matched spectral templates to stable portions of
+syllables in 8-ms segments.  They report a jitter of 4.5 ms, and
+false-negative and false-positive rates of up to 2% and 4%,
+respectively.  Hardware requirements and ease of use were not
+reported.  Skocik [2013] described in detail a system that matches
+spectral images of template syllables using a correlation
+coefficient--similar to our own work, but with a less reliable
+identification algorithm.  With a fast desktop (Intel i7 six-core) and
+equipped with a National Instruments data acquisition card, it boasts
+a hardware-only (not accounting for the time taken to compute a match
+with a syllable) latency and jitter of just a few microseconds, and
+the detection computation they use should not much increase that.
+Drawbacks are that some hand-tuning is still required, and that they
+report false-negative rates around 4% and 7% for zebra finches and
+Bengalese finches respectively, measured on a small dataset for which
+few details are given.  In much other work, an allusion is made to a
+syllable detector, but no further information is provided.  Reports on
+timing, if they exist at all, are anecdotal.
+
+Innovation:
+
+We developed a standalone detector that learns to match moments in the
+song using a neural network applied to the song spectrogram, and
+outputs a TTL pulse (a brief 5-volt pulse) at the chosen moment. The
+approach consists of three steps:
+
+* Record and align a corpus of training songs.  The technique has been
+  published in Poole [2012].
+
+* Choose one or more instants in the song that should create a trigger
+  event, and train a neural network to recognise them. This step is
+  carried out offline.
+
+* Once trained and saved, the neural network is used by a realtime
+  detection program that listens to an audio signal and indicates
+  detection of the target syllables via a TTL pulse.  We present three
+  implementations, in MATLAB, LabVIEW, and Swift, that trade off
+  hardware requirements, ease of maintenance, and performance.
+
+This method makes the following contributions:
+
+* Fast: sub-millisecond latencies, with standard deviations around 2
+  ms.
+
+* Accurate: false positive rates under 0.02% and false negative rates
+  under 0.5% for a variety of syllables.
+
+* State-of-the-art performance with default parameters.
+
+* Runs on inexpensive hardware.
+
+* Described in detail here, with reference implementations provided
+  and benchmarked.
+
+Validation:
+
+We measure accuracy and timing on six pseudorandomly chosen moments in
+a typical bird's song.  Our test procedure for this paper involved
+training on 1000 instances of a bird's song and testing on another
+1818 instances.  To characterise accuracy and consistency of the
+training procedure, we run the training software 100 times on each of
+the six moments.
+
+In order to measure timing, we use an oscilloscope to automatically
+compare the detector's response to a ground truth signal that is
+available from our training corups, providing a more complete measure
+of timing than has heretofore been available.  Timing is tested on
+only 128 song presentations due to limitations of the oscilloscope.
+We compare timing across various configurable parameters in order to
+justify and provide information on our default choices, and we compare
+our three implementations of the realtime detector against each other.
+
+Availability:
+
+The software will be provided under an open-source license, available on our lab's GitHub repository.  It is our intention that the community may easily fork, modify, and contribute improvements back to the project.
