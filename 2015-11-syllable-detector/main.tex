@@ -764,7 +764,7 @@ timing data. The canonical signal is the trigger at $t=0$, and the
 average of the detector's detection events will be seen as a
 low-to-high transition with form approximating the cumulative
 probability distribution function (CDF) of the detector's output in
-response to the chosen song event.
+response to the chosen song event, with individual detection events visible as steps in this curve.
 
 % Use to say: "Mean latency is then given as the halfway point of that detection 
 % sigmoid."
@@ -782,12 +782,7 @@ detector with high but constant latency can often be trained to
 trigger at a point somewhat before the true moment of interest,
 especially given the stereotypy of zebra finch song.  Often more
 important is latency jitter: how much variability is there in the
-latency?
-
-We obtain both of these numbers by performing a maximum-likelihood fit
-of a Gaussian distribution to the timing data obtained from the
-oscilloscope.  We refer to the distribution's mean as latency and its
-standard deviation as jitter.
+latency?  We define jitter as the standard deviation of the latency.
 
 When measuring timing, it is useful to compare against a theoretical
 optimal, in order to control for any imprecision in the song
@@ -852,8 +847,8 @@ complex changing tone structure.
     simplicity, we show only the syllables $t^*_1$, $t^*_4$, and
     $t^*_6$. The horizontal axis is time relative to the beginning of
     the aligned song, and the vertical axis is an index for the 2818
-    individual song presentations. The grey shading shows the total audio
-    energy of song Y at time T. Detection events on training songs
+    individual song presentations. The grey shading shows the audio
+    amplitude of song Y at time T. Detection events on training songs
     are shown in cyan, with detections of unseen test songs in red.  To provide an intuition of intra-song variability, songs have been
     stably sorted by the time of detection events; thus, each of the
     three detection graphs shows the songs in a different order.}
@@ -973,7 +968,7 @@ FFT frame interval; syllable choice; and detector implementation.
     show results for the ideal detector and the LabVIEW and
     Swift+serial implementations, for the constructed
     $\delta$-syllable and for trigger $t^*_4$ of the bird song.  The
-    lines show latency, with error bars representing jitter.  Points have
+    lines show latency; error bars are standard deviation (jitter).  Points have
     been shifted horizontally slightly for clarity; original positions are [0.5 1
       1.5 2 4] ms.}
   \label{fig:TimingVsFrame}
@@ -1039,9 +1034,7 @@ timing consistency, but we did not test this.
     \includegraphics[width=8cm]{timing}
   \end{center}
   \caption{Raw timing curves for all detectors measured during
-    detection of $t^*_4$ using 1.5-ms frames.  A maximum-likelihood
-    fit of a Gaussian cumulative distribution function (CDF) was computed
-    for each curve, from which were extracted the mean---latency---and
+    detection of $t^*_4$ using 1.5-ms frames.  We extract the trigger events from each curve, from which we obtain the mean---latency---and
     standard deviation---jitter.}
   \label{fig:timing}
 \end{figure}
