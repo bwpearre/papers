@@ -1,3 +1,17 @@
+Hello!
+
+We have developed a piece of software that may be of general interest
+to neuroscientists working in the zebra finch.  We've gone to some
+lengths to describe and characterise the software's performance in
+detail, and the manuscript is about twice as long as a Software
+manuscript should be, so we'd like to ask whether it would be
+appropriate for Methods.
+
+I'm going to try to upload the manuscript as well, if your presubmission system allows that.
+
+Thank you!
+-Ben Pearre <bwpearre@gmail.com>
+
 Problem:
 
 The zebra finch sings a strikingly stereotyped song.  The highly

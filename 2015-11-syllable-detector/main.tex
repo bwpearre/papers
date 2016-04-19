@@ -119,11 +119,12 @@
 \\
 Ben Pearre\textsuperscript{1,a,\textcurrency},
 L.~Nathan Perkins\textsuperscript{1,b},
-Jeffrey E.~Markowitz\textsuperscript{1,c},
+Jeffrey E.~Markowitz\textsuperscript{2,c},
 Timothy J.~Gardner\textsuperscript{1,d}
 \\
 \bigskip
-\textsuperscript{1} Department of Biology, Boston University, Boston, Massachusetts, United States of America
+\textsuperscript{1} Department of Biology, Boston University, Boston, Massachusetts, United States of America\\
+\textsuperscript{2} Department of Neurobiology, Harvard Medical School, Cambridge, Massachusetts, United States of America
 \\
 \bigskip
 
@@ -135,7 +136,7 @@ Timothy J.~Gardner\textsuperscript{1,d}
 %\Yinyang These authors contributed equally to this work.
 Author \textsuperscript{a}~contributed the original MATLAB and LabVIEW implementations and most of the manuscript.
 \textsuperscript{b}~contributed the Swift implementation and its description herein, helped debug the training code, and measured the timing for most of the detectors.
-\textsuperscript{c}~wrote several types of filter-bank software against which we compared, made suggestions for the neural network detector, and prepared the final version of the MATLAB code for distribution.
+\textsuperscript{c}~wrote several types of filter-bank software against which we compared, made suggestions for the neural network detector, and reformatted the MATLAB code for distribution.
 \textsuperscript{d}~provided a stream of suggested techniques, metrics, and goals.
 
 % Additional Equal Contribution Note
@@ -301,15 +302,6 @@ case made inside a sound-isolating chamber in which was mounted a
 recording microphone (Audio-Technica AT803).  The songs are
 time-aligned as described in \cite{Poole2012}.
 
-\begin{figure}
-  \includegraphics[width=\textwidth]{6syllables}
-  \caption{This image was made by superposing the spectra of our 2818
-    aligned songs.  Our example detection points, $t^*_1\ldots t^*_6$,
-    are shown as red lines, with the recognition regions (30 ms
-    $\times$ 1--8 kHz) marked as rectangles.}
-  \label{fig:song}
-\end{figure}
-
 We rely on two circular buffers:
 \begin{description}
 \item[Audio buffer:] This contains the most recent audio samples, and
@@ -333,6 +325,17 @@ must be appended to the audio buffer, the FFT is computed using the
 most recent 256 samples in that buffer, and the result is appended to
 the FFT buffer.  Over time, the successive spectra will look something
 like \fig{fig:song}.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{Fig1}
+  \caption{This image was made by superposing the spectra of our 2818
+    aligned songs.  Our example detection points, $t^*_1\ldots t^*_6$,
+    are shown as red lines, with the recognition regions (30 ms
+    $\times$ 1--8 kHz) marked as rectangles.}
+  \label{fig:song}
+\end{figure}
+
+
 
 Note that this results in time being discretised into chunks of length
 $t_\mathrm{fft}$.  Because each Fourier transform computation contains
@@ -838,8 +841,15 @@ partway through the syllable demands a detector that can use multiple
 time steps.  $t^*_5$ (350 ms) shows a steady pitch followed by a
 complex changing tone structure.
 
+An example of the detector's output for three of these syllables is
+shown in \fig{fig:detection_raster}.  The total audio energy of each song is shown as a single grayscale row.  By sorting according to time of
+each syllable's detection, the rest of the song is shown in the
+context of the timing for that moment.  This gives an intuition of the
+timing variability within each song and across songs (which may be responsible
+for some of our measured jitter).
+
 \begin{figure}
-  \includegraphics[width=\textwidth]{detection_raster}
+  \includegraphics[width=\textwidth]{Fig2}
   % 9x10 inches
   % Fonts: Helvetica, scaled 130%
   \caption{Each plot shows one network output unit's responses to all
@@ -855,27 +865,7 @@ complex changing tone structure.
   \label{fig:detection_raster}
 \end{figure}
 
-An example of the detector's output for three of these syllables is
-shown in \fig{fig:detection_raster}.  The total audio energy of each song is shown as a single grayscale row.  By sorting according to time of
-each syllable's detection, the rest of the song is shown in the
-context of the timing for that moment.  This gives an intuition of the
-timing variability within each song and across songs (which may be responsible
-for some of our measured jitter).
-
 \subsection{Accuracy}
-
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\textwidth]{Accuracies}
-  \end{center}
-  \caption{Accuracy variability over 100 different training runs for each
-    of the six test syllables.  Each dot shows the test-set accuracy
-    for an independently trained detector.  Because the horizontal
-    positions have been randomised slightly so as not to occlude same-valued
-    measurements, test syllable is also indicated by colour.}
-  \label{fig:accuracies}
-\end{figure}
 
 
 We allowed our training software to allocate our default of 4 hidden
@@ -954,6 +944,19 @@ is easy to spot these networks by their performance either as measured
 as part of the training process or on the test audio file, and
 re-train when necessary.
 
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\textwidth]{Fig3}
+  \end{center}
+  \caption{Accuracy variability over 100 different training runs for each
+    of the six test syllables.  Each dot shows the test-set accuracy
+    for an independently trained detector.  Because the horizontal
+    positions have been randomised slightly so as not to occlude same-valued
+    measurements, test syllable is also indicated by colour.}
+  \label{fig:accuracies}
+\end{figure}
+
+
 
 \subsection{Timing}
 
@@ -961,18 +964,6 @@ We evaluate variability in timing performance across three variables:
 FFT frame interval; syllable choice; and detector implementation.
 
 \subsubsection{FFT frame interval}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{TimingVsFrame}
-  \caption{Timing varies as the FFT frame interval changes.  Here we
-    show results for the ideal detector and the LabVIEW and
-    Swift+serial implementations, for the constructed
-    $\delta$-syllable and for trigger $t^*_4$ of the bird song.  The
-    lines show latency; error bars are standard deviation (jitter).  Points have
-    been shifted horizontally slightly for clarity; original positions are [0.5 1
-      1.5 2 4] ms.}
-  \label{fig:TimingVsFrame}
-\end{figure}
 
 Detector latency and jitter depend on the FFT frame rate.  Our
 1.5-ms--frame default is a compromise: shorter frames increase the
@@ -983,17 +974,19 @@ detector, the Swift detector with serial output, and for the LabVIEW
 detector, for both the $\delta$-syllable and for the bird song at
 $t^*_4$.
 
-\subsubsection{Syllable choice}
-
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=8cm]{TimingVsSyllable}
-  \end{center}
-  \caption{Timing data for our 6 test syllables, for the ideal and the
-    Swift+serial detectors, with an FFT frame rate of 1.5 ms.  Point
-    centres show latency; error bars show jitter.}
-  \label{fig:TimingVsSyllable}
+  \includegraphics[width=\textwidth]{Fig4}
+  \caption{Timing varies as the FFT frame interval changes.  Here we
+    show results for the ideal detector and the LabVIEW and
+    Swift+serial implementations, for the constructed
+    $\delta$-syllable and for trigger $t^*_4$ of the bird song.  The
+    lines show latency; error bars are standard deviation (jitter).  Points have
+    been shifted horizontally slightly for clarity; original positions are [0.5 1
+      1.5 2 4] ms.}
+  \label{fig:TimingVsFrame}
 \end{figure}
+
+\subsubsection{Syllable choice}
 
 Syllable choice impacts detector performance, but despite the variety
 of syllables chosen here, performance was fairly stable across
@@ -1015,29 +1008,22 @@ similar to the trained match, the network's evaluation of similarity
 rises, and will generally cross the triggering threshold before it
 reaches its maximum value.  A heuristic as simple as triggering at an
 apparent turning point after crossing the threshold might improve
-timing consistency, but we did not test this.
+timing consistency at the expense of latency, but we did not test this.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=8cm]{Fig5}
+  \end{center}
+  \caption{Timing data for our 6 test syllables, for the ideal and the
+    Swift+serial detectors, with an FFT frame rate of 1.5 ms.  Point
+    centres show latency; error bars show jitter.}
+  \label{fig:TimingVsSyllable}
+\end{figure}
+
+
 
 \subsubsection{Detector Implementations}
 
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=8cm]{TimingVsDetector}
-  \end{center}
-  \caption{The different detectors for the constructed
-    $\delta$-syllable and for the bird song at $t^*_4$.  Point centres
-    show latency; error bars show jitter.}
-  \label{fig:TimingVsDetector}
-\end{figure}
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=8cm]{timing}
-  \end{center}
-  \caption{Raw timing curves for all detectors measured during
-    detection of $t^*_4$ using 1.5-ms frames.  We extract the trigger events from each curve, from which we obtain the mean---latency---and
-    standard deviation---jitter.}
-  \label{fig:timing}
-\end{figure}
 
 We compared latency and jitter across our different detector
 implementations for the $\delta$-syllable and $t^*_4$, again with
@@ -1058,6 +1044,26 @@ $t_\mathrm{fft}=1.5$ ms.  Results are as follows:
 These data are also plotted in \fig{fig:TimingVsDetector}, and
 \fig{fig:timing} gives a more detailed view of what the timing curves
 look like for the five implementations of our detector on $t^*_4$.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=8cm]{Fig6}
+  \end{center}
+  \caption{The different detectors for the constructed
+    $\delta$-syllable and for the bird song at $t^*_4$.  Point centres
+    show latency; error bars show jitter.}
+  \label{fig:TimingVsDetector}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=8cm]{Fig7}
+  \end{center}
+  \caption{Raw timing curves for all detectors measured during
+    detection of $t^*_4$ using 1.5-ms frames.  We extract the trigger events from each curve, from which we obtain the mean---latency---and
+    standard deviation---jitter.}
+  \label{fig:timing}
+\end{figure}
 
 
 \section{Discussion}
@@ -1132,8 +1138,8 @@ their improvements to the draft.  This work was funded by NIH grants
 
 \section{Resources}
 \label{sec:resources}
-\marginpar{PLOS doesn't really say where such things should go.}
-\marginpar{Cleanup: mostly done.  But it would be nice to move all this to the lab's GitHub group.}
+%\marginpar{PLOS doesn't really say where such things should go.}
+%\marginpar{Cleanup: mostly done.  But it would be nice to move all this to the lab's GitHub group.}
 \begin{description}
   \item[Song alignment:] Last we checked, Jeff Markowitz's song
     alignment software could be found at
@@ -1141,10 +1147,13 @@ their improvements to the draft.  This work was funded by NIH grants
 \end{description}
 
  \noindent Our implementation of the syllable
-    detector is available under the GNU GPL:
+    detector is available under an open-source license (at the time of this draft, we have not yet decided on which open-source license to use, and the final location will probably move from Author (a)'s to our lab's GitHub group):
     \begin{description}
-    \item[Training the neural network:] {\tt https://github.com/bwpearre/birds/align}
-
+    \item[Training the neural network:]\hfill
+      \begin{trivlist}
+      \item {\tt https://github.com/bwpearre/birds/align}
+      \end{trivlist}
+      
     \item[Runtime:]\hfill
       \begin{description}
       \item[MATLAB:] {\tt https://github.com/jmarkow/nndetector-live}
