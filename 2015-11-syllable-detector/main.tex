@@ -945,11 +945,12 @@ as part of the training process or on the test audio file, and
 re-train when necessary.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=\textwidth]{Fig3}
-  \end{center}
+  % Width 8, height 3, font 120%
+  \includegraphics[width=\textwidth]{Fig3}
+  \includegraphics[width=\textwidth]{accuracies-2hidden}
+  
   \caption{Accuracy variability over 100 different training runs for each
-    of the six test syllables.  Each dot shows the test-set accuracy
+    of the six test syllables, for (top) four and (bottom) two hidden units.  Each dot shows the test-set accuracy
     for an independently trained detector.  Because the horizontal
     positions have been randomised slightly so as not to occlude same-valued
     measurements, test syllable is also indicated by colour.}
