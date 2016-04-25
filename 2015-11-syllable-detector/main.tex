@@ -947,17 +947,17 @@ re-train when necessary.
 \begin{figure}
   % Width 8, height 3, font 120%
   \includegraphics[width=\textwidth]{Fig3}
-  \includegraphics[width=\textwidth]{accuracies-2hidden}
+  %\includegraphics[width=\textwidth]{accuracies-2hidden}
   
   \caption{Accuracy variability over 100 different training runs for each
-    of the six test syllables, for (top) four and (bottom) two hidden units.  Each dot shows the test-set accuracy
+    of the six test syllables.  Each dot shows the test-set accuracy
     for an independently trained detector.  Because the horizontal
     positions have been randomised slightly so as not to occlude same-valued
     measurements, test syllable is also indicated by colour.}
   \label{fig:accuracies}
 \end{figure}
 
-
+We repeated the above experiment using only 2 hidden units per syllable.  Training under this condition is much faster, but the mean true positive rate per syllable decreases by an average of 18\% across our test syllables, and the mean false positive rate increases by roughly 23\%.
 
 \subsection{Timing}
 
