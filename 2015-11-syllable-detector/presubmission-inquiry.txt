@@ -1,16 +1,22 @@
 Hello!
 
 We have developed a piece of software that may be of general interest
-to neuroscientists working in the zebra finch.  We've gone to some
-lengths to describe and characterise the software's performance in
-detail, and the manuscript is about twice as long as a Software
-manuscript should be, so we'd like to ask whether it would be
-appropriate for Methods.
+to neuroscientists working in the zebra finch and possibly other bird
+species.  We've gone to some lengths to describe and characterise the
+software's performance in detail, and the manuscript is about twice as
+long as a Software manuscript should be, so we'd like to ask whether
+it would be appropriate for Methods.
 
-I'm going to try to upload the manuscript as well, if your presubmission system allows that.
+Included is the manuscript.  At the last minute we decided to add a
+brief description of an in-vivo experiment, described in the
+"Validation" section of this letter.  This is not yet included in the
+manuscript that I uploaded, but will add a couple of interesting
+paragraphs, if you decide that you want to review this.
 
 Thank you!
 -Ben Pearre <bwpearre@gmail.com>
+
+
 
 Problem:
 
@@ -119,6 +125,20 @@ only 128 song presentations due to limitations of the oscilloscope.
 We compare timing across various configurable parameters in order to
 justify and provide information on our default choices, and we compare
 our three implementations of the realtime detector against each other.
+
+In addition to synthetic testing, the MATLAB and Swift implementations
+of the detector were piloted as part of an experiment providing
+altered auditory feedback (AAF) to zebra finches. AAF, or playback of
+a perturbing white noise stimulus, is known to disrupt the highly-
+stereotyped zebra finch song. By probabilistically targeting the AAF
+to a specific syllable in the song, it is possible to selectively
+destabilize specific parts of the song. During this feedback,
+signal from genetically-encoded calcium indicators was recorded
+via fiber photometry to look for neural representations of error
+signals associated with the feedback. The new syllable detector
+improved performance over hand-tuned filterbanks, by eliminating the
+need for manual tuning, increasing the types of syllables that could
+be targeted and decreasing the error rate.
 
 Availability:
 
