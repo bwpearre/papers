@@ -819,7 +819,7 @@ songs, and the canonical signal is given with respect to that
 alignment.  These timing measurements reflect not only detector
 performance, but also the variability of the bird's song.
 
-\subsection{Fiber Photometry}
+\subsection{Fibre Photometry}
 \label{sec:fp-methods}
 
 In addition to synthetic tests of detector accuracy and 
@@ -830,39 +830,39 @@ the highly-stereotyped zebra finch song. By probabilistically
 targeting the AAF to a specific syllable, it is possible 
 to selectively destabilize parts of the song. During this 
 feedback, signal from genetically-encoded calcium indicators was 
-recorded via fiber photometry to identify a neural representation of 
+recorded via fibre photometry to identify a neural representation of 
 an error signals associated with the feedback.
 
 The initial experiment design used a DSP with hand-designed filter-banks to
 detect syllables, but these required tuning and were only conducive
 to detecting harmonic stacks. This experiment provided an ideal design
-to pilot our novel, neural network-based syllable detector.
+to pilot our neural-network-based syllable detector.
 
 \subsubsection{Surgery}
 
 GCaMP6s and GCaMP6f were expressed using a lentivirus under the RSV 
 promoter \cite{Markowitz:2015ko}. Injections were targeted under HVC 
 using stimulation of Area X with a bipolar stimulation electrode. 
-After injecting the virus, we implanted a fiber-optic cannula above 
+After injecting the virus, we implanted a fibre-optic cannula above 
 HVC ($400 \mu m$ diameter, Doric Lenses). The location of the injection 
 was verified histologically after each experiment.
 
 \subsubsection{Photometry}
 
-Fiber photometry \cite{Adelsberger:2005dy,Schulz:2012fv,Cui:2013dq,Adelsberger:2014jd,Gunaydin:2014dh} 
+Fibre photometry \cite{Adelsberger:2005dy,Schulz:2012fv,Cui:2013dq,Adelsberger:2014jd,Gunaydin:2014dh} 
 was performed in N=3 birds at least 2 weeks post-injection using a 
-completely fiber-coupled light path. A 470 nm fiber-coupled LED (Mightex) 
+completely fibre-coupled light path. A 470 nm fibre-coupled LED (Mightex) 
 was sinusoidally driven at 5 kHz by a TDT RX8. The output of the LED 
 was filtered with a GFP excitation filter (Doric Lenses Fluorescence Cube) 
 and coupled to an optical rotary joint (Doric Lenses). The rotary joint 
-was connected via a multimode fiber optic patch cord ($400 \mu m$, .48 NA, 
+was connected via a multimode fibre optic patch cord (400 $\mu$m, .48 NA, 
 Doric Lenses) to the implanted cannula using a brass sleeve (Doric Lenses). 
 LED power was calibrated such that optical power at the tip was 
-$20-300 \mu W$ (LED was turned on only during vocalizations, detected using 
+20--300 $\mu$W (LED was turned on only during vocalizations, detected using 
 a TDT RX8). Fluorescence was collected through the same patch cord, 
 filtered with a GFP emission filter, and sent to a silicon photomultiplier 
 (SensL MiniSM 30000). The output of the photomultiplier was demodulated 
-using a dual-phase lock-in amplifier (10 ms time-scale, SR830, Stanford 
+using a dual-phase lock-in amplifier (10-ms time-scale, SR830, Stanford 
 Research Systems) and digitized along with the bird's song at 24.414 kHz 
 using a National Instruments data acquisition board (PCIE-6323).
 
@@ -875,15 +875,15 @@ via the TDT RX8.
 \subsubsection{Data analysis}
 
 $\Delta F / F0$ was estimated at each point by subtracting and dividing by 
-F0, defined as the 11th percentile computed in a 300 ms sliding window. 
-Data were then smoothed with a 50 ms exponential window. Fluorescence traces
+F0, defined as the 11th percentile computed in a 300-ms sliding window. 
+Data were then smoothed with a 50-ms exponential window. Fluorescence traces
 during singing were normalized by subtracting the trial-average signal, in 
 order to remove song-based modulation.
 
 \section{Results}
 \label{sec:results}
 
-\fig{fig:song} shows the song for which we present results.  Six
+\fig{fig:song} shows the song for which we present accuracy and timing results.  Six
 example target trigger points are shown, at 150, 200, 250, 300, 350,
 and 400 milliseconds after the beginning of the aligned samples, as
 indicated by the red lines, and referred to henceforth as $t^*_1\ldots
@@ -1126,7 +1126,7 @@ look like for the five implementations of our detector on $t^*_4$.
   \label{fig:timing}
 \end{figure}
 
-\subsection{Fiber Photometry}
+\subsection{Fibre Photometry}
 \label{sec:fp-results}
 
 \fig{fig:fp-audio} shows 1,123 song performances from a single bird. 
@@ -1140,7 +1140,7 @@ shelf that respond to AAF and may be involved in error signaling, given projecti
 from the shelf to AIV, an area area known to be critical for processing of 
 sensory errors during singing \cite{MandelblatCerf:2014eu}.
 
-The neural network-based syllable detector enabled this experiment
+The neural-network-based syllable detector enabled this experiment
 by allowing low-latency AAF triggered off user-selected syllables, 
 without hand-tuning and without relying on harmonic stacks needed 
 for filter-bank-based syllable detection. The detector will allow
@@ -1160,7 +1160,7 @@ continued research into the neural encoding of these error signals.
   \begin{center}
     \includegraphics[width=7cm]{fp-results}
   \end{center}
-  \caption{Fiber photometry during AAF reveals an AAF-sensitive response
+  \caption{Fibre photometry during AAF reveals an AAF-sensitive response
   (lines indicate mean, shading indicates 95\% confidence interval, bootstrap).
   Blue are catch trials, red are AAF trials.}
   \label{fig:fp-results}
