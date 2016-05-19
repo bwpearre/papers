@@ -819,9 +819,69 @@ songs, and the canonical signal is given with respect to that
 alignment.  These timing measurements reflect not only detector
 performance, but also the variability of the bird's song.
 
+\subsection{Fiber Photometry}
+\label{sec:fp-methods}
+
+In addition to synthetic tests of detector accuracy and 
+latency, we piloted the syllable detector in an experiment
+providing altered auditory feedback (AAF) to zebra finches. AAF, or 
+playback of a perturbing white noise stimulus, is known to disrupt 
+the highly-stereotyped zebra finch song. By probabilistically 
+targeting the AAF to a specific syllable, it is possible 
+to selectively destabilize parts of the song. During this 
+feedback, signal from genetically-encoded calcium indicators was 
+recorded via fiber photometry to identify a neural representation of 
+an error signals associated with the feedback.
+
+The initial experiment design used a DSP with hand-designed filter-banks to
+detect syllables, but these required tuning and were only conducive
+to detecting harmonic stacks. This experiment provided an ideal design
+to pilot our novel, neural network-based syllable detector.
+
+\subsubsection{Surgery}
+
+GCaMP6s and GCaMP6f were expressed using a lentivirus under the RSV 
+promoter \cite{Markowitz:2015ko}. Injections were targeted under HVC 
+using stimulation of Area X with a bipolar stimulation electrode. 
+After injecting the virus, we implanted a fiber-optic cannula above 
+HVC ($400 \mu m$ diameter, Doric Lenses). The location of the injection 
+was verified histologically after each experiment.
+
+\subsubsection{Photometry}
+
+Fiber photometry \cite{Adelsberger:2005dy,Schulz:2012fv,Cui:2013dq,Adelsberger:2014jd,Gunaydin:2014dh} 
+was performed in N=3 birds at least 2 weeks post-injection using a 
+completely fiber-coupled light path. A 470 nm fiber-coupled LED (Mightex) 
+was sinusoidally driven at 5 kHz by a TDT RX8. The output of the LED 
+was filtered with a GFP excitation filter (Doric Lenses Fluorescence Cube) 
+and coupled to an optical rotary joint (Doric Lenses). The rotary joint 
+was connected via a multimode fiber optic patch cord ($400 \mu m$, .48 NA, 
+Doric Lenses) to the implanted cannula using a brass sleeve (Doric Lenses). 
+LED power was calibrated such that optical power at the tip was 
+$20-300 \mu W$ (LED was turned on only during vocalizations, detected using 
+a TDT RX8). Fluorescence was collected through the same patch cord, 
+filtered with a GFP emission filter, and sent to a silicon photomultiplier 
+(SensL MiniSM 30000). The output of the photomultiplier was demodulated 
+using a dual-phase lock-in amplifier (10 ms time-scale, SR830, Stanford 
+Research Systems) and digitized along with the bird's song at 24.414 kHz 
+using a National Instruments data acquisition board (PCIE-6323).
+
+\subsubsection{Syllable detection}
+
+User-selected syllables were detected using the Swift implementation of the
+syllable detector, and the TTL output triggered altered auditory feedback 
+via the TDT RX8.
+
+\subsubsection{Data analysis}
+
+$\Delta F / F0$ was estimated at each point by subtracting and dividing by 
+F0, defined as the 11th percentile computed in a 300 ms sliding window. 
+Data were then smoothed with a 50 ms exponential window. Fluorescence traces
+during singing were normalized by subtracting the trial-average signal, in 
+order to remove song-based modulation.
+
 \section{Results}
 \label{sec:results}
-
 
 \fig{fig:song} shows the song for which we present results.  Six
 example target trigger points are shown, at 150, 200, 250, 300, 350,
@@ -1066,6 +1126,49 @@ look like for the five implementations of our detector on $t^*_4$.
   \label{fig:timing}
 \end{figure}
 
+\subsection{Fiber Photometry}
+\label{sec:fp-results}
+
+The neural network-based syllable detector provided improved 
+performance over hand-tuned filter-banks
+experiment, by eliminating the need for manual tuning, 
+increasing the types of syllables that could be targeted and 
+decreasing the error rate. \fig{fig:fp-audio} shows 1,123 
+song performances from a single bird. At trial 858, the altered
+auditory feedback (AAF) was introduced, triggered by the first syllable
+in the song.
+
+Measurements of the fluorescence from genetically encoded calcium indicators
+in the HVC shelf reveal an AAF-sensitive response as compared with catch trials
+(\fig{fig:fp-results}). This suggests a population of cells in the HVC
+shelf that respond to AAF and potentially encode an error signal based
+on auditory feedback during song performance.
+
+The neural network-based syllable detector enabled this experiment
+by allowing low-latency AAF triggered off user-selected syllables, 
+without hand-tuning and without relying on harmonic stacks needed 
+for filter-bank based syllable detection. The detector will allow
+continued research into the neural encoding of these error signals.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=6cm]{fp-audio}
+  \end{center}
+  \caption{Audio amplitude stack plot of the experiment as aligned by 
+  the bird's song. Each row is average amplitude for a single performance
+  of the song.}
+  \label{fig:fp-audio}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=6cm]{fp-results}
+  \end{center}
+  \caption{Fiber photometry during AAF reveals an AAF-sensitive response
+  (lines indicate mean, shading indicates 95\% confidence interval, bootstrap).
+  Blue are catch trials, red are AAF trials.}
+  \label{fig:fp-results}
+\end{figure}
 
 \section{Discussion}
 \label{sec:conclusion}
