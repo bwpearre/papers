@@ -1,4 +1,3 @@
-% zscore question for Jeff
 \documentclass[10pt,letterpaper]{article}
 \usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
 
@@ -136,7 +135,7 @@ Timothy J.~Gardner\textsuperscript{1,d}
 %\Yinyang These authors contributed equally to this work.
 Author \textsuperscript{a}~contributed the original MATLAB and LabVIEW implementations and most of the manuscript.
 \textsuperscript{b}~contributed the Swift implementation and its description herein, helped debug the training code, and measured the timing for most of the detectors.
-\textsuperscript{c}~is performed the fibre photometry experiment, wrote several types of filter-bank software against which we compared, made suggestions for the neural network detector, and reformatted the MATLAB code for distribution.
+\textsuperscript{c}~performed the fibre photometry experiment, wrote several types of filter-bank software against which we compared, made suggestions for the neural network detector, and reformatted the MATLAB code for distribution.
 \textsuperscript{d}~provided a stream of suggested techniques, metrics, and goals.
 
 % Additional Equal Contribution Note
@@ -889,6 +888,10 @@ Data were then smoothed with a 50-ms exponential window. Fluorescence traces
 during singing were normalized by subtracting the trial-average signal, in 
 order to remove song-based modulation.
 
+\subsection{Ethics}
+
+
+
 \section{Results}
 \label{sec:results}
 
@@ -1241,24 +1244,23 @@ these approaches in future work.
 \section{Acknowledgments}
 We would like to thank Winthrop F.~Gillis, William A.~Liberti, and Sanne Moorman for
 their improvements to the draft.  This work was funded by NIH grants
-5R01NS089679-02 and 5U01NS090454-02.
+5R01NS089679-02 and 5U01NS090454-02.  The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.
 
 \appendix
 
 \section{Resources}
 \label{sec:resources}
 
-{\em If accepted, before final submission, all code will be cleaned up and moved to the Gardner Lab github repository, final release versions generated, and DOIs created, so that the software may be put into use immediately and our results are easily reproducible.  For now, in lieu of final release DOIs, we provide these links to our development repositories.}
+{\em If accepted, before final submission, all code will be moved to the Gardner Lab github repository, final release versions generated, and DOIs created as described in https://guides.github.com/activities/citable-code/ so that our results may be reproduced and the software deployed.  For now, in lieu of final release DOIs, we provide these links to our development repositories.  If you would like final versions and test datasets for review, please contact the corresponding author (bwpearre@bu.edu).}
 %\marginpar{PLOS doesn't really say where such things should go.}
 %\marginpar{Cleanup: mostly done.  But it would be nice to move all this to the lab's GitHub group.}
 \begin{description}
-  \item[Song alignment:] Jeff Markowitz's song
-    alignment software \cite{Poole2012} can be found at
-    {\tt https://github.com/jmarkow}
+  \item[Song alignment:] Jeff Markowitz's song alignment software \cite{Poole2012} can be found at
+    {\tt https://github.com/jmarkow/zftftb}
 \end{description}
 
  \noindent Our implementation of the syllable
-    detector is available under an open-source license {\em (at the time of this draft, we have not yet decided on which open-source license to use):}
+    detector is available under an open-source license {\em (we are still evaluating which open source license is the most suitable for this software):}
     \begin{description}
     \item[Training the neural network:]\hfill
       \begin{trivlist}
@@ -1274,7 +1276,152 @@ their improvements to the draft.  This work was funded by NIH grants
 
 \end{description}
 
-\bibliography{birds}
+%\bibliography{birds}
+    \begin{thebibliography}{10}
+      
+\bibitem{Kao2005}
+Kao MH, Doupe AJ, Brainard MS.
+\newblock Contributions of an avian basal ganglia--forebrain circuit to
+  real-time modulation of song.
+\newblock Letters to Nature. 2005 February;433:638--643.
+\newblock Available from:
+  \url{http://www.nature.com/nature/journal/v433/n7026/abs/nature03127.html}.
+
+\bibitem{Wang2008interhemispheric}
+Wang CZH, Herbst JA, Keller GB, Hahnloser RHR.
+\newblock Rapid Interhemispheric Switching during Vocal Production in a
+  Songbird.
+\newblock PLOS Biology. 2008 October;6(10).
+\newblock Available from:
+  \url{http://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0060250}.
+
+\bibitem{Keller2009}
+Keller GB, Hahnloser RHR.
+\newblock Neural processing of auditory feedback during vocal practice in a
+  songbird.
+\newblock Nature. 2009 January;(457):187--190.
+\newblock Available from:
+  \url{http://www.nature.com/nature/journal/v457/n7226/abs/nature07467.html}.
+
+\bibitem{Tumer2007pitchshift}
+Tumer EC, Brainard MS.
+\newblock Performance variability enables adaptive plasticity of 'crystallized'
+  adult birdsong.
+\newblock Nature. 2007 December;450:1240--1244.
+\newblock Available from:
+  \url{http://www.nature.com/nature/journal/v450/n7173/abs/nature06390.html}.
+
+\bibitem{Andalman2009}
+Andalman AS, Fee MS.
+\newblock A basal ganglia-forebrain circuit in the songbird biases motor output
+  to avoid vocal errors.
+\newblock Proceedings of the National Academy of Sciences of the United States
+  of America. 2009 July;106(30):12518--12523.
+\newblock Available from:
+  \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2709669/}.
+
+\bibitem{Warren2011}
+Warren TL, Tumer EC, Charlesworth JD, Brainard MS.
+\newblock Mechanisms and time course of vocal learning and consolidation in the
+  adult songbird.
+\newblock Journal of Neurophysiology. 2011 October;106(4):1806--1821.
+\newblock Available from:
+  \url{http://jn.physiology.org/content/106/4/1806.full}.
+
+\bibitem{Canopoli2014}
+Canopoli A, Herbst JA, Hahnloser RHR.
+\newblock A Higher Sensory Brain Region Is Involved in Reversing
+  Reinforcement-Induced Vocal Changes in a Songbird.
+\newblock The Journal of Neuroscience. 2014;34(20):7018--7026.
+\newblock Available from:
+  \url{http://www.jneurosci.org/content/34/20/7018.full}.
+
+\bibitem{Leonardo1999}
+Leonardo A, Konishi M.
+\newblock Decrystallization of adult birdsong by perturbation of auditory
+  feedback.
+\newblock Nature. 1999 June;(399):466--470.
+\newblock Available from:
+  \url{http://www.nature.com/nature/journal/v399/n6735/abs/399466a0.html}.
+
+\bibitem{Skocik2013}
+Skocik M, Kozhevnikov A.
+\newblock Real-time system for studies of the effects of acoustic feedback on
+  animal vocalizations.
+\newblock Frontiers in Neural Circuits. 2013 January;6(111).
+\newblock Available from:
+  \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3539774/}.
+
+\bibitem{Poole2012}
+Poole B, Markowitz JE, Gardner TJ.
+\newblock The Song Must Go On: Resilience of the Songbird Vocal Motor Pathway.
+\newblock PLOS One. 2012 June;7(6).
+\newblock Available from:
+  \url{http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0038173}.
+
+\bibitem{Jacobsen2003SlidingDFT}
+Jacobsen E, Lyons R.
+\newblock The sliding DFT.
+\newblock IEEE Signal Processing Magazine. 2003 Mar;20(2):74--80.
+\newblock Available from:
+  \url{http://www.cmlab.csie.ntu.edu.tw/DSPCourse/reference/Sliding\%20DFT.pdf}.
+
+\bibitem{hkp}
+Hertz JA, Krogh AS, Palmer RG.
+\newblock Introduction to the Theory of Neural Computation.
+\newblock Perseus Books; 1991.
+
+\bibitem{Markowitz:2015ko}
+Markowitz JE, Liberti WA, Guitchounts G, Velho T, Lois C, Gardner TJ.
+\newblock {Mesoscopic Patterns of Neural Activity Support Songbird Cortical
+  Sequences}.
+\newblock PLOS Biology. 2015 Jun;13(6):e1002158--20.
+
+\bibitem{Adelsberger:2005dy}
+Adelsberger H, Garaschuk O, Konnerth A.
+\newblock {Cortical calcium waves in resting newborn mice.}
+\newblock Nature Neuroscience. 2005 Aug;8(8):988--990.
+
+\bibitem{Schulz:2012fv}
+Schulz K, Sydekum E, Krueppel R, Engelbrecht CJ, Schlegel F, Schr{\"o}ter A,
+  et~al.
+\newblock {Simultaneous BOLD fMRI and fiber-optic calcium recording in rat
+  neocortex}.
+\newblock Nature Methods. 2012 May;9(6):597--602.
+
+\bibitem{Cui:2013dq}
+Cui G, Jun SB, Jin X, Pham MD, Vogel SS, Lovinger DM, et~al.
+\newblock {Concurrent activation of striatal direct and indirect pathways
+  during action initiation}.
+\newblock Nature. 2013 Feb;494(7436):238--242.
+
+\bibitem{Adelsberger:2014jd}
+Adelsberger H, Zainos A, Alvarez M, Romo R, Konnerth A.
+\newblock {Local domains of motor cortical activity revealed by fiber-optic
+  calcium recordings in behaving nonhuman primates.}
+\newblock Proceedings of the National Academy of Sciences of the United States
+  of America. 2014 Jan;111(1):463--468.
+
+\bibitem{Gunaydin:2014dh}
+Gunaydin LA, Grosenick L, Finkelstein JC, Kauvar IV, Fenno LE, Adhikari A,
+  et~al.
+\newblock {Natural neural projection dynamics underlying social behavior.}
+\newblock Cell. 2014 Jun;157(7):1535--1551.
+
+\bibitem{MandelblatCerf:2014eu}
+Mandelblat-Cerf Y, Las L, Denissenko N, Fee M.
+\newblock {A role for descending auditory cortical projections in songbird
+  vocal learning}.
+\newblock Elife. 2014 Jan;3(0):e02152--e02152.
+
+\bibitem{Noll1970pitchdetection}
+Noll AM.
+\newblock Pitch determination of human speech by the harmonic product spectrum,
+  the harmonic sum spectrum, and a maximum likelihood estimate.
+\newblock In: Proceedings of the symposium on computer processing in
+  communications. vol.~19; 1970. p. 779--797.
+
+\end{thebibliography}
 
 \end{document}
 
