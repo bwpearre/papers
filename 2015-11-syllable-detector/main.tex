@@ -267,7 +267,7 @@ National Instruments data acquisition card, it boasts a hardware-only
 (not accounting for the time taken to compute a match with a syllable)
 latency and jitter of just a few microseconds, and the detection
 computation they use should not much increase that.  Drawbacks are
-that some hand-tuning is still required, and that they report
+that some hand-tuning may still be required, and that they report
 false-negative rates around 4\% and 7\% for zebra finches and
 Bengalese finches respectively, measured on a small dataset.  In much
 other work, an allusion is made to a syllable detector, but no further
@@ -358,8 +358,7 @@ retrieves new audio samples from the hardware several at a time, so
 the full benefit of the SDFT is difficult to see in practice.
 Furthermore, we found that FFT implementations are sufficiently highly
 optimised that discretising time into chunks of $t_\mathrm{fft}$ as we
-have done produced similar results with lower software development
-effort.
+have done produced similar results with simpler software.
 
 When using consumer audio hardware that operates best at 44.1 kHz, the
 requested frame interval may not line up with the sample rate, so the
