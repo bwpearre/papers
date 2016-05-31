@@ -1,0 +1,26 @@
+Dear Dr. Lengauer,
+
+Thank you for reviewing our presubmission inquiry (PCOMPBIOL-D-16-00635).
+
+As you've seen, we have developed a piece of software that may be of
+general interest to neuroscientists working in the zebra finch and
+possibly other bird species: it allows precisely timed triggering of
+other experimental apparatus in response to syllables during bird
+song.  We've gone to some lengths to describe and characterise the
+software's performance in detail, and to make the code useful to the
+community, and everything will be made available under an open source
+license.  Although a relevant experimental result is included, the
+focus is on the technique, but the paper is too long for a Software
+paper.  Therefore, we ask that it be considered as a Methods paper.
+
+If accepted, before final submission, all code will be moved to the
+Gardner Lab github repository and placed under an appropriate open
+source license, final release versions generated, and DOIs created as
+described in https://guides.github.com/activities/citable-code/ .  The
+relevant datasets will be uploaded to one of your approved
+repositories.  For now, in lieu of final release DOIs, we provide
+links to our development repositories.  If you would like anything
+else, such as access to the datasets for review, please contact me.
+
+Thank you!
+-Ben Pearre <bwpearre@gmail.com>
