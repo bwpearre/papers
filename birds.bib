@@ -1,1 +1,840 @@
-../2015-11-syllable-detector/birds.bib
+@Article{Leonardo1999,
+  author =       {Anthony Leonardo and Masakazu Konishi},
+  title =        {Decrystallization of adult birdsong by perturbation of auditory feedback},
+  journal =      {Nature},
+  year =         1999,
+  volume =    399,
+  pages =     {466-470},
+  month =     {June},
+  doi = {10.1038/20933},
+  url = {http://www.nature.com/nature/journal/v399/n6735/abs/399466a0.html},
+  annote =    {Series of IIR filters, hand-built logical operators to tune.  Resolution 50ms? 100ms? No information on accuracy.}
+}
+
+
+
+@Article{Skocik2013,
+  author =       {Mike Skocik and Alexay Kozhevnikov},
+  title =        {Real-time system for studies of the effects of acoustic feedback on animal vocalizations},
+  journal =      {Frontiers in Neural Circuits},
+  year =         2013,
+  volume =    6,
+  number = 111,
+  month =     {January},
+  doi = {10.3389/fncir.2012.00111},
+  url = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3539774/},
+  annote =    {Intel i7 6-core 2.66GHz, Linux, PCIe-6251, correlation coefficient, 1ms frame rate, fft, hand-tuned thresholds, 20ms template length, manual verification, Bengalese 7\% false negative, 0 false positive; Zebra 3.7\% false negative, 1\% false positive.  No syllable detection latency given, but hardware-only latency $27\pm 9 \mu$s.}
+}
+
+@Article{Andalman2009,
+  author =       {Aaron S. Andalman and Michale S. Fee},
+  title =        {A basal ganglia-forebrain circuit in the songbird biases motor output to avoid vocal errors},
+  journal =      {Proceedings of the National Academy of Sciences of the United States of America},
+  year =         2009,
+  doi = {10.1073/pnas.0903214106},
+  url = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2709669/},
+  volume =    106,
+  number =    30,
+  pages =     {12518-12523},
+  month =     {July},
+  annote =    {TDT, unique pitch, hand-tuned FIR filters, no performance data given, but probably very fast given the method.}
+}
+
+
+@Article{Keller2009,
+  author =       {Georg B. Keller and Richard H. R. Hahnloser},
+  title =        {Neural processing of auditory feedback during vocal practice in a songbird},
+  journal =      {Nature},
+  year =         2009,
+  volume = 457,
+  pages =     {187--190},
+  month =     {January},
+  doi = {10.1038/nature07467},
+  url = {http://www.nature.com/nature/journal/v457/n7226/abs/nature07467.html},
+  annote =    {2-layer neural network on FFT. Latency jitter $\sigma=4.3$ ms},
+  abstract = {Songbirds are capable of vocal learning and
+                  communication, and are ideally suited to the study
+                  of neural mechanisms of complex sensory and motor
+                  processing. Vocal communication in a noisy bird
+                  colony and vocal learning of a specific song
+                  template both require the ability to monitor
+                  auditory feedback to distinguish self-generated
+                  vocalizations from external sounds and to identify
+                  mismatches between the developing song and a
+                  memorized template acquired from a tutor. However,
+                  neurons that respond to auditory feedback from vocal
+                  output have not been found in song-control areas
+                  despite intensive searching. Here we
+                  investigate feedback processing outside the
+                  traditional song system, in single auditory
+                  forebrain neurons of juvenile zebra finches that
+                  were in a late developmental stage of song
+                  learning. Overall, we found similarity of spike
+                  responses during singing and during playback of the
+                  bird's own song, with song responses commonly
+                  leading by a few milliseconds. However, brief
+                  time-locked acoustic perturbations of auditory
+                  feedback revealed complex sensitivity that could not
+                  be predicted from passive playback responses. Some
+                  neurons that responded to playback perturbations did
+                  not respond to song perturbations, which is
+                  reminiscent of sensory-motor mirror neurons. By
+                  contrast, some neurons were highly feedback
+                  sensitive in that they responded vigorously to song
+                  perturbations, but not to unperturbed songs or
+                  perturbed playback. These findings suggest that a
+                  computational function of forebrain auditory areas
+                  may be to detect errors between actual feedback and
+                  mirrored feedback deriving from an internal model of
+                  the bird's own song or that of its tutor. Such
+                  feedback-sensitive spikes could constitute the key
+                  signals that trigger adaptive motor responses to
+                  song disruptions or reinforce exploratory
+                  motor gestures for vocal learning.}
+}
+
+
+@Article{Kao2005,
+  author =       {Mimi H. Kao and Allison J. Doupe and Michael S. Brainard},
+  title =        {Contributions of an avian basal ganglia--forebrain circuit to real-time modulation of song},
+  journal =      {Letters to Nature},
+  year =         2005,
+  volume =    433,
+  pages =     {638--643},
+  month =     {February},
+  doi = {10.1038/nature03127},
+  url = {http://www.nature.com/nature/journal/v433/n7026/abs/nature03127.html},
+  annote =    {Good example of "we have this spectral thingy for syllables, and it Just Works."}
+}
+
+@Article{Poole2012,
+  author =       {Barish Poole and Jeffrey E. Markowitz and Timothy J. Gardner},
+  title =        {The Song Must Go On: Resilience of the Songbird Vocal Motor Pathway},
+  journal =      {PLOS One},
+  year =         2012,
+  doi = {10.1371/journal.pone.0038173},
+  url = {http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0038173},
+  key =       {e38173},
+  volume =    7,
+  number =    6,
+  month =     {June},
+  annote =    {No syllable detection, but song alignment is described herein.}
+}
+
+@Article{Warren2011,
+  author =       {Timothy L. Warren and Evren C. Tumer and Jonathan D. Charlesworth and Michael S. Brainard},
+  title =        {Mechanisms and time course of vocal learning and consolidation in the adult songbird},
+  journal =      {Journal of Neurophysiology},
+  year =         2011,
+  volume =    106,
+  number =    4,
+  pages =     {1806-1821},
+  month =     {October},
+  doi = {10.1152/jn.00311.2011},
+  url = {http://jn.physiology.org/content/106/4/1806.full}
+}
+
+@article{Canopoli2014,
+author = {Canopoli, Alessandro and Herbst, Joshua A. and Hahnloser, Richard H.R.}, 
+title = {A Higher Sensory Brain Region Is Involved in Reversing Reinforcement-Induced Vocal Changes in a Songbird},
+volume = {34}, 
+number = {20}, 
+pages = {7018-7026}, 
+year = {2014}, 
+doi = {10.1523/JNEUROSCI.0266-14.2014}, 
+abstract ={Many animals exhibit flexible behaviors that they can adjust to increase reward or avoid harm (learning by positive or aversive reinforcement). But what neural mechanisms allow them to restore their original behavior (motor program) after reinforcement is withdrawn? One possibility is that motor restoration relies on brain areas that have a role in memorization but no role in either motor production or in sensory processing relevant for expressing the behavior and its refinement.We investigated the role of a higher auditory brain area in the songbird for modifying and restoring the stereotyped adult song. We exposed zebra finches to aversively reinforcing white noise stimuli contingent on the pitch of one of their stereotyped song syllables. In response, birds significantly changed the pitch of that syllable to avoid the aversive reinforcer. After we withdrew reinforcement, birds recovered their original song within a few days. However, we found that large bilateral lesions in the caudal medial nidopallium (NCM, a high auditory area) impaired recovery of the original pitch even several weeks after withdrawal of the reinforcing stimuli. Because NCM lesions spared both successful noise-avoidance behavior and birds' auditory discrimination ability, our results show that NCM is not needed for directed motor changes or for auditory discriminative processing, but is implied in memorizing or recalling the memory of the recent song target.}, 
+URL = {http://www.jneurosci.org/content/34/20/7018.full}, 
+eprint = {http://www.jneurosci.org/content/34/20/7018.full.pdf+html}, 
+journal = {The Journal of Neuroscience} 
+}
+
+
+@InProceedings{Noll1970pitchdetection,
+  author =       {A. M. Noll},
+  title =        {Pitch determination of human speech by the harmonic product spectrum, the harmonic sum spectrum, and a maximum likelihood estimate},
+  booktitle =      {Proceedings of the symposium on computer processing in communications},
+  year =         1970,
+  volume = 19,
+  pages = {779--797}
+}
+
+
+@BOOK{hkp,
+  title = {Introduction to the Theory of Neural Computation},
+  publisher = {Perseus Books},
+  year = {1991},
+  author = {John A. Hertz and Andrers S. Krogh and Richard G. Palmer},
+  owner = {ben},
+  timestamp = {2012.03.25}
+}
+
+@ARTICLE{Jacobsen2003SlidingDFT, 
+author={E. Jacobsen and R. Lyons}, 
+journal={IEEE Signal Processing Magazine}, 
+title={The sliding DFT}, 
+year=2003, 
+volume=20, 
+number=2, 
+pages={74-80}, 
+abstract={The sliding DFT process for spectrum analysis was presented and shown to be more efficient than the popular Goertzel (1958) algorithm for sample-by-sample DFT bin computations. The sliding DFT provides computational advantages over the traditional DFT or FFT for many applications requiring successive output calculations, especially when only a subset of the DFT output bins are required. Methods for output stabilization as well as time-domain data windowing by means of frequency-domain convolution were also discussed. A modified sliding DFT algorithm, called the sliding Goertzel DFT, was proposed to further reduce the computational workload. We start our sliding DFT discussion by providing a review of the Goertzel algorithm and use its behavior as a yardstick to evaluate the performance of the sliding DFT technique. We examine stability issues regarding the sliding DFT implementation as well as review the process of frequency-domain convolution to accomplish time-domain windowing. Finally, a modified sliding DFT structure is proposed that provides improved computational efficiency.}, 
+keywords={convolution;discrete Fourier transforms;frequency-domain analysis;numerical stability;signal processing;spectral analysis;DFT bin computations;FFT;Goertzel algorithm;computational efficiency;frequency-domain convolution;modified sliding DFT algorithm;output stabilization;sliding DFT;sliding Goertzel DFT;spectrum analysis;stability issues;successive output calculations;time-domain data windowing;time-domain windowing;Algorithm design and analysis;Digital signal processing;Frequency;Poles and zeros;Resonator filters;Signal design;Signal processing algorithms;Time domain analysis;Tin;Transfer functions}, 
+doi={10.1109/MSP.2003.1184347},
+url = {http://www.cmlab.csie.ntu.edu.tw/DSPCourse/reference/Sliding\%20DFT.pdf},
+ISSN={1053-5888}, 
+month={Mar}
+}
+
+
+
+
+@Article{McIntyre2015,
+  author =       {McIntyre, CC and Chaturvedi, A and Shamir, RR and Lempka, SF},
+  title =        {Engineering the Next Generation of Clinical Deep Brain Stimulation Technology},
+  journal =      {Brain stimulation},
+  year =         2015,
+  doi = {10.1016/j.brs.2014.07.039},
+  url = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4501497/},
+  volume =    8,
+  number =    1,
+  pages =     {21-26},
+  abstract = {Deep brain stimulation (DBS) has evolved into a powerful clinical therapy for a range of neurological disorders, but even with impressive clinical growth, DBS technology has been relatively stagnant over its history. However, enhanced collaborations between neural engineers, neuroscientists, physicists, neurologists, and neurosurgeons are beginning to address some of the limitations of current DBS technology. These interactions have helped to develop novel ideas for the next generation of clinical DBS systems. This review attempts collate some of that progress and with two goals in mind. First, provide a general description of current clinical DBS practices, geared toward educating biomedical engineers and computer scientists on a field that needs their expertise and attention. Second, describe some of the technological developments that are currently underway in surgical targeting, stimulation parameter selection, stimulation protocols, and stimulation hardware that are being directly evaluated for near term clinical application.}
+}
+
+@Article{Cowak2011,
+  author =       {Karl Nowak and Eilhard Mix and Jan Gimsa and Ulf Strauss and Kiran Kumar Sriperumbudur and Reiner Benecke and and Ulrike Gimsa},
+  title =        {Optimizing a Rodent Model of Parkinson's Disease for Exploring the Effects and Mechanisms of Deep Brain Stimulation},
+  journal =      {Parkinson's Disease},
+  year =         2011,
+  doi = {http://dx.doi.org/10.4061/2011/414682},
+  url = {http://www.hindawi.com/journals/pd/2011/414682/},
+  abstract = {Deep brain stimulation (DBS) has become a treatment for a growing number of neurological and psychiatric disorders, especially for therapy-refractory Parkinson's disease (PD). However, not all of the symptoms of PD are sufficiently improved in all patients, and side effects may occur. Further progress depends on a deeper insight into the mechanisms of action of DBS in the context of disturbed brain circuits. For this, optimized animal models have to be developed. We review not only charge transfer mechanisms at the electrode/tissue interface and strategies to increase the stimulation's energy-efficiency but also the electrochemical, electrophysiological, biochemical and functional effects of DBS. We introduce a hemi-Parkinsonian rat model for long-term experiments with chronically instrumented rats carrying a backpack stimulator and implanted platinum/iridium electrodes. This model is suitable for (1) elucidating the electrochemical processes at the electrode/tissue interface, (2) analyzing the molecular, cellular and behavioral stimulation effects, (3) testing new target regions for DBS, (4) screening for potential neuroprotective DBS effects, and (5) improving the efficacy and safety of the method. An outlook is given on further developments of experimental DBS, including the use of transgenic animals and the testing of closed-loop systems for the direct on-demand application of electric stimulation.}
+  }
+
+@article{priori2013adaptive,
+  title={Adaptive deep brain stimulation (aDBS) controlled by local field potential oscillations},
+  author={Priori, Alberto and Foffani, Guglielmo and Rossi, Lorenzo and Marceglia, Sara},
+  journal={Experimental neurology},
+  volume=245,
+  pages={77--86},
+  year=2013,
+  publisher={Elsevier},
+  doi = {doi:10.1016/j.expneurol.2012.09.013},
+  url = {http://www.sciencedirect.com/science/article/pii/S0014488612003755},
+  url = {https://scholar.google.com/scholar?q=http://dx.doi.org/10.1016/j.expneurol.2012.09.013},
+  abstract = {Despite their proven efficacy in treating neurological disorders, especially Parkinson's disease, deep brain stimulation (DBS) systems could be further optimized to maximize treatment benefits. In particular, because current open-loop DBS strategies based on fixed stimulation settings leave the typical parkinsonian motor fluctuations and rapid symptom variations partly uncontrolled, research has for several years focused on developing novel “closed-loop” or “adaptive” DBS (aDBS) systems. aDBS consists of a simple closed-loop model designed to measure and analyze a control variable reflecting the patient's clinical condition to elaborate new stimulation settings and send them to an “intelligent” implanted stimulator. The major problem in developing an aDBS system is choosing the ideal control variable for feedback. Here we review current evidence on the advantages of neurosignal-controlled aDBS that uses local field potentials (LFPs) as a control variable, and describe the technology already available to create new aDBS systems, and the potential benefits of aDBS for patients with Parkinson's disease.}
+}
+
+@InProceedings{Lee2008,
+  author =       {A 64 Channelprogrammable closed-loop deep brain stimulator with 8 channel neural amplifier and logarithmic ADC },
+  title =        {Jongwoo Lee and Hyo-Gyuem Rhew and Kipke, D. and Flynn, M.},
+  booktitle = {IEEE Symposium on VLSI Circuits},
+  year =      2008,
+  pages =     {76-77},
+  month =     {June},
+  abstract = {We describe a 64 channel closed-loop deep brain stimulator IC for use in research and treatment of Parkinsonpsilas disease. The system generates programmable stimulation currents and senses and filters neural activity recorded with an 8 channel preamplifier and 200 kS/s 8 bit logADC. The entire system implemented in 0.18 mum CMOS, occupies 2.67 mm2, and consumes 271 muW from a 1.8 V supply. In-vivo test data is presented.},
+  doi = {10.1109/VLSIC.2008.4585958},
+  url = {http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4585958},
+  abstract = {We describe a 64 channel closed-loop deep brain stimulator IC for use in research and treatment of Parkinsonpsilas disease. The system generates programmable stimulation currents and senses and filters neural activity recorded with an 8 channel preamplifier and 200 kS/s 8 bit logADC. The entire system implemented in 0.18 mum CMOS, occupies 2.67 mm2, and consumes 271 muW from a 1.8 V supply. In-vivo test data is presented.}
+}
+
+
+
+@Article{Butson2008steering,
+  author =       {C. R. Butson and C. C. McIntyre},
+  title =        {Current steering to control the volume of tissue activated during deep brain stimulation},
+  journal =      {Brain Stimulation},
+  year =         2008,
+  volume =    1,
+  pages =     {7--15},
+  doi = {doi:10.1016/j.brs.2007.08.004},
+  url = {http://www.sciencedirect.com/science/article/pii/S1935861X07000058},
+  abstract = {Background
+
+Over the last two decades, deep brain stimulation (DBS) has become a recognized and effective clinical therapy for numerous neurologic conditions. Since its inception, clinical DBS technology has progressed at a relatively slow rate; however, numerous advances in neural engineering research have the potential to improve DBS systems. One such advance is the concept of current steering, or the use of multiple stimulation sources to direct current flow through targeted regions of brain tissue. The goals of this study were to develop a theoretical understanding of the effects of current steering in the context of DBS, and use that information to evaluate the potential use of current steering during stimulation of the subthalamic nucleus.
+Methods
+
+We used finite element electric field models, coupled to multicompartment cable axon models, to predict the volume of tissue activated (VTA) by DBS as a function of the stimulation parameter settings.
+Results
+
+Balancing current flow through adjacent cathodes can increase the VTA magnitude, relative to monopolar stimulation, and current steering can be an effective technique to sculpt the shape of the VTA to fit a given anatomic target.
+Conclusions
+
+These results provide motivation for the integration of current steering technology into clinical DBS systems, thereby expanding opportunities to customize DBS to individual patients, and potentially enhancing therapeutic efficacy.}
+}
+
+@Article{Chaturvedi2012,
+  author =       {Ashutosh Chaturvedia and Thomas J. Foutza and Cameron C. McIntyre},
+  title =        {Current steering to activate targeted neural pathways during deep brain stimulation of the subthalamic region},
+  journal =      {Brain Stimulation},
+  year =         2012,
+  month =     {July},
+  abstract = {Deep brain stimulation (DBS) has steadily evolved into an established surgical therapy for numerous neurological disorders, most notably Parkinson's disease (PD). Traditional DBS technology relies on voltage-controlled stimulation with a single source; however, recent engineering advances are providing current-controlled devices with multiple independent sources. These new stimulators deliver constant current to the brain tissue, irrespective of impedance changes that occur around the electrode, and enable more specific steering of current towards targeted regions of interest. In this study, we examined the impact of current steering between multiple electrode contacts to directly activate three distinct neural populations in the subthalamic region commonly stimulated for the treatment of PD: projection neurons of the subthalamic nucleus (STN), globus pallidus internus (GPi) fibers of the lenticular fasiculus, and internal capsule (IC) fibers of passage. We used three-dimensional finite element electric field models, along with detailed multicompartment cable models of the three neural populations to determine their activations using a wide range of stimulation parameter settings. Our results indicate that selective activation of neural populations largely depends on the location of the active electrode(s). Greater activation of the GPi and STN populations (without activating any side effect related IC fibers) was achieved by current steering with multiple independent sources, compared to a single current source. Despite this potential advantage, it remains to be seen if these theoretical predictions result in a measurable clinical effect that outweighs the added complexity of the expanded stimulation parameter search space generated by the more flexible technology.},
+  url = {http://www.sciencedirect.com/science/article/pii/S1935861X11000672},
+  doi = {doi:10.1016/j.brs.2011.05.002},
+  annotate = {Basically same paper as McIntyre2015}
+}
+
+
+@Article{Udupa2015,
+  author =       {Kaviraja Udupa and Robert Chen},
+  title =        {The mechanisms of action of deep brain stimulation and ideas for the future development},
+  journal =      {Progress in Neurobiology},
+  year =         2015,
+  volume =    133,
+  pages =     {27-49},
+  month =     {October},
+  abstract = {Deep brain stimulation (DBS) has been used as a treatment of movement disorders such as Parkinson's disease, dystonia, and essential tremor for over twenty years, and is a promising treatment for depression and epilepsy. However, the exact mechanisms of action of DBS are still uncertain, although different theories have emerged. This review summarizes the current understanding in this field. Different modalities used to investigate DBS such as electrophysiological, imaging and biochemical studies have revealed different mechanisms of DBS. The mechanisms may also be different depending on the structure targeted, the disease condition or the animal model employed. DBS may inhibit the target neuronal networks but activate the efferent axons. It may suppress pathological rhythms or impose new rhythms associated with beneficial effects, and involves neuronal networks with widespread connections. Different neurotransmitter systems such as dopamine and GABA upregulation are involved in the effects of DBS. There are also technical advances to prolong the battery life and specific targeting based on new electrode designs with multiple contacts which have the ability to steer the current toward a specific direction. There is ongoing work in closed loop or adaptive DBS using neural oscillations to provide the feedback signals. These oscillations need to be better characterized in a wide variety of clinical settings in future studies. Individualization of DBS parameters based on neural oscillations may optimize the clinical benefits of DBS.},
+  url = {http://www.sciencedirect.com/science/article/pii/S030100821500088X},
+  doi = {doi:10.1016/j.pneurobio.2015.08.001},
+  annotate = {Superb review, including current steering and closed-loop (adaptive) DBS.}
+}
+
+@Article{pollo2014,
+  author =       {Pollo C and Kaelin-Lang A and Oertel M F and Stieglitz L and Taub E and Fuhr P and Lozano A M and Raabe A and Schüpbach M},
+  title =        {Directional deep brain stimulation: an intraoperative double-blind pilot study},
+  journal =      {Brain},
+  year =         2014,
+  volume =    137,
+  number =    7,
+  pages =     {2015-2026},
+  month =     {July},
+  abstract = {Deep brain stimulation of different targets has been shown to drastically improve symptoms of a variety of neurological conditions. However, the occurrence of disabling side effects may limit the ability to deliver adequate amounts of current necessary to reach the maximal benefit. Computed models have suggested that reduction in electrode size and the ability to provide directional stimulation could increase the efficacy of such therapies. This has never been demonstrated in humans. In the present study, we assess the effect of directional stimulation compared to omnidirectional stimulation. Three different directions of stimulation as well as omnidirectional stimulation were tested intraoperatively in the subthalamic nucleus of 11 patients with Parkinson's disease and in the nucleus ventralis intermedius of two other subjects with essential tremor. At the trajectory chosen for implantation of the definitive electrode, we assessed the current threshold window between positive and side effects, defined as the therapeutic window. A computed finite element model was used to compare the volume of tissue activated when one directional electrode was stimulated, or in case of omnidirectional stimulation. All but one patient showed a benefit of directional stimulation compared to omnidirectional. A best direction of stimulation was observed in all the patients. The therapeutic window in the best direction was wider than the second best direction (P = 0.003) and wider than the third best direction (P = 0.002). Compared to omnidirectional direction, the therapeutic window in the best direction was 41.3\% wider (P = 0.037). The current threshold producing meaningful therapeutic effect in the best direction was 0.67 mA (0.3-1.0 mA) and was 43\% lower than in omnidirectional stimulation (P = 0.002). No complication as a result of insertion of the directional electrode or during testing was encountered. The computed model revealed a volume of tissue activated of 10.5 mm(3) in omnidirectional mode, compared with 4.2 mm(3) when only one electrode was used. Directional deep brain stimulation with a reduced electrode size applied intraoperatively in the subthalamic nucleus as well as in the nucleus ventralis intermedius of the thalamus significantly widened the therapeutic window and lowered the current needed for beneficial effects, compared to omnidirectional stimulation. The observed side effects related to direction of stimulation were consistent with the anatomical location of surrounding structures. This new approach opens the door to an improved deep brain stimulation therapy. Chronic implantation is further needed to confirm these findings.},
+  url = {http://brain.oxfordjournals.org/content/137/7/2015.long},
+  doi = {10.1093/brain/awu102}}
+
+@InProceedings{Latikka2001,
+  author =       {Juha Latikka and Jari AK Hittinen and Timo Kuurne and Hannu Eskola and Jaakko Malmivuo},
+  title =        {The conductivity of brain tissues: comparison of results in vivo and in vitro measurements},
+  booktitle = {Conference: Engineering in Medicine and Biology Society},
+  year =      2001,
+  month = 10,
+  doi = {10.1109/IEMBS.2001.1019092},
+  url = {https://www.researchgate.net/publication/224055792_The_conductivity_of_brain_tissues_comparison_of_results_in_vivo_and_in_vitro_measurements},
+  abstract = {Electric properties of tissues depend on many factors, including measurement frequency and temperature. Properties differ also in vivo and in vitro situations. We have collected conductivity values from several studies and compared the values measured from living tissue and tissue samples. The results show that the resistivity ratio of grey and white matter increases 36\% after death, and the resistivity values increase over 100\%.},
+  annotate = {Old review. Short. Large-scale.}
+}
+
+@Article{Histed2009stimulation,
+  author =       {Mark H. Histed and Vincent Bonin and R. Clay Reid},
+  title =        {Direct activation of sparse, distributed populations of cortical neurons by electrical microstimulation},
+  journal =      {Neuron},
+  year =         2009,
+  volume =    63,
+  number =    4,
+  pages =     {508--522},
+  month =     {August},
+  url = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2874753/},
+  doi = {10.1016/j.neuron.2009.07.016},
+  abstract = {For over a century, electrical microstimulation has been the most direct method for causally linking brain function with behavior. Despite this long history, it is still unclear how the activity of neural populations is affected by stimulation. For example, there is still no consensus on where activated cells lie, or on the extent to which neural processes such as passing axons near the electrode are also activated. Past studies of this question have proven difficult because microstimulation interferes with electrophysiological recordings, which in any case provide only coarse information about the location of activated cells. We used two-photon calcium imaging, an optical method, to circumvent these hurdles. We found that microstimulation sparsely activates neurons around the electrode, sometimes as far as millimeters away, even at low currents. The pattern of activated neurons likely arises from the direct activation of axons in a volume with a diameter of tens of microns.}}
+
+@Article{Guitchounts2013electrode,
+  author =       {Grigori Guitchounts and Jeffrey E. Markowitz and William A. Liberti and Timothy J. Gardner},
+  title =        {A carbon-fiber electrode array for long-term neural recording},
+  journal =      {Journal of Neural Engineering},
+  year =         2013,
+  volume =    10,
+  number =    4,
+  doi = {10.1088/1741-2560/10/4/046016},
+  url = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3875136/},
+  abstract = {Problem addressed: Chronic neural recording in behaving animals is an essential method for studies of neural circuit function. However, stable recordings from small, densely packed neurons remains challenging, particularly over time-scales relevant for learning.
+
+Methodology: We describe an assembly method for a 16 channel electrode array consisting of carbon fibers (<5 μm diameter) individually insulated with Parylene-C and fire-sharpened. The diameter of the array is approximately 26 microns, along the full extent of the implant.
+
+Results: Carbon fiber arrays were tested in HVC (used as a proper name), a song motor nucleus, of singing zebra finches where individual neurons discharge with temporally precise patterns. Previous reports of activity in this population of neurons has required the use of high impedance electrodes on movable microdrives. Here, the carbon fiber electrodes provided stable multi-unit recordings over time-scales of months. Spike-sorting indicated that the multi-unit signals were dominated by one, or a small number of cells. Stable firing patterns during singing confirmed the stability of these clusters over time-scales of months. In addition, from a total of 10 surgeries, 16 projection neurons were found. This cell type is characterized by sparse - stereotyped firing firing patterns, providing unambiguous confirmation of single cell recordings.
+
+Significance: Carbon fiber electrode bundles may provide a scalable solution for long-term neural recordings of densely packed neurons.}
+}
+
+
+@article{Cogan2008electrodes,
+author = {Stuart F. Cogan},
+title = {Neural Stimulation and Recording Electrodes},
+journal = {Annual Review of Biomedical Engineering},
+volume = 10,
+number = 1,
+pages = {275-309},
+year = 2008,
+doi = {10.1146/annurev.bioeng.10.061807.160518},
+    note ={PMID: 18429704},
+URL = {http://dx.doi.org/10.1146/annurev.bioeng.10.061807.160518},
+abstract = { Electrical stimulation of nerve tissue and recording of neural electrical activity are the basis of emerging prostheses and treatments for spinal cord injury, stroke, sensory deficits, and neurological disorders. An understanding of the electrochemical mechanisms underlying the behavior of neural stimulation and recording electrodes is important for the development of chronically implanted devices, particularly those employing large numbers of microelectrodes. For stimulation, materials that support charge injection by capacitive and faradaic mechanisms are available. These include titanium nitride, platinum, and iridium oxide, each with certain advantages and limitations. The use of charge-balanced waveforms and maximum electrochemical potential excursions as criteria for reversible charge injection with these electrode materials are described and critiqued. Techniques for characterizing electrochemical properties relevant to stimulation and recording are described with examples of differences in the in vitro and in vivo response of electrodes. }
+}
+
+
+
+
+@Article{Swadlow1998antidromic,
+  author =       {Harvey A Swadlow},
+  title =        {Neocortical efferent neurons with very slowly conducting axons: strategies for reliable antidromic identification},
+  journal =      {Journal of Neuroscience Methods},
+  year =         1998,
+  volume =    79,
+  number =    2,
+  pages =     {131--141},
+  month =     {February},
+  url = {http://www.sciencedirect.com/science/article/pii/S0165027097001763#BIB51},
+  abstract = {Although simple in concept, reliable antidromic identification of efferent populations poses numerous technical challenges and is subject to a host of sampling biases, most of which select against the detection of the neurons with slowly conducting axons. This problem is particularly acute in studies of the neocortex. Many neocortical efferent systems have large sub-populations with very slowly conducting, nonmyelinated axons and these elements have been relatively neglected in antidromic studies of neocortical neurons. The present review attempts to redress this problem by analyzing the steps that must necessarily precede antidromic identification and the sampling biases associated with each of these steps. These steps include (1) initial recognition that the microelectrode is near a neuron; (2) activation of the efferent axon via the stimulating electrode; (3) conduction of the antidromic impulse from stimulation site to soma; (4) detection of the antidromic spike in the extracellular record and (5) discriminating antidromic from synaptic activation. Experimental strategies are suggested for minimizing the sampling biases associated with each of these steps; most of which can be reduced or eliminated by appropriate experimental procedures. Careful attention to such procedures will make it possible to better understand the nature and function of the information flow along the very slowly conducting axonal systems of the neocortex.},
+  doi = {doi:10.1016/S0165-0270(97)00176-3}
+}
+
+
+
+@Article{Hahnloser2002sparse,
+  author =       {Richard H. R. Hahnloser and Alexay A. Kozhevnikov and Michale S. Fee},
+  title =        {An ultra-sparse code underliesthe generation of neural sequences in a songbird},
+  journal =      {Letters to Nature},
+  year =         2002,
+  month = {September},
+  volume = 419,
+  pages = {65--70},
+  abstract = {Sequences of motor activity are encoded in many vertebrate brains by complex spatio-temporal patterns of neural activity; however, the neural circuit mechanisms underlying the generation of these pre-motor patterns are poorly understood. In songbirds, one prominent site of pre-motor activity is the forebrain robust nucleus of the archistriatum (RA), which generates stereotyped sequences of spike bursts during song1 and recapitulates these sequences during sleep2. We show that the stereotyped sequences in RA are driven from nucleus HVC (high vocal centre), the principal pre-motor input to RA3, 4. Recordings of identified HVC neurons in sleeping and singing birds show that individual HVC neurons projecting onto RA neurons produce bursts sparsely, at a single, precise time during the RA sequence. These HVC neurons burst sequentially with respect to one another. We suggest that at each time in the RA sequence, the ensemble of active RA neurons is driven by a subpopulation of RA-projecting HVC neurons that is active only at that time. As a population, these HVC neurons may form an explicit representation of time in the sequence. Such a sparse representation, a temporal analogue of the 'grandmother cell'5 concept for object recognition, eliminates the problem of temporal interference during sequence generation and learning attributed to more distributed representations.},
+  url = {http://www.nature.com/nature/journal/v419/n6902/full/nature00974.html},
+  doi = {10.1038/nature00974}
+}
+
+@Article{Rossi2016dbs,
+  author =       {P. Justin Rossi and Aysegul Gunduz and Jack Judy and Linda Wilson and Andre Machado and James J. Giordano and W. Jeff Elias and Marvin A. Rossi and Christopher L. Butson and Michael D. Fox and Cameron C. McIntyre and Nader Pouratian and Nicole C. Swann and Coralie de Hemptinne and Robert E. Gross and Howard J. Chizeck and Michele Tagliati and Andres M. Lozano and Wayne Goodman and Jean-Philippe Langevin and Ron L. Alterman and Umer Akbar and Greg A. Gerhardt and Warren M. Grill and Mark Hallett and Todd Herrington and Jeffrey Herron and Craig van Horne and Brian H. Kopell and Anthony E. Lang and Codrin Lungu and Daniel Martinez-Ramirez and Alon Y. Mogilner and Rene Molina and Enrico Opri and Kevin J. Otto and Karim G. Oweiss and Yagna Pathak and Aparna Shukla and Jonathan Shute and Sameer A. Sheth and Ludy C. Shih and G. Karl Steinke and Alexander I. Tröster and Nora Vanegas and Kareem A. Zaghloul and Leopoldo Cendejas-Zaragoza and Leonard Verhagen and Kelly D. Foote and and Michael S. Okun},
+  title =        {Proceedings of the Third Annual Deep Brain Stimulation Think Tank: A Review of Emerging Issues and Technologies},
+  journal =      {Frontiers in Neuroscience},
+  year =         2016,
+  month = {April},
+  url = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4821860/},
+  doi = {10.3389/fnins.2016.00119},
+  abstract = {The proceedings of the 3rd Annual Deep Brain Stimulation Think Tank summarize the most contemporary clinical, electrophysiological, imaging, and computational work on DBS for the treatment of neurological and neuropsychiatric disease. Significant innovations of the past year are emphasized. The Think Tank's contributors represent a unique multidisciplinary ensemble of expert neurologists, neurosurgeons, neuropsychologists, psychiatrists, scientists, engineers, and members of industry. Presentations and discussions covered a broad range of topics, including policy and advocacy considerations for the future of DBS, connectomic approaches to DBS targeting, developments in electrophysiology and related strides toward responsive DBS systems, and recent developments in sensor and device technologies.}
+}
+
+@Article{Fee2004mechanisms,
+  author =       {Michale S. Fee and Alexay A Kozhevnikov and Richard H. R. Hahnloser},
+  title =        {Neural Mechanisms of Vocal Sequence 
+Generation in the Songbird},
+  journal =      {Ann. N.Y. Acad. Sci.},
+  year =         2004,
+  pages = {153--170},
+  volume = 1016,
+  doi = {10.1196/annals.1298.022},
+  url = {http://web.mit.edu/feelab/publications/Fee%20et%20al%20NYAS%202004.pdf},
+  abstract = {Little is known about the biophysical and neuronal circuit mecha-
+nisms underlying the generation and learning of behavioral sequences. Song-
+birds provide a marvelous animal model in which to study these phenomena.
+By use of a motorized microdrive to record the activity of single neurons in the
+singing bird, we are beginning to understand the circuits that generate complex
+vocal sequences. We describe recent experiments elucidating the role of premo-
+tor  song-control  nucleus  HVC  in  the  production  of  song.  We  find  that  HVC
+neurons  projecting  to  premotor  nucleus  RA  each  generate  a  single  burst  of
+spikes at a particular time in the song and may form a sparse representation of
+temporal order. We incorporate this observation into a working hypothesis for
+the generation of vocal sequences in the songbird, and examine some implica-
+tions for song learning.}}
+
+
+@Article{Afshar2012closedloop,
+  author =       {Pedram Afshar and Ankit Khambhati and Scott Stanslaski and David Carlson and Randy Jensen and Dave Linde and Siddharth Dani and Maciej Lazarewicz and Peng Cong and Jon Giftakis and Paul Stypulkowski and Tim Denison},
+  title =        {A translational platform for prototyping closed-loop neuromodulation systems},
+  journal =      {Frontiers in Neural Circuits},
+  year =         2012,
+  volume = 6,
+  number = 112,
+  month = {January},
+  URL = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3551193/},
+  abstract = {While modulating neural activity through stimulation is an effective treatment for neurological diseases such as Parkinson's disease and essential tremor, an opportunity for improving neuromodulation therapy remains in automatically adjusting therapy to continuously optimize patient outcomes. Practical issues associated with achieving this include the paucity of human data related to disease states, poorly validated estimators of patient state, and unknown dynamic mappings of optimal stimulation parameters based on estimated states. To overcome these challenges, we present an investigational platform including: an implanted sensing and stimulation device to collect data and run automated closed-loop algorithms; an external tool to prototype classifier and control-policy algorithms; and real-time telemetry to update the implanted device firmware and monitor its state. The prototyping system was demonstrated in a chronic large animal model studying hippocampal dynamics. We used the platform to find biomarkers of the observed states and transfer functions of different stimulation amplitudes. Data showed that moderate levels of stimulation suppress hippocampal beta activity, while high levels of stimulation produce seizure-like after-discharge activity. The biomarker and transfer function observations were mapped into classifier and control-policy algorithms, which were downloaded to the implanted device to continuously titrate stimulation amplitude for the desired network effect. The platform is designed to be a flexible prototyping tool and could be used to develop improved mechanistic models and automated closed-loop systems for a variety of neurological disorders.},
+  doi = {10.3389/fncir.2012.00117}}
+
+@Article{Holloway2005stereotaxy,
+  author =       {Holloway, K. L. and Gaede, S. E. and Starr, P. A. and Rosenow, J. M. and Ramakrishnan, V and Henderson, J. M.},
+  title =        {Frameless stereotaxy using bone fiducial markers for deep brain stimulation},
+  journal =      {J Neurosurg},
+  year =         2005,
+  volume = 103,
+  number = 3,
+  pages = {404--413}}
+
+
+
+@Article{Alexander2007dti,
+  author =       {Andrew L. Alexander and Jee Eun Lee and Mariana Lazar and Aaron S. Field},
+  title =        {Diffusion Tensor Imaging of the Brain},
+  journal =      {Neurotherapeutics},
+  year =         2007,
+  month = {July},
+  volume = 4,
+  number = 3,
+  pages = {316--329},
+  doi = {10.1016/j.nurt.2007.05.011},
+  url = {http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2041910/},
+  abstract = {Diffusion tensor imaging (DTI) is a promising method for characterizing microstructural changes or differences with neuropathology and treatment. The diffusion tensor may be used to characterize the magnitude, anisotropy and orientation of the diffusion tensor. This paper reviews the biological mechanisms, acquisition and analysis methodology of DTI measurements. The relationships between DTI measures and white matter pathologic features (ischemia, myelination, axonal damage, inflammation, and edema) are summarized. Applications of DTI to tissue characterization in neurotherapeutic applications are reviewed. The interpretations of common DTI measures – mean diffusivity (MD), fractional anisotropy (FA), radial diffusivity (Dr) and axial diffusivity (Da) – are discussed. In particular, FA is highly sensitive to microstructural changes, but not very specific to the type of changes (e.g., radial or axial). In order to maximize the specificity, it is recommended that future studies use multiple diffusion tensor measures (e.g., MD and FA, or Da and Dr) to better characterize the tissue microstructure.}
+}
+
+% Władysław Dąbrowski
+@Article{Jepson2014steering_in_retina,
+  author =       {Lauren H. Jepson and Paweł Hottowy and Keith Mathieson and Deborah E. Gunning and Władysław Dabrowski and Alan M. Litke and E. J. Chichilnisky},
+  title =        {Spatially Patterned Electrical Stimulation to Enhance Resolution of Retinal Prostheses},
+  journal =      {Journal of Neuroscience},
+  year =         2014,
+  month = {April},
+  volume = 34,
+  number = 14,
+  pages = {4871--4881},
+  url = {http://www.jneurosci.org/content/34/14/4871.full},
+  doi = {10.1523/JNEUROSCI.2882-13.2014},
+  abstract = {Retinal prostheses electrically stimulate neurons to produce artificial vision in people blinded by photoreceptor degenerative diseases. The limited spatial resolution of current devices results in indiscriminate stimulation of interleaved cells of different types, precluding veridical reproduction of natural activity patterns in the retinal output. Here we investigate the use of spatial patterns of current injection to increase the spatial resolution of stimulation, using high-density multielectrode recording and stimulation of identified ganglion cells in isolated macaque retina. As previously shown, current passed through a single electrode typically induced a single retinal ganglion cell spike with submillisecond timing precision. Current passed simultaneously through pairs of neighboring electrodes modified the probability of activation relative to injection through a single electrode. This modification could be accurately summarized by a piecewise linear model of current summation, consistent with a simple biophysical model based on multiple sites of activation. The generalizability of the piecewise linear model was tested by using the measured responses to stimulation with two electrodes to predict responses to stimulation with three electrodes. Finally, the model provided an accurate prediction of which among a set of spatial stimulation patterns maximized selective activation of a cell while minimizing activation of a neighboring cell. The results demonstrate that tailored multielectrode stimulation patterns based on a piecewise linear model may be useful in increasing the spatial resolution of retinal prostheses.}}
+
+
+
+@Article{Nigam2014richclub,
+  author =       {
+    Sunny Nigam and
+    Masanori Shimono 
+    Shinya Ito and
+    Yeh Fang-Chin and
+    Nicholas Timme and
+    Maxym Myroshnychenko
+},
+  title =        {Systems/Circuits Rich-Club Organization in Effective Connectivity among Cortical Neurons},
+  journal =      {Journal of Neuroscience},
+  year =         2014,
+  volume = 36,
+  number = 3,
+  pages = {670--684},
+  doi = {10.1523/JNEUROSCI.2177-15.2016},
+  url = {https://www.researchgate.net/publication/291343084_SystemsCircuits_Rich-Club_Organization_in_Effective_Connectivity_among_Cortical_Neurons},
+  abstract = {The performance of complex networks, like the brain, depends on how effectively their elements communicate. Despite the importance
+of communication, it is virtually unknown how information is transferred in local cortical networks, consisting of hundreds of closely
+spaced neurons. To address this, it is important to record simultaneously from hundreds of neurons at a spacing that matches typical
+axonal connection distances, and at a temporal resolution that matches synaptic delays. We used a 512-electrode array (60 $\mu$m spacing)
+to record spontaneous activity at 20 kHz from up to 500 neurons simultaneously in slice cultures of mouse somatosensory cortex for 1 h
+at a time. We applied a previously validated version of transfer entropy to quantify information transfer. Similar to
+in vivo
+reports,
+we found an approximately lognormal distribution of firing rates. Pairwise information transfer strengths also were nearly
+lognormally distributed, similar to reports of synaptic strengths. Some neurons transferred and received much more information
+than others, which is consistent with previous predictions. Neurons with the highest outgoing and incoming information transfer
+were more strongly connected to each other than chance, thus forming a “rich club.” We found similar results in networks recorded
+in vivo
+from rodent cortex, suggesting the generality of these findings. A rich-club structure has been found previously in
+large-scale human brain networks and is thought to facilitate communication between cortical regions. The discovery of a small,
+but information-rich, subset of neurons within cortical regions suggests that this population will play a vital role in communication, learning, and memory.}
+}
+
+
+@Article{Rosin2011adbs,
+  author =       {    Boris Rosin and Maya Slovik and Rea Mitelman and Michal Rivlin-Etzion and Suzanne N. Haber and Zvi Israel and Eilon Vaadia and Hagai Bergman},
+  title =        {Closed-Loop Deep Brain Stimulation Is Superior in Ameliorating Parkinsonism},
+  journal =      {Neuron},
+  year =         {2011},
+  month = {October},
+  volume = 72,
+  number = 2,
+  pages = {370--384},
+  url = {http://www.sciencedirect.com/science/article/pii/S0896627311007768},
+  doi = {doi:10.1016/j.neuron.2011.08.023},
+  abstract = {Continuous high-frequency deep brain stimulation (DBS) is a widely used therapy for advanced Parkinson's disease (PD) management. However, the mechanisms underlying DBS effects remain enigmatic and are the subject of an ongoing debate. Here, we present and test a closed-loop stimulation strategy for PD in the 1-methyl-4-phenyl-1,2,3,6-tetrahydropyridine (MPTP) primate model of PD. Application of pallidal closed-loop stimulation leads to dissociation between changes in basal ganglia (BG) discharge rates and patterns, providing insights into PD pathophysiology. Furthermore, cortico-pallidal closed-loop stimulation has a significantly greater effect on akinesia and on cortical and pallidal discharge patterns than standard open-loop DBS and matched control stimulation paradigms. Thus, closed-loop DBS paradigms, by modulating pathological oscillatory activity rather than the discharge rate of the BG-cortical networks, may afford more effective management of advanced PD. Such strategies have the potential to be effective in additional brain disorders in which a pathological neuronal discharge pattern can be recognized.}
+}
+
+@Article{Priori2013adbs-lfp,
+  author =       {Alberto Priori and Guglielmo Foffani and Lorenzo Rossia and Sara Marceglia},
+  title =        {Adaptive deep brain stimulation (aDBS) controlled by local field potential oscillations},
+  journal =      {Experimental Neurology},
+  year =         2013,
+  volume = 245,
+  month = {July},
+  pages = {77--86},
+  abstract = {Despite their proven efficacy in treating neurological disorders, especially Parkinson's disease, deep brain stimulation (DBS) systems could be further optimized to maximize treatment benefits. In particular, because current open-loop DBS strategies based on fixed stimulation settings leave the typical parkinsonian motor fluctuations and rapid symptom variations partly uncontrolled, research has for several years focused on developing novel “closed-loop” or “adaptive” DBS (aDBS) systems. aDBS consists of a simple closed-loop model designed to measure and analyze a control variable reflecting the patient's clinical condition to elaborate new stimulation settings and send them to an “intelligent” implanted stimulator. The major problem in developing an aDBS system is choosing the ideal control variable for feedback. Here we review current evidence on the advantages of neurosignal-controlled aDBS that uses local field potentials (LFPs) as a control variable, and describe the technology already available to create new aDBS systems, and the potential benefits of aDBS for patients with Parkinson's disease.},
+  url = {http://www.sciencedirect.com/science/article/pii/S0014488612003755},
+  doi = {doi:10.1016/j.expneurol.2012.09.013}}
+
+
+
+
+@Article{Priori2015review,
+  author =       {Alberto Priori},
+  title =        {Technology for Deep Brain Stimulation at a Gallop},
+  journal =      {Movement Disorders},
+  year =         {2015},
+  OPTkey =       {},
+  OPTvolume =    {30},
+  OPTnumber =    {9},
+  OPTpages =     {1206--1212},
+  OPTmonth =     {May},
+  OPTnote =      {},
+  OPTannote =    {},
+  url = {http://onlinelibrary.wiley.com/doi/10.1002/mds.26253/pdf},
+  doi = {10.1002/mds.26253},
+  abstract = {Along with levodopa and botulinum toxin, deep
+brain stimulation (DBS) has been a milestone achieve-
+ment  in  the  treatment  of  movement  disorders.
+Although the hardware for DBS has undergone tech-
+nological improvement, and more than one manufac-
+turer has appeared in the global market, in general the
+concept for DBS has remained almost unchanged over
+the past two decades. As the pathophysiology of
+movement disorders becomes clearer (thanks partly to
+DBS itself) and electronic know-how and equipment
+advance, an even more fascinating future opens for
+treating patients. As happens in other therapeutic
+fields, not every innovation brings about substantial
+changes that will really influence patients’ quality of
+life, but many can simply involve commercial restyling
+aimed to push the market forward. Technological
+advancements have an especially important role in
+DBS, now becoming an increasingly more appealing
+business given the growing Parkinson’s disease (PD)
+prevalence—expected to reach 8.7 million in 2030
+and the evidence that early DBS implant induces benefits.  Currently the estimated market for DBS devices
+for PD is approximately $200 million to $300 million
+per year worldwide, but the coming years promise a
+further powerful push.
+
+Because good clinical practice requires us to offer
+our patients the best possible and most suitable health-
+care solutions, we should critically assess whether
+technical advances are really useful. To provide clini-
+cians with the knowledge needed to orient themselves
+in the wide innovative DBS field, here I introduce and
+try to explain in simple terms understandable to the
+general reader DBS technological advances that could
+improve health care. In very broad terms, the most rel-
+evant recent technological progresses in the DBS field
+outlined later aim to increase the temporal and spatial
+resolution of this treatment by developing solutions to
+deliver stimulation only where and when it is needed,
+thus reducing energy wasting and limiting adverse
+effects}
+}
+
+@Article{Biran2005gliosis,
+  author =       {Biran R, Martin DC, Tresco PA},
+  title =        {Neuronal cell loss accompanies the brain tissue response to chronically implanted silicon microelectrode arrays},
+  journal =      {Experimental Neurology},
+  year =         2005,
+  month = {September},
+  volume = 195,
+  number = 1,
+  pages = {115--126},
+  url = {http://www.ncbi.nlm.nih.gov/pubmed/16045910},
+  doi = {doi:10.1016/j.expneurol.2005.04.020},
+  abstract = {Implantable silicon microelectrode array technology is a useful technique for obtaining high-density, high-spatial resolution sampling of neuronal activity within the brain and holds promise for a wide range of neuroprosthetic applications. One of the limitations of the current technology is inconsistent performance in long-term applications. Although the brain tissue response is believed to be a major cause of performance degradation, the precise mechanisms that lead to failure of recordings are unknown. We observed persistent ED1 immunoreactivity around implanted silicon microelectrode arrays implanted in adult rat cortex that was accompanied by a significant reduction in nerve fiber density and nerve cell bodies in the tissue immediately surrounding the implanted silicon microelectrode arrays. Persistent ED1 up-regulation and neuronal loss was not observed in microelectrode stab controls indicating that the phenotype did not result from the initial mechanical trauma of electrode implantation, but was associated with the foreign body response. In addition, we found that explanted electrodes were covered with ED1/MAC-1 immunoreactive cells and that the cells released MCP-1 and TNF-alpha under serum-free conditions in vitro. Our findings suggest a potential new mechanism for chronic recording failure that involves neuronal cell loss, which we speculate is caused by chronic inflammation at the microelectrode brain tissue interface.}
+}
+
+@Article{Polikov2005gliosis,
+  author =       {Polikov VS and Tresco PA and Reichert WM},
+  title =        {Response of brain tissue to chronically implanted neural electrodes},
+  journal =      {Journal of Neuroscience Methods},
+  year =         2005,
+  month = {October},
+  volume = 148,
+  number = 1,
+  pages = {1--18},
+  url = {http://www.ncbi.nlm.nih.gov/pubmed/16198003},
+  doi = {doi:10.1016/j.jneumeth.2005.08.015},
+  abstract = {Chronically implanted recording electrode arrays linked to prosthetics have the potential to make positive impacts on patients suffering from full or partial paralysis. Such arrays are implanted into the patient's cortical tissue and record extracellular potentials from nearby neurons, allowing the information encoded by the neuronal discharges to control external devices. While such systems perform well during acute recordings, they often fail to function reliably in clinically relevant chronic settings. Available evidence suggests that a major failure mode of electrode arrays is the brain tissue reaction against these implants, making the biocompatibility of implanted electrodes a primary concern in device design. This review presents the biological components and time course of the acute and chronic tissue reaction in brain tissue, analyses the brain tissue response of current electrode systems, and comments on the various material science and bioactive strategies undertaken by electrode designers to enhance electrode performance.}}
+
+
+@Article{Tuch2001conductivity,
+  author =       {David S. Tuch and Van J. Wedeen and Anders M. Dale and John S. George and John W. Billiveau},
+  title =        {Conductivity tensor mapping of the human brain using diffusion tensor MRI},
+  journal =      {PNAS},
+  year =         2001,
+  volume =    98,
+  number =    20,
+  pages =     {11697--11701},
+  month =     {September},
+  url = {http://www.pnas.org/content/98/20/11697.full.pdf},
+  doi = {10.1073/pnas.171473898},
+  abstract = {Knowledge of the electrical conductivity properties of
+                  excitable tissues is essential for relating the
+                  electromagnetic fields generated by the tissue to
+                  the underlying electrophysiological currents.
+                  Efforts to characterize these endogenous currents
+                  from measurements of the associated electromagnetic
+                  fields would significantly benefit from the ability
+                  to measure the electrical conductivity properties of
+                  the tissue noninvasively.  Here, using an effective
+                  medium approach, we show how the electrical
+                  conductivity tensor of tissue can be quantitatively
+                  inferred from the water self-diffusion tensor as
+                  measured by diffusion tensor magnetic resonance
+                  imaging.  The effective medium model indicates a
+                  strong linear relationship between the conductivity
+                  and diffusion tensor eigenvalues (respectively, s
+                  and d ) in agreement with theoretical bounds and
+                  experimental measurements presented here ($\sigma / d \approx 0.844 \pm 0.0545 S\cdot s / mm^3, r^2 = 0.945$).  The
+                  extension to other biological transport phenomena is
+                  also discussed.}
+}
+
+@Article{Winslow2010gliosis,
+  author =       {Brent D. Winslow and Michael B. Christiensen and Wen-Kuo Yang and Florian Solzbacher and Patrick A. Tresco},
+  title =        {A comparison of the tissue response to chronically implanted Parylene-C-coated and uncoated planar silicon microelectrode arrays in rat cortex},
+  journal =      {Biomaterials},
+  year =         2010,
+  volume =    31,
+  number =    35,
+  pages =     {9163--9172},
+  month =     {December},
+  doi = {doi:10.1016/j.biomaterials.2010.05.050},
+  url = {http://www.sciencedirect.com/science/article/pii/S0142961210006873},
+  abstract = {In this study we employed a quantitative immunohistochemical approach to compare the brain tissue response to planar silicon microelectrode arrays that were conformally coated with Parylene-C to uncoated controls at 2, 4, and 12 weeks following implantation into the cortex of adult male Sprague-Dawley rats. We did not find any difference in the relative intensity or the spatial distribution of neuronal or glial markers over the indwelling period, even though Parylene-C-coated substrates supported significantly less cell attachment, indicating that the foreign body response to planar silicon microelectrode arrays has little to do with the composition or decomposition of the silicon electrode. Moreover, our results suggest that changes in microelectrode surface chemistry do not have a strong influence on the cytoarchitectural changes that accompany the brain foreign body response to planar silicon microelectrode arrays. Our quantitative comparison over the indwelling period does not support progressive increases in astrocyte encapsulation and/or progressive neuronal loss in the recording zone as dominant failure mechanisms of the type of chronic recording device. Finally, we found evidence of two potentially new failure mechanisms that were associated with CD68 immunoreactivity including demyelination of adjacent neurons and BBB breakdown surrounding implanted electrodes at long indwelling times.}
+}
+
+@Article{Udupa2015dbs,
+  author =       {Kaviraja Udupa and Robert Chen},
+  title =        {The mechanisms of action of deep brain stimulation and ideas for the future development},
+  journal =      {Progress in Neurobiology},
+  year =         2015,
+  volume =    133,
+  pages =     {27--49},
+  doi = {10.1016/j.pneurobio.2015.08.001},
+  url = {http://www.sciencedirect.com/science/article/pii/S030100821500088X},
+  abstract = {Deep brain stimulation (DBS) has been used as a treatment of movement disorders such as Parkinson's disease, dystonia, and essential tremor for over twenty years, and is a promising treatment for depression and epilepsy. However, the exact mechanisms of action of DBS are still uncertain, although different theories have emerged. This review summarizes the current understanding in this field. Different modalities used to investigate DBS such as electrophysiological, imaging and biochemical studies have revealed different mechanisms of DBS. The mechanisms may also be different depending on the structure targeted, the disease condition or the animal model employed. DBS may inhibit the target neuronal networks but activate the efferent axons. It may suppress pathological rhythms or impose new rhythms associated with beneficial effects, and involves neuronal networks with widespread connections. Different neurotransmitter systems such as dopamine and GABA upregulation are involved in the effects of DBS. There are also technical advances to prolong the battery life and specific targeting based on new electrode designs with multiple contacts which have the ability to steer the current toward a specific direction. There is ongoing work in closed loop or adaptive DBS using neural oscillations to provide the feedback signals. These oscillations need to be better characterized in a wide variety of clinical settings in future studies. Individualization of DBS parameters based on neural oscillations may optimize the clinical benefits of DBS.}
+}
+
+@article{Markowitz:2015ko,
+author = {Markowitz, Jeffrey E and Liberti, William A and Guitchounts, Grigori and Velho, Tarciso and Lois, Carlos and Gardner, Timothy J},
+title = {Mesoscopic Patterns of Neural Activity Support Songbird Cortical Sequences},
+journal = {PLOS Biology},
+year = {2015},
+volume = {13},
+number = {6},
+pages = {e1002158--20},
+month = {June},
+abstract = {Time-locked sequences of neural activity can be found throughout the vertebrate forebrain in various species and behavioral contexts. From “time cells” in the hippocampus of rodents to cortical activity controlling movement, temporal sequence generation is integral to many forms of learned behavior. However, the mechanisms underlying sequence generation are not well known. Here, we describe a spatial and temporal organization of the songbird premotor cortical microcircuit that supports sparse sequences of neural activity. Multi-channel electrophysiology and calcium imaging reveal that neural activity in premotor cortex is correlated with a length scale of 100 µm. Within this length scale, basal-ganglia–projecting excitatory neurons, on average, fire at a specific phase of a local 30 Hz network rhythm. These results show that premotor cortical activity is inhomogeneous in time and space, and that a mesoscopic dynamical pattern underlies the generation of the neural sequences controlling song.},
+doi = {10.1371/journal.pbio.1002158},
+url = {http://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1002158}
+}
+
+@article{Adelsberger:2005dy,
+author = {Adelsberger, Helmuth and Garaschuk, Olga and Konnerth, Arthur},
+title = {{Cortical calcium waves in resting newborn mice.}},
+journal = {Nature Neuroscience},
+year = {2005},
+volume = {8},
+number = {8},
+pages = {988--990},
+month = {August},
+abstract = {Using a new optical fiber–based approach, we demonstrate the presence of recurrent Ca2+ transients in cortical neurons of non-anesthetized newborn mice in vivo. These Ca2+ waves reflect the correlated activity of thousands of cells and were detected only in resting, but not in moving pups. Our results suggest that Ca2+-dependent cortical maturation occurs predominantly during the intermittent sleep-like resting periods that are characteristic for the first days of postnatal life.},
+doi = {10.1038/nn1502},
+url = {http://www.nature.com/neuro/journal/v8/n8/full/nn1502.html}
+}
+
+@article{Schulz:2012fv,
+author = {Schulz, Kristina and Sydekum, Esther and Krueppel, Roland and Engelbrecht, Christoph J and Schlegel, Felix and Schr{\"o}ter, Aileen and Rudin, Markus and Helmchen, Fritjof},
+title = {{Simultaneous BOLD fMRI and fiber-optic calcium recording in rat neocortex}},
+journal = {Nature Methods},
+year = {2012},
+volume = {9},
+number = {6},
+pages = {597--602},
+month = {May},
+abstract = {Functional magnetic resonance imaging (fMRI) based on blood oxygen level–dependent (BOLD) contrast is widely used for probing brain activity, but its relationship to underlying neural activity remains elusive. Here, we combined fMRI with fiber-optic recordings of fluorescent calcium indicator signals to investigate this relationship in rat somatosensory cortex. Electrical forepaw stimulation (1–10 Hz) evoked fast calcium signals of neuronal origin that showed frequency-dependent adaptation. Additionally, slower calcium signals occurred in astrocyte networks, as verified by astrocyte-specific staining and two-photon microscopy. Without apparent glia activation, we could predict BOLD responses well from simultaneously recorded fiber-optic signals, assuming an impulse response function and taking into account neuronal adaptation. In cases with glia activation, we uncovered additional prolonged BOLD signal components. Our findings highlight the complexity of fMRI BOLD signals, involving both neuronal and glial activity. Combined fMRI and fiber-optic recordings should help to clarify cellular mechanisms underlying BOLD signals.},
+doi = {10.1038/nmeth.2013},
+url = {http://www.nature.com/nmeth/journal/v9/n6/full/nmeth.2013.html}
+}
+
+@article{Cui:2013dq,
+author = {Cui, Guohong and Jun, Sang Beom and Jin, Xin and Pham, Michael D and Vogel, Steven S and Lovinger, David M and Costa, Rui M},
+title = {{Concurrent activation of striatal direct and indirect pathways during action initiation}},
+journal = {Nature},
+year = {2013},
+volume = {494},
+number = {7436},
+pages = {238--242},
+month = {February},
+abstract = {The basal ganglia are subcortical nuclei that control voluntary actions, and they are affected by a number of debilitating neurological disorders1, 2, 3, 4. The prevailing model of basal ganglia function proposes that two orthogonal projection circuits originating from distinct populations of spiny projection neurons (SPNs) in the striatum5, 6—the so-called direct and indirect pathways—have opposing effects on movement: activity of direct-pathway SPNs is thought to facilitate movement, whereas activity of indirect-pathway SPNs is presumed to inhibit movement1, 2. This model has been difficult to test owing to the lack of methods to selectively measure the activity of direct- and indirect-pathway SPNs in freely moving animals. Here we develop a novel in vivo method to specifically measure direct- and indirect-pathway SPN activity, using Cre-dependent viral expression of the genetically encoded calcium indicator (GECI) GCaMP3 in the dorsal striatum of D1-Cre (direct-pathway-specific6, 7) and A2A-Cre (indirect-pathway-specific8, 9) mice10. Using fibre optics and time-correlated single-photon counting (TCSPC) in mice performing an operant task, we observed transient increases in neural activity in both direct- and indirect-pathway SPNs when animals initiated actions, but not when they were inactive. Concurrent activation of SPNs from both pathways in one hemisphere preceded the initiation of contraversive movements and predicted the occurrence of specific movements within 500 ms. These observations challenge the classical view of basal ganglia function and may have implications for understanding the origin of motor symptoms in basal ganglia disorders.},
+url = {http://www.nature.com/nature/journal/v494/n7436/full/nature11846.html},
+doi = {10.1038/nature11846}
+}
+
+@article{Adelsberger:2014jd,
+author = {Adelsberger, Helmuth and Zainos, Antonio and Alvarez, Manuel and Romo, Ranulfo and Konnerth, Arthur},
+title = {{Local domains of motor cortical activity revealed by fiber-optic calcium recordings in behaving nonhuman primates.}},
+journal = {Proceedings of the National Academy of Sciences of the United States of America},
+year = {2014},
+volume = {111},
+number = {1},
+pages = {463--468},
+month = {January},
+abstract = {Brain mapping experiments involving electrical microstimulation indicate that the primary motor cortex (M1) directly regulates muscle contraction and thereby controls specific movements. Possibly, M1 contains a small circuit “map” of the body that is formed by discrete local networks that code for specific movements. Alternatively, movements may be controlled by distributed, larger-scale overlapping circuits. Because of technical limitations, it remained unclear how movement-determining circuits are organized in M1. Here we introduce a method that allows the functional mapping of small local neuronal circuits in awake behaving nonhuman primates. For this purpose, we combined optic-fiber–based calcium recordings of neuronal activity and cortical microstimulation. The method requires targeted bulk loading of synthetic calcium indicators (e.g., OGB-1 AM) for the staining of neuronal microdomains. The tip of a thin (200 µm) optical fiber can detect the coherent activity of a small cluster of neurons, but is insensitive to the asynchronous activity of individual cells. By combining such optical recordings with microstimulation at two well-separated sites of M1, we demonstrate that local cortical activity was tightly associated with distinct and stereotypical simple movements. Increasing stimulation intensity increased both the amplitude of the movements and the level of neuronal activity. Importantly, the activity remained local, without invading the recording domain of the second optical fiber. Furthermore, there was clear response specificity at the two recording sites in a trained behavioral task. Thus, the results provide support for movement control in M1 by local neuronal clusters that are organized in discrete cortical domains.},
+url = {http://www.pnas.org/content/111/1/463.full},
+doi = {10.1073/pnas.1321612111}
+}
+
+@article{Gunaydin:2014dh,
+author = {Gunaydin, Lisa A and Grosenick, Logan and Finkelstein, Joel C and Kauvar, Isaac V and Fenno, Lief E and Adhikari, Avishek and Lammel, Stephan and Mirzabekov, Julie J and Airan, Raag D and Zalocusky, Kelly A and Tye, Kay M and Anikeeva, Polina and Malenka, Robert C and Deisseroth, Karl},
+title = {{Natural neural projection dynamics underlying social behavior.}},
+journal = {Cell},
+year = 2014,
+volume = 157,
+number = 7,
+pages = {1535--1551},
+month = {June},
+abstract = {Social interaction is a complex behavior essential for many species and is impaired in major neuropsychiatric disorders. Pharmacological studies have implicated certain neurotransmitter systems in social behavior, but circuit-level understanding of endogenous neural activity during social interaction is lacking. We therefore developed and applied a new methodology, termed fiber photometry, to optically record natural neural activity in genetically and connectivity-defined projections to elucidate the real-time role of specified pathways in mammalian behavior. Fiber photometry revealed that activity dynamics of a ventral tegmental area (VTA)-to-nucleus accumbens (NAc) projection could encode and predict key features of social, but not novel object, interaction. Consistent with this observation, optogenetic control of cells specifically contributing to this projection was sufficient to modulate social behavior, which was mediated by type 1 dopamine receptor signaling downstream in the NAc. Direct observation of deep projection-specific activity in this way captures a fundamental and previously inaccessible dimension of mammalian circuit dynamics.},
+url = {http://www.cell.com/cell/fulltext/S0092-8674%2814%2900659-X},
+doi = {10.1016/j.cell.2014.05.017}
+}
+
+@article{MandelblatCerf:2014eu,
+author = {Mandelblat-Cerf, Y and Las, L and Denissenko, N and Fee, M},
+title = {{A role for descending auditory cortical projections in songbird vocal learning}},
+journal = {Elife},
+year = 2014,
+volume = 3,
+number = 0,
+pages = {e02152--e02152},
+month = {January},
+abstract = {Many learned motor behaviors are acquired by comparing ongoing behavior with an internal representation of correct performance, rather than using an explicit external reward. For example, juvenile songbirds learn to sing by comparing their song with the memory of a tutor song. At present, the brain regions subserving song evaluation are not known. In this study, we report several findings suggesting that song evaluation involves an avian 'cortical' area previously shown to project to the dopaminergic midbrain and other downstream targets. We find that this ventral portion of the intermediate arcopallium (AIV) receives inputs from auditory cortical areas, and that lesions of AIV result in significant deficits in vocal learning. Additionally, AIV neurons exhibit fast responses to disruptive auditory feedback presented during singing, but not during nonsinging periods. Our findings suggest that auditory cortical areas may guide learning by transmitting song evaluation signals to the dopaminergic midbrain and/or other subcortical targets.},
+url = {https://elifesciences.org/content/3/e02152},
+doi = {10.7554/eLife.02152}
+}
+
+
+
+@misc{king2006current_steeriing_optimisation,
+  title={Method for optimizing search for spinal cord stimulation parameter settings},
+  author={King, J.D.H.},
+  url={https://www.google.com/patents/US7146223},
+  year={2006},
+  month= {December},
+  publisher={Google Patents},
+  note={US Patent 7,146,223},
+  abstract = {A method for selecting Spinal Cord Stimulation (SCS) stimulation parameter sets guides a clinician towards an effective set of stimulation parameters. The clinician first evaluates the effectiveness of a small number of trial stimulation parameter sets from a Measurement Table. Based on the patient's assessment, the trial stimulation sets are ranked. Then the clinician selects a starting or benchmark row in a Steering Table corresponding to the highest ranked trial stimulation parameter set. The clinician moves either up or down from the starting row, testing consecutive parameter sets. When a local optimum is found, the clinician returns to the benchmark row, and tests in the opposite direction for another local optimum. This process of searching for optimum parameter sets is repeated for a new starting row in the Steering Table that is selected based on the next ranked trial set from the Measurement Table.}
+}
+
+@misc{parramon2011current_steering_optimisation,
+  title={Current steering for an implantable stimulator device involving fractionalized stimulation pulses},
+  author={Parramon, J. and Carbunaru, R. and Haller, M.I.},
+  url={https://www.google.com/patents/US7890182},
+  year={2011},
+  month=feb # "~15",
+  publisher={Google Patents},
+  note={US Patent 7,890,182},
+  abstract = {A method for configuring stimulation pulses in an implantable stimulator device having a plurality of electrodes is disclosed, which method is particularly useful in adjusting the electrodes by current steering during initialization of the device. In one aspect, a set of ideal pulses for patient therapy is determined, in which at least two of the ideal pulses are of the same polarity and are intended to be simultaneous applied to corresponding electrodes on the implantable stimulator device during an initial duration. These pulses are reconstructed into fractionalized pulses, each comprised of pulse portions. The fractionalized pulses are applied to the corresponding electrodes on the device during a final duration, but the pulse portions of the fractionalized pulses are not simultaneously applied during the final duration.}
+}
+
+
+@Article{Tumer2007pitchshift,
+  author =       {Evren C. Tumer and Michael S. Brainard},
+  title =        {Performance variability enables adaptive plasticity of 'crystallized' adult birdsong},
+  journal =      {Nature},
+  year =         2007,
+  volume =    450,
+  pages =     {1240--1244},
+  month =     {December},
+  abstract = {Significant trial-by-trial variation persists even in the most practiced skills. One prevalent view is that such variation is simply 'noise' that the nervous system is unable to control or that remains below threshold for behavioural relevance1, 2, 3. An alternative hypothesis is that such variation enables trial-and-error learning, in which the motor system generates variation and differentially retains behaviours that give rise to better outcomes. Here we test the latter possibility for adult bengalese finch song. Adult birdsong is a complex, learned motor skill that is produced in a highly stereotyped fashion from one rendition to the next4, 5. Nevertheless, there is subtle trial-by-trial variation even in stable, 'crystallized' adult song6, 7, 8. We used a computerized system to monitor small natural variations in the pitch of targeted song elements and deliver real-time auditory disruption to a subset of those variations. Birds rapidly shifted the pitch of their vocalizations in an adaptive fashion to avoid disruption. These vocal changes were precisely restricted to the targeted features of song. Hence, birds were able to learn effectively by associating small variations in their vocal behaviour with differential outcomes. Such a process could help to maintain stable, learned song despite changes to the vocal control system arising from ageing or injury. More generally, our results suggest that residual variability in well learned skills is not entirely noise but rather reflects meaningful motor exploration that can support continuous learning and optimization of performance.},
+  url = {http://www.nature.com/nature/journal/v450/n7173/abs/nature06390.html},
+  doi = {10.1038/nature06390}
+}
+
+@Article{Wang2008interhemispheric,
+  author =       { Claude Z. H Wang and Joshua A Herbst and Georg B
+                  Keller and Richard H. R Hahnloser},
+  title =        {Rapid Interhemispheric Switching during Vocal Production in a Songbird},
+  journal =      {PLOS Biology},
+  year =         2008,
+  volume = 6,
+  number = 10,
+  month =     {October},
+  abstract = {To generate complex bilateral motor patterns such as those underlying birdsong, neural activity must be highly coordinated across the two cerebral hemispheres. However, it remains largely elusive how this coordination is achieved given that interhemispheric communication between song-control areas in the avian cerebrum is restricted to projections received from bilaterally connecting areas in the mid- and hindbrain. By electrically stimulating cerebral premotor areas in zebra finches, we find that behavioral effectiveness of stimulation rapidly switches between hemispheres. In time intervals in which stimulation in one hemisphere tends to distort songs, stimulation in the other hemisphere is mostly ineffective, revealing an idiosyncratic form of motor dominance that bounces back and forth between hemispheres like a virtual ping-pong ball. The intervals of lateralized effectiveness are broadly distributed and are unrelated to simple spectral and temporal song features. Such interhemispheric switching could be an important dynamical aspect of neural coordination that may have evolved from simpler pattern generator circuits.},
+  url = {http://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0060250},
+  doi = {10.1371/journal.pbio.0060250}
+}
+
